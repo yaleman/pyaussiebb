@@ -21,12 +21,20 @@ def default_headers():
         'cache-control': "no-cache",
     }
 
+class InvalidTestForService(BaseException):
+    """ user specified an invalid test """
+
+class AuthenticationException(BaseException):
+    """authentication error for AussieBB"""
+
 class AussieBB():
     """ class for interacting with Aussie Broadband APIs """
-    def __init__(self, username, password):
+    def __init__(self, username: str, password: str):
         """ class for interacting with Aussie Broadband APIs """
         self.username = username
         self.password = password
+        if not (username and password):
+            raise AuthenticationException("You need to supply both username and password")
 
         self.session = requests.Session()
 
@@ -48,6 +56,8 @@ class AussieBB():
                                      headers=headers,
                                      data=json.dumps(payload),
                                      )
+        if response.status_code == 422:
+            raise AuthenticationException(response.json())
         response.raise_for_status()
 
         jsondata = response.json()
@@ -63,8 +73,7 @@ class AussieBB():
             return True
         return False
 
-
-    def request_get(self, skip_login_check=False, **kwargs):
+    def request_get(self, skip_login_check: bool = False, **kwargs):
         """ does a GET request and logs in first if need be"""
         if not skip_login_check:
             logger.debug("skip_login_check false")
@@ -77,7 +86,7 @@ class AussieBB():
         response.raise_for_status()
         return response
 
-    def request_post(self, skip_login_check=False, **kwargs):
+    def request_post(self, skip_login_check: bool = False, **kwargs):
         """ does a POST request and logs in first if need be"""
         if not skip_login_check:
             logger.debug("skip_login_check false")
@@ -101,7 +110,7 @@ class AussieBB():
                                     )
         return response.json()
 
-    def get_services(self, page=1):
+    def get_services(self, page: int = 1):
         """ returns a list of dicts of services associated with the account """
 
         url = f"{BASEURL.get('api')}/services?page={page}"
@@ -113,7 +122,7 @@ class AussieBB():
             logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
         return responsedata.get('data')
 
-    def get_usage(self, serviceid):
+    def get_usage(self, serviceid: int):
         """ returns a json blob of usage for a service """
         url = f"{BASEURL.get('api')}/broadband/{serviceid}/usage"
         response = self.request_get(url=url)
@@ -121,7 +130,36 @@ class AussieBB():
         logger.debug(responsedata)
         return responsedata
 
-    def test_line_state(self, serviceid):
+    def get_service_tests(self, serviceid: int):
+        """ gets the available tests for a given service ID
+        returns list of dicts
+        [{
+            'name' : str(),
+            'description' : str',
+            'link' : str(a url to the test)
+        },]
+
+        this is known to throw 400 errors if you query a VOIP service...
+        """
+        logger.debug(f"Getting service tests for {serviceid}")
+        url = f"{BASEURL.get('api')}/tests/{serviceid}/available"
+        response = self.request_get(url=url)
+        responsedata = response.json()
+        logger.debug(responsedata)
+        return responsedata
+
+    def get_test_history(self, serviceid: int):
+        """ gets the available tests for a given service ID
+
+        returns a list of dicts with tests which have been run
+        """
+        url = f"{BASEURL.get('api')}/tests/{serviceid}"
+        response = self.request_get(url=url)
+        responsedata = response.json()
+        logger.debug(responsedata)
+        return responsedata
+
+    def test_line_state(self, serviceid: int):
         """ tests the line state for a given service ID """
 
         url = f"{BASEURL.get('api')}/tests/{serviceid}/linestate"
@@ -131,3 +169,25 @@ class AussieBB():
         logger.debug(f"Response body: {response.text}")
         logger.debug(f"Response headers: {response.headers}")
         return response.json()
+
+    def run_test(self, serviceid: int, test_name: str, test_method: str = 'post'):
+        """ run a test, but it checks it's valid first
+            There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
+            See the README for more analysis
+
+            - 'status' of 'InProgress' use 'AussieBB.get_test_history()' and look for the 'id'
+            - 'status' of 'Completed' means you've got the full response
+        """
+
+        test_links = [test for test in self.get_service_tests(serviceid) if test.get('link', '').endswith(f'/{test_name}')] #pylint: disable=line-too-long
+
+        if not test_links:
+            return False
+        if len(test_links) != 1:
+            logger.debug(f"Too many tests? {test_links}")
+
+        test_name = test_links[0].get('name')
+        logger.debug(f"Running {test_name}")
+        if test_method == 'get':
+            return self.request_get(url=test_links[0].get('link')).json()
+        return self.request_post(url=test_links[0].get('link')).json()

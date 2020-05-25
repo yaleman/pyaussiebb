@@ -2,16 +2,20 @@
 """ test some things """
 
 import os
-
+import pytest
+import requests.exceptions
 from loguru import logger
 
 from aussiebb import AussieBB
 
 try:
     from config import username, password
+    from config import username2, password2
 except ImportError:
     username = os.environ.get('username')
     password = os.environ.get('password')
+    username2 = os.environ.get('username2')
+    password2 = os.environ.get('password2')
 
 TESTAPI = AussieBB(username=username, password=password)
 
@@ -32,6 +36,14 @@ def test_customer_details(api=TESTAPI):
 def test_get_services(api=TESTAPI):
     """ test get_services """
     logger.debug(api.get_services())
+    assert api.get_services()
+
+    # api2 has a VOIP service
+    api2 =  AussieBB(username2, password2)
+    VOIPservice = [service for service in api2.get_services() if service.get('type') == 'VOIP']
+    if VOIPservice:
+        with pytest.raises(requests.exceptions.HTTPError) as e_info:
+            api2.get_service_tests(VOIPservice[-1].get('service_id'))
 
 def test_line_state(api=TESTAPI):
     """ test test_line_state """
@@ -44,4 +56,11 @@ def test_get_usage(api=TESTAPI):
     assert api.get_usage(serviceid).get('daysTotal')
 
 if __name__ == '__main__':
-    test_get_usage()
+    # FTTC service
+    # api = AussieBB(username, password)
+    api = AussieBB(username2, password2)
+    
+    services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
+    for service in services:
+        #logger.debug(api.get_service_tests(service.get('service_id')))
+        logger.debug(api.run_test(service.get('service_id'), 'dpustatus', 'post'))

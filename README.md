@@ -28,6 +28,17 @@ All the "endpoints" should be tacked onto `aussiebb.BASEURL['api']`.
 
 These can be run by using `AussieBB.run_test()` with the string after the last forward-slash as the "test" - ie, `connection` or `linestate`.
 
+## HFC 
+
+These are entirely untested so far.
+
+| Endpoint | Method | Name | Description |
+| --- | --- | --- | --- |
+| `/nbn/{service_id}/connection` | Probably GET | Check Connection | Check to see if your service is currently connected |
+| `/nbn/{service_id}/connection` | Probably POST | Kick Connection | Kick your current session and force your device to reauthenticate |
+| `/tests/{service_id}/loopback` | Probably POST | Loopback Test | This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node. |
+| `/tests/{service_id}/ntdstatus` | Probably POST | NTD Status | An NTD Status will show you the operational state of the Network Termination Device (NTD). The test will also show if the NTD is detecting the wired connection from your router. |
+
 ## FTTC
 
 | Endpoint | Method | Name | Description |

@@ -1,5 +1,8 @@
+.vscode/*
+
 **/__pycache__/*
-config.py
 *.egg-info/
 build/
-dist/*
+dist/
+
+config.py

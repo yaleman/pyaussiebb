@@ -9,3 +9,8 @@ steps:
   - pip install pytest requests pylint loguru
   - pylint
   - pytest
+  environment:
+    username:
+      from_secret: username
+    password:
+      from_secret: password

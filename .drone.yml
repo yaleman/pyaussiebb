@@ -14,3 +14,7 @@ steps:
       from_secret: username
     password:
       from_secret: password
+    username2:
+      from_secret: username2
+    password2:
+      from_secret: password2

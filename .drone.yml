@@ -6,8 +6,8 @@ steps:
 - name: testbuild
   image: python:3.7
   commands:
-  - pip install pytest requests pylint loguru
-  - pylint
+  - pip install -q pytest requests pylint loguru
+  - pylint aussiebb
   - pytest
   environment:
     username:

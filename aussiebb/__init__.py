@@ -113,6 +113,14 @@ class AussieBB():
             logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
         return responsedata.get('data')
 
+    def get_usage(self, serviceid):
+        """ returns a json blob of usage for a service """
+        url = f"{BASEURL.get('api')}/broadband/{serviceid}/usage"
+        response = self.request_get(url=url)
+        responsedata = response.json()
+        logger.debug(responsedata)
+        return responsedata
+
     def test_line_state(self, serviceid):
         """ tests the line state for a given service ID """
 

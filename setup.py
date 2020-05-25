@@ -1,7 +1,9 @@
+""" setup script for packaging the module """
+
 import setuptools
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONGDESCRIPTION = fh.read()
 
 setuptools.setup(
     name="pyaussiebb",
@@ -9,7 +11,7 @@ setuptools.setup(
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="Aussie Broadband API module",
-    long_description=long_description,
+    long_description=LONGDESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/aussiebb",
     packages=setuptools.find_packages(),

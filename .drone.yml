@@ -18,3 +18,4 @@ steps:
       from_secret: username2
     password2:
       from_secret: password2
+    LOGURU_LEVEL: WARNING

@@ -18,7 +18,7 @@ except ImportError:
     password2 = os.environ.get('password2')
 
 TESTAPI = AussieBB(username=username, password=password)
-
+TESTAPI2 = AussieBB(username=username2, password=password2)
 def test_login_cycle(api=TESTAPI):
     """ test the login step """
     logger.info("Testing login")
@@ -33,13 +33,12 @@ def test_customer_details(api=TESTAPI):
     response = api.get_customer_details()
     assert response.get('customer_number', False)
 
-def test_get_services(api=TESTAPI):
+def test_get_services(api=TESTAPI, api2=TESTAPI2):
     """ test get_services """
     logger.debug(api.get_services())
     assert api.get_services()
 
     # api2 has a VOIP service
-    api2 =  AussieBB(username2, password2)
     VOIPservice = [service for service in api2.get_services() if service.get('type') == 'VOIP']
     if VOIPservice:
         with pytest.raises(requests.exceptions.HTTPError) as e_info:

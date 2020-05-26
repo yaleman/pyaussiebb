@@ -62,3 +62,15 @@ These are entirely untested so far.
 | `/tests/{service_id}/loopback` | POST | Loopback Test | This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node. |
 | `/tests/{service_id}/portreset` | Probably POST | Port Reset | This will reset the connection from the Node and also clear errors that may be causing issues with gaining sync. |
 | `/tests/{service_id}/stabilityprofile` | Probably POST | Stability Profile | This will apply changes to your FTTN service including allowing increased noise to occur before making the connection unstable. This will cause your speeds to degrade as a result, but in turn making the service more stable. For NBN to investigate a fault this profile needs to be applied and a minimum of 5 dropouts recorded over a 24hr period on NBN's systems before a dropout fault can be raised |
+
+## FTTP
+
+These are as-yet untested.
+
+| Endpoint | Method | Name | Description |
+|  --- | --- | --- | --- |
+| `/nbn/{service_id}/connection` | Probably GET | Check Connection | Check to see if your service is currently connected |
+| `/nbn/{service_id}/connection` | Probably POST | Kick Connection | Kick your current session and force your device to reauthenticate |
+| `/tests/{service_id}/loopback` | Probably POST | Loopback Test | This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node. |
+| `/tests/{service_id}/portreset` | Probably POST | Port Reset | This will reset the connection from the Node and also clear errors that may be causing issues with gaining sync. |
+| `/tests/{service_id}/unidstatus` | Probably POST | UNI-D Status | UNI-D Status will show if the UNI-D port you are currently using has a router connected to it. This will also provide the Link speed your router and UNI-D port are connected at Eg, 100mbit or 1gbit. You will also see the MAC address of the currently connected router. |

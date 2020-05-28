@@ -66,13 +66,13 @@ def test_get_service_plans():
 
 if __name__ == '__main__':
     for un, pw in [ [username, password], [username2, password2]]:
-    api = AussieBB(un, pw)
+        api = AussieBB(un, pw)
 
-    services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
-    for service in services:
-        plans = api.get_service_plans(service.get('service_id'))
+        services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
+        for service in services:
+            plans = api.get_service_plans(service.get('service_id'))
 
-        for plan in plans.get('available'):
-            if plan.get('download') >= 900:
-                logger.info(plan.get('name'))
-                logger.info("OVER 900!")
+            for plan in plans.get('available'):
+                if plan.get('download') >= 900:
+                    logger.info(plan.get('name'))
+                    logger.info("OVER 900!")

@@ -191,3 +191,13 @@ class AussieBB():
         if test_method == 'get':
             return self.request_get(url=test_links[0].get('link')).json()
         return self.request_post(url=test_links[0].get('link')).json()
+
+    def get_service_plans(self, serviceid: int):
+        """ pulls the JSON for the plan data
+            keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
+            """
+        url = f"{BASEURL.get('api')}/planchange/{serviceid}"
+
+        response = self.request_get(url=url)
+
+        return response.json()

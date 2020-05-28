@@ -54,12 +54,25 @@ def test_get_usage(api=TESTAPI):
     serviceid = api.get_services()[0].get('service_id')
     assert api.get_usage(serviceid).get('daysTotal')
 
+def test_get_service_plans():
+    for un, pw in [ [username, password], [username2, password2]]:
+        api = AussieBB(un, pw)
+        services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
+        if services:
+            plans = api.get_service_plans(services[0].get('service_id'))
+            assert plans
+            for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
+                assert key in plans.keys()
+
 if __name__ == '__main__':
-    # FTTC service
-    # api = AussieBB(username, password)
-    api = AussieBB(username2, password2)
-    
+    for un, pw in [ [username, password], [username2, password2]]:
+    api = AussieBB(un, pw)
+
     services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
     for service in services:
-        #logger.debug(api.get_service_tests(service.get('service_id')))
-        logger.debug(api.run_test(service.get('service_id'), 'dpustatus', 'post'))
+        plans = api.get_service_plans(service.get('service_id'))
+
+        for plan in plans.get('available'):
+            if plan.get('download') >= 900:
+                logger.info(plan.get('name'))
+                logger.info("OVER 900!")

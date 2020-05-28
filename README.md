@@ -20,7 +20,7 @@ python
 For more, check out the module.
 
 
-# Example tests I've seen
+# Example service tests I've seen
 
 All the "endpoints" should be tacked onto `aussiebb.BASEURL['api']`.
 

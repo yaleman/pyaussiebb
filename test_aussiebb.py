@@ -40,9 +40,10 @@ def test_get_services(api=TESTAPI, api2=TESTAPI2):
 
     # api2 has a VOIP service
     VOIPservice = [service for service in api2.get_services() if service.get('type') == 'VOIP']
-    if VOIPservice:
-        with pytest.raises(requests.exceptions.HTTPError) as e_info:
-            api2.get_service_tests(VOIPservice[-1].get('service_id'))
+    assert VOIPservice
+#        with pytest.raises(requests.exceptions.HTTPError) as e_info:
+#            logger.debug('Getting services tests for a VOIP Service...?')
+#            logger.debug(api2.get_service_tests(VOIPservice[-1].get('service_id')))
 
 def test_line_state(api=TESTAPI):
     """ test test_line_state """

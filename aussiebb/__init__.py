@@ -6,26 +6,8 @@ from time import time
 from loguru import logger
 import requests
 
-BASEURL = {
-    'api' : 'https://myaussie-api.aussiebroadband.com.au',
-    'login' : "https://myaussie-auth.aussiebroadband.com.au/login"
-}
-
-def default_headers():
-    """ returns a default set of headers """
-    return {
-        'Accept': "application/json",
-        'Content-Type': "application/json",
-        'Origin': "https://my.aussiebroadband.com.au",
-        'Referer': "https://my.aussiebroadband.com.au/",
-        'cache-control': "no-cache",
-    }
-
-class InvalidTestForService(BaseException):
-    """ user specified an invalid test """
-
-class AuthenticationException(BaseException):
-    """authentication error for AussieBB"""
+from .const import BASEURL, default_headers
+from .exceptions import AuthenticationException, RateLimitException
 
 class AussieBB():
     """ class for interacting with Aussie Broadband APIs """
@@ -58,6 +40,8 @@ class AussieBB():
                                      )
         if response.status_code == 422:
             raise AuthenticationException(response.json())
+        if response.status == 429:
+            raise RateLimitException(response.json())
         response.raise_for_status()
 
         jsondata = response.json()

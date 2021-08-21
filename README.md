@@ -19,6 +19,9 @@ python
 
 For more, check out the module.
 
+# AsyncIO version
+
+You can replace `from aussiebb import AussieBB` with `from aussiebb.asyncio import AussieBB` and you'll get an `aiohttp`-powered version. The only difference in this case is that you have to explicitly call `login()` for reasons.
 
 # Example service tests I've seen
 
@@ -78,3 +81,4 @@ These are as-yet untested.
 # Changelog
 
  * 0.0.3 - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.
+ * 0.0.4 - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.

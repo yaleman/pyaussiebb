@@ -81,7 +81,7 @@ class AussieBB():
             jsondata = await response.json()
             if self.debug:
                 print(f"Dumping headers: {response.headers}", file=sys.stderr)
-                print(f"Dumping response: {response.json()}", file=sys.stderr)
+                print(f"Dumping response: {jsondata}", file=sys.stderr)
             if 'Please try again in ' in jsondata.get('errors'):
                 delay = jsondata.get('errors').split()[-2]
                 if int(delay) > 0 and int(delay) > 1000:

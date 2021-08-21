@@ -13,7 +13,7 @@ except ImportError as error_message:
     sys.exit(1)
 
 from ..const import BASEURL, default_headers
-from ..exceptions import AuthenticationException, RateLimitException
+from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 
 class AussieBB():
     """ aiohttp class for interacting with Aussie Broadband APIs """
@@ -30,9 +30,12 @@ class AussieBB():
         self.token_expires = -1
         self.debug = debug
 
-    async def login(self):
+    async def login(self, depth=0):
         """ does the login bit """
+        if depth>2:
+            raise RecursiveDepth("Login recursion depth > 2")
         print("logging in...")
+
         url = BASEURL.get('login')
         if self.session is None:
             self.session = aiohttp.ClientSession()
@@ -47,11 +50,13 @@ class AussieBB():
         headers = default_headers()
 
         async with self.session.post(url, headers=headers, json=payload) as response:
-            await self.handle_response_fail(response)
+            try:
+                await self.handle_response_fail(response)
+                jsondata = await response.json()
+            except RateLimitException:
+                return await self.login(depth+1)
             if self.debug:
-                print(f"Response status: {response.status}", file=sys.stderr)
-            jsondata = await response.json()
-
+                print(f"Login response status: {response.status}", file=sys.stderr)
         if self.debug:
             print(f"Dumping login response: {json.dumps(jsondata)}", file=sys.stderr)
         self.token_expires = time() + jsondata.get('expiresIn') - 50
@@ -61,12 +66,36 @@ class AussieBB():
                 print(f"Login Cookie: {self.myaussie_cookie}", file=sys.stderr)
         return True
 
-    async def handle_response_fail(self, response):
+    async def handle_response_fail(self, response, wait_on_rate_limit: bool=True):
         """ handles response status codes """
+        ratelimit_remaining = int(response.headers.get('x-ratelimit-remaining', -1))
+        if self.debug:
+            print(f"Rate limit header: {response.headers.get('x-ratelimit-remaining', -1)}", file=sys.stderr)
+        if ratelimit_remaining < 5 and wait_on_rate_limit:
+            print("Rate limit below 5, sleeping for 1 second.", file=sys.stderr)
+            asyncio.sleep(1)
+
         if response.status == 422:
             raise AuthenticationException(await response.json())
         if response.status == 429:
-            raise RateLimitException(await response.json())
+            jsondata = await response.json()
+            if self.debug:
+                print(f"Dumping headers: {response.headers}", file=sys.stderr)
+                print(f"Dumping response: {response.json()}", file=sys.stderr)
+            if 'Please try again in ' in jsondata.get('errors'):
+                delay = jsondata.get('errors').split()[-2]
+                if int(delay) > 0 and int(delay) > 1000:
+                    if self.debug:
+                        print(f"Found delay: {delay}", file=sys.stderr)
+                    delay = int(delay)
+                else:
+                    delay = 30
+            else:
+                delay = 60
+            if wait_on_rate_limit:
+                print(f"Rate limit on Aussie API calls raised, sleeping for {delay} seconds.", file=sys.stderr)
+                await asyncio.sleep(delay)
+            raise RateLimitException(jsondata)
         response.raise_for_status()
 
     def has_token_expired(self):
@@ -77,6 +106,10 @@ class AussieBB():
 
     async def request_get_json(self, skip_login_check: bool = False, **kwargs) -> dict:
         """ does a GET request and logs in first if need be, returns a dict of json """
+        depth = kwargs.get('depth', 0)
+        if depth > 2:
+            raise RecursiveDepth(f"depth: {depth}")
+
         if self.session is None:
             self.session = aiohttp.ClientSession()
 
@@ -91,17 +124,23 @@ class AussieBB():
         if 'cookies' not in kwargs:
             kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
         async with self.session.get(**kwargs) as response:
-            await self.handle_response_fail(response)
-            jsondata = await response.json()
-        await asyncio.sleep(1)
+            try:
+                await self.handle_response_fail(response)
+                jsondata = await response.json()
+            except RateLimitException:
+                jsondata = await self.request_get_json(skip_login_check, **kwargs)
         return jsondata
 
-    async def request_post_json(self, url, skip_login_check: bool = False, **kwargs):
+    async def request_post_json(self, url, **kwargs):
         """ does a POST request and logs in first if need be"""
+        depth = kwargs.get('depth', 0)
+        if depth > 2:
+            raise RecursiveDepth(f"depth: {depth}")
+
         if self.session is None:
             self.session = aiohttp.ClientSession()
 
-        if not skip_login_check:
+        if not kwargs.get('skip_login_check', False):
             if self.debug:
                 print("skip_login_check false", file=sys.stderr)
             if self.has_token_expired():
@@ -114,8 +153,11 @@ class AussieBB():
         cookies = kwargs.get('cookies', {'myaussie_cookie' : self.myaussie_cookie})
         headers = kwargs.get('headers', default_headers())
         async with self.session.post(url=url, cookies=cookies, headers=headers) as response:
-            await self.handle_response_fail(response)
-            jsondata = await response.json()
+            try:
+                await self.handle_response_fail(response)
+                jsondata = await response.json()
+            except RateLimitException:
+                jsondata = await self.request_post_json(url, depth=depth+1, **kwargs)
         return jsondata
 
     async def get_customer_details(self) -> dict:

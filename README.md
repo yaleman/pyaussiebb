@@ -19,9 +19,13 @@ python
 
 For more, check out the module.
 
+
+
 # AsyncIO version
 
 You can replace `from aussiebb import AussieBB` with `from aussiebb.asyncio import AussieBB` and you'll get an `aiohttp`-powered version. The only difference in this case is that you have to explicitly call `login()` for reasons.
+
+If you hit the rate limit it'll raise a `RateLimit` exception. I haven't put that functionality into the blocking version yet, since ... that tends not to hit it. 🤣
 
 # Example service tests I've seen
 

@@ -8,3 +8,6 @@ class AuthenticationException(BaseException):
 
 class RateLimitException(BaseException):
     """ rate limit error for AussieBB """
+
+class RecursiveDepth(BaseException):
+    """ you've gone too far down the rabbit hole """

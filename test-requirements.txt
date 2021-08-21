@@ -1,0 +1,4 @@
+pytest
+pytest-aiohttp
+pytest-asyncio
+pylint

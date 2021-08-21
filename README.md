@@ -20,6 +20,13 @@ python
 For more, check out the module.
 
 
+
+# AsyncIO version
+
+You can replace `from aussiebb import AussieBB` with `from aussiebb.asyncio import AussieBB` and you'll get an `aiohttp`-powered version. The only difference in this case is that you have to explicitly call `login()` for reasons.
+
+If you hit the rate limit it'll raise a `RateLimit` exception. I haven't put that functionality into the blocking version yet, since ... that tends not to hit it. 🤣
+
 # Example service tests I've seen
 
 All the "endpoints" should be tacked onto `aussiebb.BASEURL['api']`.
@@ -78,3 +85,4 @@ These are as-yet untested.
 # Changelog
 
  * 0.0.3 - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.
+ * 0.0.4 - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.

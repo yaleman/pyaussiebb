@@ -2,10 +2,17 @@
 """ test some things """
 
 import os
-
+import sys
 import pytest
 from loguru import logger
 from aussiebb.asyncio import AussieBB
+
+try:
+    import aiohttp #pylint: disable=unused-import
+except ImportError as error_message:
+    print(f"Failed to import aiohttp: {error_message}")
+    sys.exit(1)
+
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio

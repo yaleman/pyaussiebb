@@ -7,7 +7,7 @@ steps:
   image: python:3.7
   commands:
   - python3 -m pip install --upgrade pip
-  - python3 -m pip install -q pytest requests pylint loguru
+  - python3 -m pip install -q pytest requests pylint loguru aiohttp
   - python3 -m pip install -r test-requirements.txt
   - pylint aussiebb
   - pytest

@@ -40,7 +40,7 @@ class AussieBB():
                                      )
         if response.status_code == 422:
             raise AuthenticationException(response.json())
-        if response.status == 429:
+        if response.status_code == 429:
             raise RateLimitException(response.json())
         response.raise_for_status()
 

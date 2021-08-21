@@ -91,3 +91,4 @@ These are as-yet untested.
 
  * 0.0.3 - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.
  * 0.0.4 - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.
+ * 0.0.5/6 - Fixing rate limiting

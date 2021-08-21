@@ -89,9 +89,13 @@ class AussieBB():
                         print(f"Found delay: {delay}", file=sys.stderr)
                     delay = int(delay)
                 else:
-                    delay = 30
+                    delay = 60
+                    if self.debug:
+                        print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
             else:
                 delay = 60
+                if self.debug:
+                    print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
             if wait_on_rate_limit:
                 print(f"Rate limit on Aussie API calls raised, sleeping for {delay} seconds.", file=sys.stderr)
                 await asyncio.sleep(delay)

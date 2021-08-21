@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$(basename "$(pwd)")" != "aussiebb" ]; then
+if [ "$(basename "$(pwd)")" != "pyaussiebb" ]; then
     echo "This must be run from the build directory"
     exit 1
 fi

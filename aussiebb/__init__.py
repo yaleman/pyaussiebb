@@ -106,6 +106,45 @@ class AussieBB():
             logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
         return responsedata.get('data')
 
+
+    def account_transactions(self):
+        """ pulls the json for transactions on your account
+            keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
+            returns a dict where the key is the Month and year of the transaction, eg:
+            ```
+            "August 2021": [
+              {
+                    "id": 12345,
+                    "type": "receipt",
+                    "time": "2021-08-06",
+                    "description": "Payment #12345",
+                    "amountCents": -8400,
+                    "runningBalanceCents": 0
+                }
+            ],
+            """
+        url = f"{BASEURL.get('api')}/billing/transactions?group=true"
+        response = self.request_get(url=url)
+        return response.json()
+
+    def billing_invoice(self, invoice_id):
+        """ downloads an invoice
+
+            this returns the bare response object, parsing the result is an exercise for the consumer
+        """
+        url = f"{BASEURL.get('api')}/billing/invoices/{invoice_id}"
+        response = self.request_get(url=url)
+        responsedata = response.json()
+        return responsedata
+
+    def account_paymentplans(self):
+        """ returns a json blob of payment plans for an account """
+        url = f"{BASEURL.get('api')}/billing/paymentplans"
+        response = self.request_get(url=url)
+        responsedata = response.json()
+        logger.debug(responsedata)
+        return responsedata
+
     def get_usage(self, serviceid: int):
         """ returns a json blob of usage for a service """
         url = f"{BASEURL.get('api')}/broadband/{serviceid}/usage"
@@ -176,7 +215,7 @@ class AussieBB():
             return self.request_get(url=test_links[0].get('link')).json()
         return self.request_post(url=test_links[0].get('link')).json()
 
-    def get_service_plans(self, serviceid: int):
+    def service_plans(self, serviceid: int):
         """ pulls the JSON for the plan data
             keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
             """
@@ -184,4 +223,71 @@ class AussieBB():
 
         response = self.request_get(url=url)
 
+        return response.json()
+
+    def service_outages(self, serviceid: int):
+        """ pulls the JSON for outages
+            keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
+        """
+        url = f"{BASEURL.get('api')}/nbn/{serviceid}/outages"
+
+        response = self.request_get(url=url)
+
+        return response.json()
+
+    def service_boltons(self, serviceid: int):
+        """ pulls the JSON for addons associated with the service
+            keys: ['id', 'name', 'description', 'costCents', 'additionalNote', 'active']
+
+            example data
+            ```
+            [{
+                "id": 4,
+                "name": "Small Change Big Change Donation",
+                "description": "Charitable donation to the Small Change Big Change program, part of the Telco Together Foundation, which helps build resilient young Australians",
+                "costCents": 100,
+                "additionalNote": null,
+                "active": false
+            }]
+            ```
+            """
+        url = f"{BASEURL.get('api')}/nbn/{serviceid}/boltons"
+
+        response = self.request_get(url=url)
+
+        return response.json()
+
+    def service_datablocks(self, serviceid: int):
+        """ pulls the JSON for datablocks associated with the service
+            keys: ['current', 'available']
+
+            example data
+            ```
+            {
+                "current": [],
+                "available": []
+            }
+            ```
+            """
+        url = f"{BASEURL.get('api')}/nbn/{serviceid}/datablocks"
+        response = self.request_get(url=url)
+        return response.json()
+
+
+    async def support_tickets(self):
+        """ pulls the support tickets associated with the account, returns a list of dicts
+            dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
+
+            """
+        url = f"{BASEURL.get('api')}/tickets"
+        response = self.request_get(url=url)
+        return response.json()
+
+    async def account_contacts(self):
+        """ pulls the contacts with the account, returns a list of dicts
+            dict keys: ['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']
+
+            """
+        url = f"{BASEURL.get('api')}/contacts"
+        response = self.request_get(url=url)
         return response.json()

@@ -92,3 +92,4 @@ These are as-yet untested.
  * 0.0.3 - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.
  * 0.0.4 - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.
  * 0.0.5/6 - Fixing rate limiting
+ * 0.0.7 - Added the following new functions: `account_transactions`, `billing_invoice`, `service_outages`, `service_boltons`, `service_datablocks`, `support_tickets`, `account contacts`. Renamed `get_service_plans` to `service_plans`

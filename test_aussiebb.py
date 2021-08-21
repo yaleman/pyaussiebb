@@ -61,7 +61,7 @@ def test_get_service_plans():
         test_api = AussieBB(test_username, test_password)
         test_services = [ service for service in test_api.get_services() if service.get('type') == 'NBN' ]
         if test_services:
-            test_plans = test_api.get_service_plans(test_services[0].get('service_id'))
+            test_plans = test_api.service_plans(test_services[0].get('service_id'))
             assert test_plans
             for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
                 assert key in test_plans.keys()
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
         services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
         for service in services:
-            plans = api.get_service_plans(service.get('service_id'))
+            plans = api.service_plans(service.get('service_id'))
 
             for plan in plans.get('available'):
                 if plan.get('download') >= 900:

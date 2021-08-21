@@ -107,7 +107,7 @@ async def test_get_service_plans():
         test_services = [ service for service in result if service.get('type') == 'NBN' ]
 
         if test_services:
-            test_plans = await test_api.get_service_plans(test_services[0].get('service_id'))
+            test_plans = await test_api.service_plans(test_services[0].get('service_id'))
             assert test_plans
             for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
                 assert key in test_plans.keys()

@@ -5,6 +5,8 @@ BASEURL = {
     'login' : "https://myaussie-auth.aussiebroadband.com.au/login"
 }
 
+DEFAULT_BACKOFF_DELAY = 90
+
 def default_headers():
     """ returns a default set of headers """
     return {

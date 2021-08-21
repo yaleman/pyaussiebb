@@ -12,7 +12,7 @@ except ImportError as error_message:
     print("Failed to import aiohttp, bailing: {error_message}", file=sys.stderr)
     sys.exit(1)
 
-from ..const import BASEURL, default_headers
+from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY
 from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 
 class AussieBB():
@@ -82,7 +82,7 @@ class AussieBB():
             if self.debug:
                 print(f"Dumping headers: {response.headers}", file=sys.stderr)
                 print(f"Dumping response: {jsondata}", file=sys.stderr)
-            delay = 60
+            delay = DEFAULT_BACKOFF_DELAY
             if 'Please try again in ' in jsondata.get('errors'):
                 delay = jsondata.get('errors').split()[-2]
                 if int(delay) > 0 and int(delay) > 1000:
@@ -92,7 +92,7 @@ class AussieBB():
                 elif self.debug:
                     print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
             else:
-                delay = 60
+                delay = DEFAULT_BACKOFF_DELAY
                 if self.debug:
                     print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
             if wait_on_rate_limit:

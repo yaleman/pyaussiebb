@@ -82,16 +82,15 @@ class AussieBB():
             if self.debug:
                 print(f"Dumping headers: {response.headers}", file=sys.stderr)
                 print(f"Dumping response: {jsondata}", file=sys.stderr)
+            delay = 60
             if 'Please try again in ' in jsondata.get('errors'):
                 delay = jsondata.get('errors').split()[-2]
                 if int(delay) > 0 and int(delay) > 1000:
                     if self.debug:
                         print(f"Found delay: {delay}", file=sys.stderr)
                     delay = int(delay)
-                else:
-                    delay = 60
-                    if self.debug:
-                        print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
+                elif self.debug:
+                    print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
             else:
                 delay = 60
                 if self.debug:

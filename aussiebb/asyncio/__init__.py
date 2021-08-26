@@ -73,7 +73,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             print(f"Rate limit header: {response.headers.get('x-ratelimit-remaining', -1)}", file=sys.stderr)
         if ratelimit_remaining < 5 and wait_on_rate_limit:
             print("Rate limit below 5, sleeping for 1 second.", file=sys.stderr)
-            asyncio.sleep(1)
+            await asyncio.sleep(1)
 
         if response.status == 422:
             raise AuthenticationException(await response.json())

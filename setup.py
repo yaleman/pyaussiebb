@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/aussiebb",
     packages=setuptools.find_packages(),
-    install_requires=['requests', 'loguru'],
+    install_requires=['requests', 'loguru', 'aiohttp'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",

@@ -207,13 +207,29 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                                     params=params,
                                     )
 
-    async def get_services(self, page: int = 1):
-        """ returns a list of dicts of services associated with the account """
-
+    async def get_services(self, page: int=1, servicetypes: list=None):
+        """ returns a list of dicts of services associated with the account
+            if you want a specific kind of service, or services,
+            provide a list of matching strings in servicetypes
+        """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         params = {'page' : page}
+
         responsedata = await self.request_get_json(url=url, params=params)
+        # only filter if we need to
+        if servicetypes and responsedata:
+            if self.debug:
+                print(f"Filtering services based on provided list: {servicetypes}", file=sys.stderr)
+            filtered_responsedata = []
+            for service in responsedata.get('data'):
+                if service.get('type') in servicetypes:
+                    filtered_responsedata.append(service)
+                else:
+                    if self.debug:
+                        print(f"Skipping as type=={service.get('type')} - {service}", file=sys.stderr)
+            # return the filtered responses to the source data
+            responsedata['data'] = filtered_responsedata
 
         if responsedata.get('last_page') != responsedata.get('current_page'):
             if self.debug:

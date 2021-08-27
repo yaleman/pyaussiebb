@@ -122,7 +122,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             if self.has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
-                self.login()
+                await self.login()
 
         if 'cookies' not in kwargs:
             kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
@@ -149,7 +149,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             if self.has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
-                self.login()
+                await self.login()
 
         if 'cookies' not in kwargs:
             kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}

@@ -95,7 +95,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 # give it some extra time to cool off
                 delay = int(delay)+5
 
-                if delay > 0 and delay < 1000:
+                if 0 < delay < 1000:
                     if self.debug:
                         print(f"Found delay: {delay}", file=sys.stderr)
                     delay = int(delay)

@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyaussiebb",
-    version="0.0.7",
+    version="0.0.8",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="Aussie Broadband API module",

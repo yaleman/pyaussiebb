@@ -1,27 +1,33 @@
 """ class for interacting with Aussie Broadband APIs """
 
+import inspect
+
 import json
 from time import time
+import sys
 
 from loguru import logger
 import requests
 
-from .const import BASEURL, default_headers
+from .const import BASEURL, API_ENDPOINTS, default_headers
 from .exceptions import AuthenticationException, RateLimitException
+from .utils import get_url
 
+#pylint: disable=too-many-public-methods
 class AussieBB():
     """ class for interacting with Aussie Broadband APIs """
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, password: str, debug: bool=False):
         """ class for interacting with Aussie Broadband APIs """
         self.username = username
         self.password = password
+
+        self.debug = debug
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
-
         self.session = requests.Session()
 
+        self.myaussie_cookie = ""
         self.token_expires = -1
-        self.login()
 
     def login(self):
         """ does the login bit """
@@ -70,6 +76,19 @@ class AussieBB():
         response.raise_for_status()
         return response
 
+    def request_get_json(self, skip_login_check: bool = False, **kwargs):
+        """ does a GET request and logs in first if need be, returns the JSON dict """
+        if not skip_login_check:
+            logger.debug("skip_login_check false")
+            if self.has_token_expired():
+                logger.debug("token has expired, logging in...")
+                self.login()
+        if 'cookies' not in kwargs:
+            kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
+        response = self.session.get(**kwargs)
+        response.raise_for_status()
+        return response.json()
+
     def request_post(self, skip_login_check: bool = False, **kwargs):
         """ does a POST request and logs in first if need be"""
         if not skip_login_check:
@@ -87,21 +106,38 @@ class AussieBB():
 
     def get_customer_details(self):
         """ grabs the customer details """
-        url = f"{BASEURL.get('api')}/customer"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
         querystring = {"v":"2"}
-        response = self.request_get(url=url,
+        responsedata = self.request_get_json(url=url,
                                     params=querystring,
                                     )
-        return response.json()
+        return responsedata
 
-    def get_services(self, page: int = 1):
-        """ returns a list of dicts of services associated with the account """
+    def get_services(self, page: int = 1, servicetypes: list=None):
+        """ returns a list of dicts of services associated with the account
 
-        url = f"{BASEURL.get('api')}/services?page={page}"
+            if you want a specific kind of service, or services,
+            provide a list of matching strings in servicetypes
+        """
 
-        response = self.request_get(url=url)
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
+        querystring = {'page' : page}
+        responsedata = self.request_get_json(url=url, params=querystring)
 
-        responsedata = response.json()
+        # only filter if we need to
+        if servicetypes and responsedata:
+            logger.debug("Filtering services based on provided list: {}", servicetypes)
+            filtered_responsedata = []
+            for service in responsedata.get('data'):
+                if service.get('type') in servicetypes:
+                    filtered_responsedata.append(service)
+                else:
+                    logger.debug("Skipping as type=={} - {}", service.get('type'), service)
+            # return the filtered responses to the source data
+            responsedata['data'] = filtered_responsedata
+
         if responsedata.get('last_page') != responsedata.get('current_page'):
             logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
         return responsedata.get('data')
@@ -123,37 +159,33 @@ class AussieBB():
                 }
             ],
             """
-        url = f"{BASEURL.get('api')}/billing/transactions?group=true"
-        response = self.request_get(url=url)
-        return response.json()
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
+        return self.request_get_json(url=url)
+
 
     def billing_invoice(self, invoice_id):
         """ downloads an invoice
 
             this returns the bare response object, parsing the result is an exercise for the consumer
         """
-        url = f"{BASEURL.get('api')}/billing/invoices/{invoice_id}"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        return responsedata
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'invoice_id' : invoice_id})
+        return self.request_get_json(url=url)
 
     def account_paymentplans(self):
         """ returns a json blob of payment plans for an account """
-        url = f"{BASEURL.get('api')}/billing/paymentplans"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
+        return self.request_get_json(url=url)
 
-    def get_usage(self, serviceid: int):
+    def get_usage(self, service_id: int):
         """ returns a json blob of usage for a service """
-        url = f"{BASEURL.get('api')}/broadband/{serviceid}/usage"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
-    def get_service_tests(self, serviceid: int):
+    def get_service_tests(self, service_id: int):
         """ gets the available tests for a given service ID
         returns list of dicts
         [{
@@ -164,36 +196,28 @@ class AussieBB():
 
         this is known to throw 400 errors if you query a VOIP service...
         """
-        logger.debug(f"Getting service tests for {serviceid}")
-        url = f"{BASEURL.get('api')}/tests/{serviceid}/available"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
-    def get_test_history(self, serviceid: int):
+    def get_test_history(self, service_id: int):
         """ gets the available tests for a given service ID
 
         returns a list of dicts with tests which have been run
         """
-        url = f"{BASEURL.get('api')}/tests/{serviceid}"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
-    def test_line_state(self, serviceid: int):
+    def test_line_state(self, service_id: int):
         """ tests the line state for a given service ID """
-
-        url = f"{BASEURL.get('api')}/tests/{serviceid}/linestate"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
-        logger.debug(f"Response: {response}")
-        logger.debug(f"Response body: {response.text}")
-        logger.debug(f"Response headers: {response.headers}")
         return response.json()
 
-    def run_test(self, serviceid: int, test_name: str, test_method: str = 'post'):
+    def run_test(self, service_id: int, test_name: str, test_method: str = 'post'):
         """ run a test, but it checks it's valid first
             There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
             See the README for more analysis
@@ -202,7 +226,7 @@ class AussieBB():
             - 'status' of 'Completed' means you've got the full response
         """
 
-        test_links = [test for test in self.get_service_tests(serviceid) if test.get('link', '').endswith(f'/{test_name}')] #pylint: disable=line-too-long
+        test_links = [test for test in self.get_service_tests(service_id) if test.get('link', '').endswith(f'/{test_name}')] #pylint: disable=line-too-long
 
         if not test_links:
             return False
@@ -212,30 +236,26 @@ class AussieBB():
         test_name = test_links[0].get('name')
         logger.debug(f"Running {test_name}")
         if test_method == 'get':
-            return self.request_get(url=test_links[0].get('link')).json()
+            return self.request_get_json(url=test_links[0].get('link'))
         return self.request_post(url=test_links[0].get('link')).json()
 
-    def service_plans(self, serviceid: int):
+    def service_plans(self, service_id: int):
         """ pulls the JSON for the plan data
             keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
             """
-        url = f"{BASEURL.get('api')}/planchange/{serviceid}"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
-        response = self.request_get(url=url)
-
-        return response.json()
-
-    def service_outages(self, serviceid: int):
+    def service_outages(self, service_id: int):
         """ pulls the JSON for outages
             keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
         """
-        url = f"{BASEURL.get('api')}/nbn/{serviceid}/outages"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
-        response = self.request_get(url=url)
-
-        return response.json()
-
-    def service_boltons(self, serviceid: int):
+    def service_boltons(self, service_id: int):
         """ pulls the JSON for addons associated with the service
             keys: ['id', 'name', 'description', 'costCents', 'additionalNote', 'active']
 
@@ -251,13 +271,11 @@ class AussieBB():
             }]
             ```
             """
-        url = f"{BASEURL.get('api')}/nbn/{serviceid}/boltons"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
-        response = self.request_get(url=url)
-
-        return response.json()
-
-    def service_datablocks(self, serviceid: int):
+    def service_datablocks(self, service_id: int):
         """ pulls the JSON for datablocks associated with the service
             keys: ['current', 'available']
 
@@ -269,25 +287,47 @@ class AussieBB():
             }
             ```
             """
-        url = f"{BASEURL.get('api')}/nbn/{serviceid}/datablocks"
-        response = self.request_get(url=url)
-        return response.json()
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
 
+    def telephony_usage(self, service_id: int):
+        """ pulls the JSON for telephony usage associated with the service
+            keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
 
-    async def support_tickets(self):
+            example data
+            ```
+            {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
+            ```
+            """
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
+        return self.request_get_json(url=url)
+
+    def support_tickets(self):
         """ pulls the support tickets associated with the account, returns a list of dicts
             dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
 
             """
-        url = f"{BASEURL.get('api')}/tickets"
-        response = self.request_get(url=url)
-        return response.json()
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
+        return self.request_get_json(url=url)
 
-    async def account_contacts(self):
+    def get_appointment(self, ticketid):
+        """ pulls the support tickets associated with the account, returns a list of dicts
+            dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
+
+            """
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'ticketid' : ticketid})
+        return self.request_get_json(url=url)
+
+
+    def account_contacts(self):
         """ pulls the contacts with the account, returns a list of dicts
             dict keys: ['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']
 
             """
-        url = f"{BASEURL.get('api')}/contacts"
-        response = self.request_get(url=url)
-        return response.json()
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
+        return self.request_get_json(url=url)

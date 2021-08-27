@@ -47,13 +47,13 @@ def test_get_services(test_api=TESTAPI, api2=TESTAPI2):
 
 def test_line_state(test_api=TESTAPI):
     """ test test_line_state """
-    serviceid = test_api.get_services()[0].get('service_id')
-    assert test_api.test_line_state(serviceid).get('id')
+    service_id = test_api.get_services()[0].get('service_id')
+    assert test_api.test_line_state(service_id).get('id')
 
 def test_get_usage(test_api=TESTAPI):
     """ test get_usage """
-    serviceid = test_api.get_services()[0].get('service_id')
-    assert test_api.get_usage(serviceid).get('daysTotal')
+    service_id = test_api.get_services()[0].get('service_id')
+    assert test_api.get_usage(service_id).get('daysTotal')
 
 def test_get_service_plans():
     """ tests the plan pulling for services """

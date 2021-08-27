@@ -17,14 +17,7 @@ python
 [{allyourservicedetails}]
 ```
 
-For more, check out the module.
-
-
-
-# AsyncIO version
-
-You can replace `from aussiebb import AussieBB` with `from aussiebb.asyncio import AussieBB` and you'll get an `aiohttp`-powered version. The only difference in this case is that you have to explicitly call `login()` for reasons.
-
+For more, check out the docs.
 
 # AsyncIO version
 
@@ -32,15 +25,18 @@ You can replace `from aussiebb import AussieBB` with `from aussiebb.asyncio impo
 
 If you hit the rate limit it'll raise a `RateLimit` exception. I haven't put that functionality into the blocking version yet, since ... that tends not to hit it. 🤣
 
-# Example service tests I've seen
+# Development
 
-All the "endpoints" should be tacked onto `aussiebb.BASEURL['api']`.
 
-**Warning: `/nbn/{service_id}/connection` seems to have both a GET and POST method endpoint - tests on other endpoints may be similar.**
+## Example service tests I've seen
+
+All the "endpoints" below should be tacked onto `aussiebb.BASEURL['api']`.
+
+**Warning:** `/nbn/{service_id}/connection` seems to have both a GET and POST method endpoint - tests on other endpoints may be similar.
 
 These can be run by using `AussieBB.run_test()` with the string after the last forward-slash as the "test" - ie, `connection` or `linestate`.
 
-## HFC 
+### HFC 
 
 These are entirely untested so far.
 
@@ -51,7 +47,7 @@ These are entirely untested so far.
 | `/tests/{service_id}/loopback` | Probably POST | Loopback Test | This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node. |
 | `/tests/{service_id}/ntdstatus` | Probably POST | NTD Status | An NTD Status will show you the operational state of the Network Termination Device (NTD). The test will also show if the NTD is detecting the wired connection from your router. |
 
-## FTTC
+### FTTC
 
 | Endpoint | Method | Name | Description |
 | --- | --- | --- | --- |
@@ -102,3 +98,5 @@ These are as-yet untested.
     - updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service
     - abstracted how URLS are generated so I don't have to keep adding them twice
     - added a filter on get_services which allows you to filter by type
+
+

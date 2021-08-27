@@ -6,3 +6,5 @@ build/
 dist/
 
 config.py
+.DS_Store
+site/

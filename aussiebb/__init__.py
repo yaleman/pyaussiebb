@@ -1,4 +1,4 @@
-""" class for interacting with Aussie Broadband APIs """
+""" A class for interacting with Aussie Broadband APIs """
 
 import inspect
 
@@ -15,9 +15,9 @@ from .utils import get_url
 
 #pylint: disable=too-many-public-methods
 class AussieBB():
-    """ class for interacting with Aussie Broadband APIs """
+    """ A class for interacting with Aussie Broadband APIs """
     def __init__(self, username: str, password: str, debug: bool=False):
-        """ class for interacting with Aussie Broadband APIs """
+        """ Setup function. """
         self.username = username
         self.password = password
 

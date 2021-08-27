@@ -1,0 +1,17 @@
+# mkdocs.yml
+site_name: aussiebb
+theme:
+  name: "material"
+
+plugins:
+- search
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        rendering:
+          show_source: true
+
+nav:
+  - "Home" : README.md
+  - "aussiebb": aussiebb.md

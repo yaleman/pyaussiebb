@@ -179,13 +179,13 @@ class AussieBB():
         url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
-    def get_usage(self, serviceid: int):
+    def get_usage(self, service_id: int):
         """ returns a json blob of usage for a service """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def get_service_tests(self, serviceid: int):
+    def get_service_tests(self, service_id: int):
         """ gets the available tests for a given service ID
         returns list of dicts
         [{
@@ -197,27 +197,27 @@ class AussieBB():
         this is known to throw 400 errors if you query a VOIP service...
         """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def get_test_history(self, serviceid: int):
+    def get_test_history(self, service_id: int):
         """ gets the available tests for a given service ID
 
         returns a list of dicts with tests which have been run
         """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def test_line_state(self, serviceid: int):
+    def test_line_state(self, service_id: int):
         """ tests the line state for a given service ID """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
         return response.json()
 
-    def run_test(self, serviceid: int, test_name: str, test_method: str = 'post'):
+    def run_test(self, service_id: int, test_name: str, test_method: str = 'post'):
         """ run a test, but it checks it's valid first
             There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
             See the README for more analysis
@@ -226,7 +226,7 @@ class AussieBB():
             - 'status' of 'Completed' means you've got the full response
         """
 
-        test_links = [test for test in self.get_service_tests(serviceid) if test.get('link', '').endswith(f'/{test_name}')] #pylint: disable=line-too-long
+        test_links = [test for test in self.get_service_tests(service_id) if test.get('link', '').endswith(f'/{test_name}')] #pylint: disable=line-too-long
 
         if not test_links:
             return False
@@ -239,23 +239,23 @@ class AussieBB():
             return self.request_get_json(url=test_links[0].get('link'))
         return self.request_post(url=test_links[0].get('link')).json()
 
-    def service_plans(self, serviceid: int):
+    def service_plans(self, service_id: int):
         """ pulls the JSON for the plan data
             keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
             """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def service_outages(self, serviceid: int):
+    def service_outages(self, service_id: int):
         """ pulls the JSON for outages
             keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
         """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def service_boltons(self, serviceid: int):
+    def service_boltons(self, service_id: int):
         """ pulls the JSON for addons associated with the service
             keys: ['id', 'name', 'description', 'costCents', 'additionalNote', 'active']
 
@@ -272,10 +272,10 @@ class AussieBB():
             ```
             """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def service_datablocks(self, serviceid: int):
+    def service_datablocks(self, service_id: int):
         """ pulls the JSON for datablocks associated with the service
             keys: ['current', 'available']
 
@@ -288,10 +288,10 @@ class AussieBB():
             ```
             """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def telephony_usage(self, serviceid: int):
+    def telephony_usage(self, service_id: int):
         """ pulls the JSON for telephony usage associated with the service
             keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
 
@@ -301,7 +301,7 @@ class AussieBB():
             ```
             """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
     def support_tickets(self):

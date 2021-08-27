@@ -74,10 +74,10 @@ async def test_line_state():
         api = AussieBB(username=USERNAME, password=PASSWORD, debug=True, session=session)
 
         services = await api.get_services()
-        serviceid = services[0].get('service_id')
+        service_id = services[0].get('service_id')
 
-        print(f"Got service ID: {serviceid}")
-        line_state = await api.test_line_state(serviceid)
+        print(f"Got service ID: {service_id}")
+        line_state = await api.test_line_state(service_id)
         assert line_state.get('id')
 
 
@@ -87,9 +87,9 @@ async def test_get_usage():
     async with aiohttp.ClientSession() as session:
         api = AussieBB(username=USERNAME, password=PASSWORD, debug=True, session=session)
         services = await api.get_services()
-        serviceid = services[0].get('service_id')
+        service_id = services[0].get('service_id')
 
-        usage = await api.get_usage(serviceid)
+        usage = await api.get_usage(service_id)
         assert usage.get('daysTotal')
 
 

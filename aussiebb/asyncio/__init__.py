@@ -92,7 +92,10 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             if 'Please try again in ' in str(jsondata.get('errors')):
                 fallback_value = [f"default {DEFAULT_BACKOFF_DELAY} seconds"]
                 delay = jsondata.get('errors', {}).get('username', fallback_value)[0].split()[-2]
-                if int(delay) > 0 and int(delay) > 1000:
+                # give it some extra time to cool off
+                delay = int(delay)+5
+
+                if delay > 0 and delay < 1000:
                     if self.debug:
                         print(f"Found delay: {delay}", file=sys.stderr)
                     delay = int(delay)
@@ -255,14 +258,25 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(self, serviceid: int):
-        """ returns a json blob of usage for a service """
+    async def get_usage(self, service_id: int):
+        """
+        returns a json blob of usage for a service
+
+        will double-check it's not a telephony service and pull the data for that if it is
+
+        """
+        services = await self.get_services()
+        for service in services:
+            if service_id == service.get('service_id'):
+                if service.get('type') in ['PhoneMobile']:
+                    return await self.telephony_usage(service_id)
+
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_service_tests(self, serviceid: int):
+    async def get_service_tests(self, service_id: int):
         """ gets the available tests for a given service ID
         returns list of dicts
         [{
@@ -274,27 +288,27 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         this is known to throw 400 errors if you query a VOIP service...
         """
         if self.debug:
-            print(f"Getting service tests for {serviceid}", file=sys.stderr)
+            print(f"Getting service tests for {service_id}", file=sys.stderr)
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_test_history(self, serviceid: int):
+    async def get_test_history(self, service_id: int):
         """ gets the available tests for a given service ID
 
         returns a list of dicts with tests which have been run
         """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def test_line_state(self, serviceid: int):
+    async def test_line_state(self, service_id: int):
         """ tests the line state for a given service ID """
 
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
 
         if self.debug:
             print("Testing line state, can take a few seconds...")
@@ -303,7 +317,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             print(f"Response: {response}", file=sys.stderr)
         return response
 
-    async def run_test(self, serviceid: int, test_name: str, test_method: str = 'post'):
+    async def run_test(self, service_id: int, test_name: str, test_method: str = 'post'):
         """ run a test, but it checks it's valid first
             There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
             See the README for more analysis
@@ -312,7 +326,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             - 'status' of 'Completed' means you've got the full response
         """
 
-        service_tests = await self.get_service_tests(serviceid)
+        service_tests = await self.get_service_tests(service_id)
         test_links = [test for test in service_tests if test.get('link', '').endswith(f'/{test_name}')] #pylint: disable=line-too-long
 
         if not test_links:
@@ -330,19 +344,19 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             result = await self.request_post_json(url=test_links[0].get('link'))
         return result
 
-    async def service_plans(self, serviceid: int):
+    async def service_plans(self, service_id: int):
         """ pulls the JSON for the plan data
             keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
             """
 
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         if self.debug:
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_outages(self, serviceid: int):
+    async def service_outages(self, service_id: int):
         """ pulls the JSON for outages
             keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
 
@@ -366,13 +380,13 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             """
 
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         if self.debug:
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_boltons(self, serviceid: int):
+    async def service_boltons(self, service_id: int):
         """ pulls the JSON for addons associated with the service
             keys: ['id', 'name', 'description', 'costCents', 'additionalNote', 'active']
 
@@ -390,13 +404,13 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             """
 
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         if self.debug:
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_datablocks(self, serviceid: int):
+    async def service_datablocks(self, service_id: int):
         """ pulls the JSON for datablocks associated with the service
             keys: ['current', 'available']
 
@@ -410,13 +424,13 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             """
 
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         if self.debug:
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def telephony_usage(self, serviceid: int):
+    async def telephony_usage(self, service_id: int):
         """ pulls the JSON for telephony usage associated with the service
             keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
 
@@ -426,7 +440,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             ```
             """
         frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         if self.debug:
             print(responsedata, file=sys.stderr)

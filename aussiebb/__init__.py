@@ -27,7 +27,6 @@ class AussieBB():
         self.session = requests.Session()
 
         self.token_expires = -1
-        self.login()
 
     def login(self):
         """ does the login bit """

@@ -5,7 +5,6 @@ import asyncio
 
 import inspect
 import json
-from re import S
 from time import time
 
 import sys
@@ -90,8 +89,9 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 print(f"Dumping headers: {response.headers}", file=sys.stderr)
                 print(f"Dumping response: {jsondata}", file=sys.stderr)
             delay = DEFAULT_BACKOFF_DELAY
-            if 'Please try again in ' in jsondata.get('errors'):
-                delay = jsondata.get('errors', {}).get('username', f"default {DEFAULT_BACKOFF_DELAY} seconds") .split()[-2]
+            if 'Please try again in ' in str(jsondata.get('errors')):
+                fallback_value = [f"default {DEFAULT_BACKOFF_DELAY} seconds"]
+                delay = jsondata.get('errors', {}).get('username', fallback_value)[0].split()[-2]
                 if int(delay) > 0 and int(delay) > 1000:
                     if self.debug:
                         print(f"Found delay: {delay}", file=sys.stderr)
@@ -124,8 +124,6 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             self.session = aiohttp.ClientSession()
 
         if not skip_login_check:
-            if self.debug:
-                print("skip_login_check false", file=sys.stderr)
             if self.has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)

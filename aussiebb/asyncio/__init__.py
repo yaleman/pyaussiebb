@@ -404,6 +404,23 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             print(responsedata, file=sys.stderr)
         return responsedata
 
+    async def telephony_usage(self, serviceid: int):
+        """ pulls the JSON for telephony usage associated with the service
+            keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
+
+            example data
+            ```
+            {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
+            ```
+            """
+
+        url = f"{BASEURL.get('api')}/telephony/{serviceid}/usage"
+
+        responsedata = await self.request_get_json(url=url)
+        if self.debug:
+            print(responsedata, file=sys.stderr)
+        return responsedata
+
     async def support_tickets(self):
         """ pulls the support tickets associated with the account, returns a list of dicts
             dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']

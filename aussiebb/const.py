@@ -16,3 +16,13 @@ def default_headers():
         'Referer': "https://my.aussiebroadband.com.au/",
         'cache-control': "no-cache",
     }
+
+API_ENDPOINTS = {
+    'support_tickets' : '/tickets',
+    'get_appointment' : r'/tickets/{ticketid}/appointment}'
+}
+
+
+TEST_MOCKDATA = {
+    'telephony_usage' : {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
+}

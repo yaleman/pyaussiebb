@@ -1,20 +1,26 @@
 """ class for interacting with Aussie Broadband APIs """
 
+import inspect
+
 import json
 from time import time
+import sys
 
 from loguru import logger
 import requests
 
-from .const import BASEURL, default_headers
+from .const import BASEURL, API_ENDPOINTS, default_headers
 from .exceptions import AuthenticationException, RateLimitException
 
+#pylint: disable=too-many-public-methods
 class AussieBB():
     """ class for interacting with Aussie Broadband APIs """
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, password: str, debug: bool=False):
         """ class for interacting with Aussie Broadband APIs """
         self.username = username
         self.password = password
+
+        self.debug = debug
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
 
@@ -70,6 +76,19 @@ class AussieBB():
         response.raise_for_status()
         return response
 
+    def request_get_json(self, skip_login_check: bool = False, **kwargs):
+        """ does a GET request and logs in first if need be, returns the JSON dict """
+        if not skip_login_check:
+            logger.debug("skip_login_check false")
+            if self.has_token_expired():
+                logger.debug("token has expired, logging in...")
+                self.login()
+        if 'cookies' not in kwargs:
+            kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
+        response = self.session.get(**kwargs)
+        response.raise_for_status()
+        return response.json()
+
     def request_post(self, skip_login_check: bool = False, **kwargs):
         """ does a POST request and logs in first if need be"""
         if not skip_login_check:
@@ -89,19 +108,34 @@ class AussieBB():
         """ grabs the customer details """
         url = f"{BASEURL.get('api')}/customer"
         querystring = {"v":"2"}
-        response = self.request_get(url=url,
+        responsedata = self.request_get_json(url=url,
                                     params=querystring,
                                     )
-        return response.json()
+        return responsedata.json()
 
-    def get_services(self, page: int = 1):
-        """ returns a list of dicts of services associated with the account """
+    def get_services(self, page: int = 1, servicetypes: list=None):
+        """ returns a list of dicts of services associated with the account
+
+            if you want a specific kind of service, or services,
+            provide a list of matching strings in servicetypes
+        """
 
         url = f"{BASEURL.get('api')}/services?page={page}"
 
-        response = self.request_get(url=url)
+        responsedata = self.request_get_json(url=url)
 
-        responsedata = response.json()
+        # only filter if we need to
+        if servicetypes and responsedata:
+            logger.debug("Filtering services based on provided list: {}", servicetypes)
+            filtered_responsedata = []
+            for service in responsedata.get('data'):
+                if service.get('type') in servicetypes:
+                    filtered_responsedata.append(service)
+                else:
+                    logger.debug("Skipping as type=={} - {}", service.get('type'), service)
+            # return the filtered responses to the source data
+            responsedata['data'] = filtered_responsedata
+
         if responsedata.get('last_page') != responsedata.get('current_page'):
             logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
         return responsedata.get('data')
@@ -124,8 +158,8 @@ class AussieBB():
             ],
             """
         url = f"{BASEURL.get('api')}/billing/transactions?group=true"
-        response = self.request_get(url=url)
-        return response.json()
+        return self.request_get_json(url=url)
+
 
     def billing_invoice(self, invoice_id):
         """ downloads an invoice
@@ -133,25 +167,17 @@ class AussieBB():
             this returns the bare response object, parsing the result is an exercise for the consumer
         """
         url = f"{BASEURL.get('api')}/billing/invoices/{invoice_id}"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        return responsedata
+        return self.request_get_json(url=url)
 
     def account_paymentplans(self):
         """ returns a json blob of payment plans for an account """
         url = f"{BASEURL.get('api')}/billing/paymentplans"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        return self.request_get_json(url=url)
 
     def get_usage(self, serviceid: int):
         """ returns a json blob of usage for a service """
         url = f"{BASEURL.get('api')}/broadband/{serviceid}/usage"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        return self.request_get_json(url=url)
 
     def get_service_tests(self, serviceid: int):
         """ gets the available tests for a given service ID
@@ -166,10 +192,7 @@ class AussieBB():
         """
         logger.debug(f"Getting service tests for {serviceid}")
         url = f"{BASEURL.get('api')}/tests/{serviceid}/available"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        return self.request_get_json(url=url)
 
     def get_test_history(self, serviceid: int):
         """ gets the available tests for a given service ID
@@ -188,9 +211,6 @@ class AussieBB():
         url = f"{BASEURL.get('api')}/tests/{serviceid}/linestate"
         logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
-        logger.debug(f"Response: {response}")
-        logger.debug(f"Response body: {response.text}")
-        logger.debug(f"Response headers: {response.headers}")
         return response.json()
 
     def run_test(self, serviceid: int, test_name: str, test_method: str = 'post'):
@@ -212,7 +232,7 @@ class AussieBB():
         test_name = test_links[0].get('name')
         logger.debug(f"Running {test_name}")
         if test_method == 'get':
-            return self.request_get(url=test_links[0].get('link')).json()
+            return self.request_get_json(url=test_links[0].get('link'))
         return self.request_post(url=test_links[0].get('link')).json()
 
     def service_plans(self, serviceid: int):
@@ -221,9 +241,7 @@ class AussieBB():
             """
         url = f"{BASEURL.get('api')}/planchange/{serviceid}"
 
-        response = self.request_get(url=url)
-
-        return response.json()
+        return self.request_get_json(url=url)
 
     def service_outages(self, serviceid: int):
         """ pulls the JSON for outages
@@ -231,9 +249,7 @@ class AussieBB():
         """
         url = f"{BASEURL.get('api')}/nbn/{serviceid}/outages"
 
-        response = self.request_get(url=url)
-
-        return response.json()
+        return self.request_get_json(url=url)
 
     def service_boltons(self, serviceid: int):
         """ pulls the JSON for addons associated with the service
@@ -252,10 +268,7 @@ class AussieBB():
             ```
             """
         url = f"{BASEURL.get('api')}/nbn/{serviceid}/boltons"
-
-        response = self.request_get(url=url)
-
-        return response.json()
+        return self.request_get_json(url=url)
 
     def service_datablocks(self, serviceid: int):
         """ pulls the JSON for datablocks associated with the service
@@ -270,24 +283,50 @@ class AussieBB():
             ```
             """
         url = f"{BASEURL.get('api')}/nbn/{serviceid}/datablocks"
-        response = self.request_get(url=url)
-        return response.json()
+        return self.request_get_json(url=url)
+
+    def telephony_usage(self, serviceid: int):
+        """ pulls the JSON for telephony usage associated with the service
+            keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
+
+            example data
+            ```
+            {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
+            ```
+            """
+
+        url = f"{BASEURL.get('api')}/telephony/{serviceid}/usage"
+        responsedata = self.request_get_json(url=url)
+        if self.debug:
+            print(responsedata, file=sys.stderr)
+        return responsedata
 
 
-    async def support_tickets(self):
+    def support_tickets(self):
         """ pulls the support tickets associated with the account, returns a list of dicts
             dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
 
             """
-        url = f"{BASEURL.get('api')}/tickets"
-        response = self.request_get(url=url)
-        return response.json()
 
-    async def account_contacts(self):
+        frame = inspect.currentframe()
+        url =  f"{BASEURL.get('api')}{API_ENDPOINTS.get(inspect.getframeinfo(frame).function)}"
+        return self.request_get_json(url=url)
+
+    def get_appointment(self, ticketid):
+        """ pulls the support tickets associated with the account, returns a list of dicts
+            dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
+
+            """
+        frame = inspect.currentframe()
+        api_endpoint = API_ENDPOINTS.get(inspect.getframeinfo(frame).function).format({'ticketid' : ticketid})
+        url = f"{BASEURL.get('api')}{api_endpoint}"
+        return self.request_get_json(url)
+
+
+    def account_contacts(self):
         """ pulls the contacts with the account, returns a list of dicts
             dict keys: ['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']
 
             """
         url = f"{BASEURL.get('api')}/contacts"
-        response = self.request_get(url=url)
-        return response.json()
+        return self.request_get_json(url=url)

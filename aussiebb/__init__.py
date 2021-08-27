@@ -11,6 +11,7 @@ import requests
 
 from .const import BASEURL, API_ENDPOINTS, default_headers
 from .exceptions import AuthenticationException, RateLimitException
+from .utils import get_url
 
 #pylint: disable=too-many-public-methods
 class AussieBB():
@@ -23,9 +24,9 @@ class AussieBB():
         self.debug = debug
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
-
         self.session = requests.Session()
 
+        self.myaussie_cookie = ""
         self.token_expires = -1
 
     def login(self):
@@ -105,12 +106,13 @@ class AussieBB():
 
     def get_customer_details(self):
         """ grabs the customer details """
-        url = f"{BASEURL.get('api')}/customer"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
         querystring = {"v":"2"}
         responsedata = self.request_get_json(url=url,
                                     params=querystring,
                                     )
-        return responsedata.json()
+        return responsedata
 
     def get_services(self, page: int = 1, servicetypes: list=None):
         """ returns a list of dicts of services associated with the account
@@ -119,9 +121,10 @@ class AussieBB():
             provide a list of matching strings in servicetypes
         """
 
-        url = f"{BASEURL.get('api')}/services?page={page}"
-
-        responsedata = self.request_get_json(url=url)
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
+        querystring = {'page' : page}
+        responsedata = self.request_get_json(url=url, params=querystring)
 
         # only filter if we need to
         if servicetypes and responsedata:
@@ -156,7 +159,8 @@ class AussieBB():
                 }
             ],
             """
-        url = f"{BASEURL.get('api')}/billing/transactions?group=true"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
 
@@ -165,17 +169,20 @@ class AussieBB():
 
             this returns the bare response object, parsing the result is an exercise for the consumer
         """
-        url = f"{BASEURL.get('api')}/billing/invoices/{invoice_id}"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'invoice_id' : invoice_id})
         return self.request_get_json(url=url)
 
     def account_paymentplans(self):
         """ returns a json blob of payment plans for an account """
-        url = f"{BASEURL.get('api')}/billing/paymentplans"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
     def get_usage(self, serviceid: int):
         """ returns a json blob of usage for a service """
-        url = f"{BASEURL.get('api')}/broadband/{serviceid}/usage"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         return self.request_get_json(url=url)
 
     def get_service_tests(self, serviceid: int):
@@ -189,8 +196,8 @@ class AussieBB():
 
         this is known to throw 400 errors if you query a VOIP service...
         """
-        logger.debug(f"Getting service tests for {serviceid}")
-        url = f"{BASEURL.get('api')}/tests/{serviceid}/available"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         return self.request_get_json(url=url)
 
     def get_test_history(self, serviceid: int):
@@ -198,16 +205,14 @@ class AussieBB():
 
         returns a list of dicts with tests which have been run
         """
-        url = f"{BASEURL.get('api')}/tests/{serviceid}"
-        response = self.request_get(url=url)
-        responsedata = response.json()
-        logger.debug(responsedata)
-        return responsedata
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        return self.request_get_json(url=url)
 
     def test_line_state(self, serviceid: int):
         """ tests the line state for a given service ID """
-
-        url = f"{BASEURL.get('api')}/tests/{serviceid}/linestate"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
         return response.json()
@@ -238,16 +243,16 @@ class AussieBB():
         """ pulls the JSON for the plan data
             keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
             """
-        url = f"{BASEURL.get('api')}/planchange/{serviceid}"
-
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         return self.request_get_json(url=url)
 
     def service_outages(self, serviceid: int):
         """ pulls the JSON for outages
             keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
         """
-        url = f"{BASEURL.get('api')}/nbn/{serviceid}/outages"
-
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         return self.request_get_json(url=url)
 
     def service_boltons(self, serviceid: int):
@@ -266,7 +271,8 @@ class AussieBB():
             }]
             ```
             """
-        url = f"{BASEURL.get('api')}/nbn/{serviceid}/boltons"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         return self.request_get_json(url=url)
 
     def service_datablocks(self, serviceid: int):
@@ -281,7 +287,8 @@ class AussieBB():
             }
             ```
             """
-        url = f"{BASEURL.get('api')}/nbn/{serviceid}/datablocks"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
         return self.request_get_json(url=url)
 
     def telephony_usage(self, serviceid: int):
@@ -293,22 +300,17 @@ class AussieBB():
             {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
             ```
             """
-
-        url = f"{BASEURL.get('api')}/telephony/{serviceid}/usage"
-        responsedata = self.request_get_json(url=url)
-        if self.debug:
-            print(responsedata, file=sys.stderr)
-        return responsedata
-
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'serviceid' : serviceid})
+        return self.request_get_json(url=url)
 
     def support_tickets(self):
         """ pulls the support tickets associated with the account, returns a list of dicts
             dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
 
             """
-
         frame = inspect.currentframe()
-        url =  f"{BASEURL.get('api')}{API_ENDPOINTS.get(inspect.getframeinfo(frame).function)}"
+        url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
     def get_appointment(self, ticketid):
@@ -317,9 +319,8 @@ class AussieBB():
 
             """
         frame = inspect.currentframe()
-        api_endpoint = API_ENDPOINTS.get(inspect.getframeinfo(frame).function).format({'ticketid' : ticketid})
-        url = f"{BASEURL.get('api')}{api_endpoint}"
-        return self.request_get_json(url)
+        url = get_url(inspect.getframeinfo(frame).function, {'ticketid' : ticketid})
+        return self.request_get_json(url=url)
 
 
     def account_contacts(self):
@@ -327,5 +328,6 @@ class AussieBB():
             dict keys: ['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']
 
             """
-        url = f"{BASEURL.get('api')}/contacts"
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)

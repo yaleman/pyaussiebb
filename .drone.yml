@@ -10,6 +10,7 @@ steps:
   - python3 -m pip install -q pytest requests pylint loguru aiohttp
   - python3 -m pip install -r test-requirements.txt
   - pylint aussiebb
+  - pylint aussiebb.asyncio
   - pytest
   environment:
     username:

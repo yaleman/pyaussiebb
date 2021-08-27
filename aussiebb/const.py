@@ -18,8 +18,23 @@ def default_headers():
     }
 
 API_ENDPOINTS = {
+    'account_contacts' : '/contacts',
+    'account_paymentplans' : '/billing/paymentplans',
+    'account_transactions' : '/billing/transactions?group=true',
+    'billing_invoices' : '/billing/invoices/{invoice_id}',
+    'get_appointment' : '/tickets/{ticketid}/appointment',
+    'get_customer_details' : '/customer',
+    'test_line_state' : '/tests/{serviceid}/linestate',
+    'get_services' : '/services',
+    'get_service_tests' : '/tests/{serviceid}/available',
+    'get_test_history' : '/tests/{serviceid}',
+    'get_usage' : '/broadband/{serviceid}/usage',
+    'service_boltons' : '/nbn/{serviceid}/boltons',
+    'service_datablocks' : '/nbn/{serviceid}/datablocks',
+    'service_outages' : '/nbn/{serviceid}/outages',
+    'service_plans' : '/planchange/{serviceid}',
     'support_tickets' : '/tickets',
-    'get_appointment' : r'/tickets/{ticketid}/appointment}'
+    'telephony_usage' : '/telephony/{serviceid}/usage',
 }
 
 

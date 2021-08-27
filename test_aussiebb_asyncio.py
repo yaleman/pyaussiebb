@@ -32,7 +32,7 @@ async def test_login_cycle():
 
     logger.info("Testing login")
     api = AussieBB(username=USERNAME, password=PASSWORD, debug=True)
-    login = await  api.login()
+    login = await api.login()
     assert login
 
     logger.debug("Checking if token has expired...")
@@ -43,8 +43,6 @@ async def test_get_customer_details():
     """ test get_customer_details """
 
     api = AussieBB(username=USERNAME, password=PASSWORD, debug=True)
-    assert await api.login()
-
     logger.info("Testing get_details")
     response = await api.get_customer_details()
     assert response.get('customer_number', False)
@@ -54,16 +52,15 @@ async def test_get_services():
 
     api = AussieBB(username=USERNAME, password=PASSWORD, debug=True)
     api2 = AussieBB(username=USERNAME2, password=PASSWORD2, debug=True)
-    assert await api.login()
-
-    assert await api2.login()
 
     services = await api.get_services()
+    logger.debug("Dumping services for api1")
     logger.debug(services)
     assert services
 
     # api2 has a VOIP service
     services2 = await api2.get_services()
+    logger.debug("Dumping VOIP services for api2")
     voip_service = [service for service in services2 if service.get('type') == 'VOIP']
     assert voip_service
 
@@ -71,7 +68,6 @@ async def test_line_state():
     """ test test_line_state """
     api = AussieBB(username=USERNAME, password=PASSWORD, debug=True)
 
-    assert await api.login()
     services = await api.get_services()
     serviceid = services[0].get('service_id')
 
@@ -83,8 +79,6 @@ async def test_line_state():
 async def test_get_usage():
     """ test get_usage """
     api = AussieBB(username=USERNAME, password=PASSWORD, debug=True)
-
-    assert await api.login()
 
     services = await api.get_services()
     serviceid = services[0].get('service_id')
@@ -99,8 +93,6 @@ async def test_get_service_plans():
     api2 = AussieBB(username=USERNAME2, password=PASSWORD2, debug=True)
 
     for test_api in [api, api2]:
-        # make sure you log in first
-        assert await test_api.login()
 
         result = await test_api.get_services()
 

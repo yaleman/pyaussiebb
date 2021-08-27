@@ -1,0 +1,537 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+    
+    
+      
+        <title>aussiebb</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.be71726b.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyaussiebb" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="aussiebb" class="md-header__button md-logo" aria-label="aussiebb" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            aussiebb
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="aussiebb" class="md-nav__button md-logo" aria-label="aussiebb" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    aussiebb
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        Home
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aussiebb/" class="md-nav__link">
+        aussiebb
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="pyaussiebb">pyAussieBB</h1>
+<p><a href="https://droneio.yaleman.org/yaleman/aussiebb"><img alt="Build Status" src="https://droneio.yaleman.org/api/badges/yaleman/aussiebb/status.svg" /></a></p>
+<p>This is a very simple module for interacting with the Aussie Broadband APIs.</p>
+<p>I wrote this so I can pull a line test periodically and show the NBN how garbage they are.</p>
+<h1 id="usage">Usage</h1>
+<pre><code>pip install --user pyaussiebb
+python
+&gt;&gt;&gt; from aussiebb import AussieBB
+&gt;&gt;&gt; account = AussieBB(username, password)
+&gt;&gt;&gt; account.get_services()
+[{allyourservicedetails}]
+</code></pre>
+<p>For more, check out the docs.</p>
+<h1 id="asyncio-version">AsyncIO version</h1>
+<p>You can replace <code>from aussiebb import AussieBB</code> with <code>from aussiebb.asyncio import AussieBB</code> and you'll get an <code>aiohttp</code>-powered version. The only difference in this case is that you have to explicitly call <code>login()</code> for reasons.</p>
+<p>If you hit the rate limit it'll raise a <code>RateLimit</code> exception. I haven't put that functionality into the blocking version yet, since ... that tends not to hit it. 🤣</p>
+<h1 id="development">Development</h1>
+<h2 id="example-service-tests-ive-seen">Example service tests I've seen</h2>
+<p>All the "endpoints" below should be tacked onto <code>aussiebb.BASEURL['api']</code>.</p>
+<p><strong>Warning:</strong> <code>/nbn/{service_id}/connection</code> seems to have both a GET and POST method endpoint - tests on other endpoints may be similar.</p>
+<p>These can be run by using <code>AussieBB.run_test()</code> with the string after the last forward-slash as the "test" - ie, <code>connection</code> or <code>linestate</code>.</p>
+<h3 id="hfc">HFC</h3>
+<p>These are entirely untested so far.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>Probably GET</td>
+<td>Check Connection</td>
+<td>Check to see if your service is currently connected</td>
+</tr>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>Probably POST</td>
+<td>Kick Connection</td>
+<td>Kick your current session and force your device to reauthenticate</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/loopback</code></td>
+<td>Probably POST</td>
+<td>Loopback Test</td>
+<td>This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/ntdstatus</code></td>
+<td>Probably POST</td>
+<td>NTD Status</td>
+<td>An NTD Status will show you the operational state of the Network Termination Device (NTD). The test will also show if the NTD is detecting the wired connection from your router.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fttc">FTTC</h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>GET</td>
+<td>Check Connection</td>
+<td>Check to see if your service is currently connected</td>
+</tr>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>Probably POST</td>
+<td>Kick Connection</td>
+<td>Kick your current session and force your device to reauthenticate</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/dpuportreset</code></td>
+<td>Probably POST</td>
+<td>DPU Port Reset</td>
+<td>Reset the Port on the DPU (Distribution Point Unit) along with clearing any errors that maybe causing issues with connectivity.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/dpuportstatus</code></td>
+<td>POST</td>
+<td>DPU Port Status</td>
+<td>A DPU (Distribution Point Unit) port status will show if the NCD (Network Connection Device) is providing power to the DPU. It will also state if the NCD (Network Connection Device) is in sync.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/dpustatus</code></td>
+<td>POST</td>
+<td>DPU Status</td>
+<td>This will provide if the DPU (Distribution Point Unit) is currently being powered.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/loopback</code></td>
+<td>POST</td>
+<td>Loopback Test</td>
+<td>This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/ncdportreset</code></td>
+<td>Probably POST</td>
+<td>NCD Port Reset</td>
+<td>Reset the gateway port on your NCD (Network Connection Device).</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/ncdreset</code></td>
+<td>Probably POST</td>
+<td>NCD Reset</td>
+<td>This will remotely restart your Network Termination Device.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fttn">FTTN</h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>GET</td>
+<td>Check Connection</td>
+<td>Check to see if your service is currently connected</td>
+</tr>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>Probably POST</td>
+<td>Kick Connection</td>
+<td>Kick your current session and force your device to reauthenticate</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/linestate</code></td>
+<td>POST</td>
+<td>Line State</td>
+<td>A line state test will determine if you have “sync” (connection) to the node. If the service is in sync this test will also return your maximum and current attainable transfer rate.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/loopback</code></td>
+<td>POST</td>
+<td>Loopback Test</td>
+<td>This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/portreset</code></td>
+<td>Probably POST</td>
+<td>Port Reset</td>
+<td>This will reset the connection from the Node and also clear errors that may be causing issues with gaining sync.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/stabilityprofile</code></td>
+<td>Probably POST</td>
+<td>Stability Profile</td>
+<td>This will apply changes to your FTTN service including allowing increased noise to occur before making the connection unstable. This will cause your speeds to degrade as a result, but in turn making the service more stable. For NBN to investigate a fault this profile needs to be applied and a minimum of 5 dropouts recorded over a 24hr period on NBN's systems before a dropout fault can be raised</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fttp">FTTP</h2>
+<p>These are as-yet untested.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>Probably GET</td>
+<td>Check Connection</td>
+<td>Check to see if your service is currently connected</td>
+</tr>
+<tr>
+<td><code>/nbn/{service_id}/connection</code></td>
+<td>Probably POST</td>
+<td>Kick Connection</td>
+<td>Kick your current session and force your device to reauthenticate</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/loopback</code></td>
+<td>Probably POST</td>
+<td>Loopback Test</td>
+<td>This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/portreset</code></td>
+<td>Probably POST</td>
+<td>Port Reset</td>
+<td>This will reset the connection from the Node and also clear errors that may be causing issues with gaining sync.</td>
+</tr>
+<tr>
+<td><code>/tests/{service_id}/unidstatus</code></td>
+<td>Probably POST</td>
+<td>UNI-D Status</td>
+<td>UNI-D Status will show if the UNI-D port you are currently using has a router connected to it. This will also provide the Link speed your router and UNI-D port are connected at Eg, 100mbit or 1gbit. You will also see the MAC address of the currently connected router.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="changelog">Changelog</h1>
+<ul>
+<li>0.0.3 - Added <code>get_service_plans</code> so the gigabit-desperate crowd can check for their new hotness.</li>
+<li>0.0.4 - Added <code>asyncio</code> submodule, split constants and exceptions out into their own files/modules.</li>
+<li>0.0.5/6 - Fixing rate limiting</li>
+<li>0.0.7 <ul>
+<li>Added the following new functions: <code>account_transactions</code>, <code>billing_invoice</code>, <code>service_outages</code>, <code>service_boltons</code>, <code>service_datablocks</code>, <code>support_tickets</code>, <code>account contacts</code>. Renamed <code>get_service_plans</code> to <code>service_plans</code></li>
+</ul>
+</li>
+<li>0.0.8<ul>
+<li>renamed serviceid to service_id to match the api</li>
+<li>added request_get_json to the sync class</li>
+<li>added telephony_usage</li>
+<li>added get_appointment which gets service appointments</li>
+<li>updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service</li>
+<li>abstracted how URLS are generated so I don't have to keep adding them twice</li>
+<li>added a filter on get_services which allows you to filter by type</li>
+</ul>
+</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+      
+        
+        <a href="aussiebb/" class="md-footer__link md-footer__link--next" aria-label="Next: aussiebb" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              aussiebb
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.56a63758.min.js"></script>
+      
+    
+  </body>
+</html>

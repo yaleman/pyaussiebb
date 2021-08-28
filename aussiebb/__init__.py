@@ -237,7 +237,6 @@ class AussieBB():
         url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
-
     def get_usage(self, service_id: int):
         """
         Returns a dict of usage for a service.

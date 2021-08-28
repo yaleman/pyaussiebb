@@ -45,13 +45,6 @@ class AussieBB():
         self.services_last_update = -1
         self.services = None
 
-    def _check_reload_cached_services(self):
-        """ If the age of the service data caching is too old, clear it and re-poll. """
-        cache_expiry = self.services_last_update + self.services_cache_time
-        if time() > cache_expiry:
-            self.get_services(use_cached=False)
-        return True
-
     def login(self, depth=0):
         """ Logs into the account and caches the cookie.  """
         if depth>2:
@@ -150,6 +143,23 @@ class AussieBB():
                                     )
         return responsedata
 
+
+    def _check_reload_cached_services(self):
+        """ If the age of the service data caching is too old, clear it and re-poll.
+
+        Returns bool - if it reloaded the cache.
+        """
+        if not self.services:
+            self.get_services(use_cached=False)
+            return True
+
+        cache_expiry = self.services_last_update + self.services_cache_time
+        if time() >= cache_expiry:
+            self.get_services(use_cached=False)
+            return True
+        return False
+
+
     def get_services(self, page: int = 1, servicetypes: list=None, use_cached: bool=False):
         """ Returns a `list` of `dicts` of services associated with the account.
 
@@ -161,7 +171,6 @@ class AussieBB():
         if use_cached:
             logger.debug("Using cached data for get_services.")
             self._check_reload_cached_services()
-            responsedata = self.services
         else:
             frame = inspect.currentframe()
             url = get_url(inspect.getframeinfo(frame).function)
@@ -176,18 +185,14 @@ class AussieBB():
         if servicetypes:
             logger.debug("Filtering services based on provided list: {}", servicetypes)
             filtered_responsedata = []
-            for service in responsedata.get('data'):
+            for service in self.services:
                 if service.get('type') in servicetypes:
                     filtered_responsedata.append(service)
                 else:
                     logger.debug("Skipping as type=={} - {}", service.get('type'), service)
-            # return the filtered responses to the source data
-            responsedata['data'] = filtered_responsedata
+            return filtered_responsedata
 
-        if responsedata.get('last_page') != responsedata.get('current_page'):
-            logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
-
-        return responsedata.get('data')
+        return self.services
 
 
     def account_transactions(self):

@@ -57,13 +57,6 @@ class AussieBB(): #pylint: disable=too-many-public-methods,too-many-instance-att
         if self.debug:
             print(message, file=sys.stderr)
 
-    async def _check_reload_cached_services(self):
-        """ If the age of the service data caching is too old, clear it and re-poll. """
-        cache_expiry = self.services_last_update + self.services_cache_time
-        if time() > cache_expiry:
-            await self.get_services(use_cached=False)
-        return True
-
     async def login(self, depth=0):
         """ Logs into the account and caches the cookie.  """
         if depth>2:
@@ -243,6 +236,20 @@ class AussieBB(): #pylint: disable=too-many-public-methods,too-many-instance-att
                                     params=params,
                                     )
 
+    async def _check_reload_cached_services(self):
+        """ If the age of the service data caching is too old, clear it and re-poll.
+
+        Returns bool - if it reloaded the cache.
+        """
+        if not self.services:
+            await self.get_services(use_cached=False)
+            return True
+        cache_expiry = self.services_last_update + self.services_cache_time
+        if time() >= cache_expiry:
+            await self.get_services(use_cached=False)
+            return True
+        return False
+
     async def get_services(self, page: int=1, servicetypes: list=None, use_cached: bool=False):
         """ Returns a `list` of `dicts` of services associated with the account.
 
@@ -253,8 +260,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods,too-many-instance-att
         """
         if use_cached:
             self._debug_print("Using cached data for get_services.")
-            self._check_reload_cached_services()
-            responsedata = self.services
+            await self._check_reload_cached_services()
         else:
             frame = inspect.currentframe()
             url = get_url(inspect.getframeinfo(frame).function)
@@ -267,21 +273,16 @@ class AussieBB(): #pylint: disable=too-many-public-methods,too-many-instance-att
 
         # only filter if we need to
         if servicetypes:
-            if self.debug:
-                print(f"Filtering services based on provided list: {servicetypes}", file=sys.stderr)
+            self._debug_print(f"Filtering services based on provided list: {servicetypes}")
             filtered_responsedata = []
-            for service in responsedata.get('data'):
+            for service in self.services:
                 if service.get('type') in servicetypes:
                     filtered_responsedata.append(service)
                 else:
-                    if self.debug:
-                        print(f"Skipping as type=={service.get('type')} - {service}", file=sys.stderr)
-            # return the filtered responses to the source data
-            responsedata['data'] = filtered_responsedata
+                    self._debug_print(f"Skipping as type=={service.get('type')} - {service}")
+            return filtered_responsedata
 
-        if responsedata.get('last_page') != responsedata.get('current_page'):
-            self._debug_print("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
-        return responsedata.get('data')
+        return self.services
 
     async def account_transactions(self):
         """ Pulls the data for transactions on your account.

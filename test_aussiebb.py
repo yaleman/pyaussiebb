@@ -25,7 +25,7 @@ def test_login_cycle(api_object=TESTAPI):
     assert api_object.login()
 
     logger.debug("Checking if token has expired...")
-    assert not api_object.has_token_expired()
+    assert not api_object._has_token_expired() #pylint: disable=protected-access
 
 def test_customer_details(test_api=TESTAPI):
     """ test get_customer_details """

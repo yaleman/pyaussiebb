@@ -11,6 +11,8 @@ plugins:
       python:
         rendering:
           show_source: true
+    watch:
+    - aussiebb/
 
 nav:
   - "Home" : README.md

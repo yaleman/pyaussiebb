@@ -11,26 +11,35 @@ import sys
 try:
     import aiohttp
 except ImportError as error_message:
-    print("Failed to import aiohttp, bailing: {error_message}", file=sys.stderr)
+    print(f"Failed to import aiohttp, bailing: {error_message}", file=sys.stderr)
     sys.exit(1)
 
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY
 from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 from ..utils import get_url
 
-class AussieBB(): #pylint: disable=too-many-public-methods
+
+class AussieBB(): #pylint: disable=too-many-public-methods,too-many-instance-attributes
     """ aiohttp class for interacting with Aussie Broadband APIs """
-    def __init__(self, username: str, password: str, session: aiohttp.client.ClientSession=None, debug: bool=False ):
-        """ class for interacting with Aussie Broadband APIs """
+    def __init__(self, username: str, password: str, session: aiohttp.client.ClientSession=None, debug: bool=False, **kwargs):
+        """ Setup function
+
+            ```
+            @param username: str - username for Aussie Broadband account
+            @param password: str - password for Aussie Broadband account
+            @param debug: bool - debug mode
+            @param services_cache_time: int
+                - seconds between caching get_services()
+                - defaults to 8 hours
+            ```
+        """
         self.username = username
         self.password = password
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
 
-        self.made_own_session = False
-        if session is None:
+        if not session:
             self.session = aiohttp.ClientSession()
-            self.made_own_session = True
         else:
             self.session = session
 
@@ -38,15 +47,25 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         self.token_expires = -1
         self.debug = debug
 
+        self.services_cache_time = kwargs.get('services_cache_time', 28800) # defaults to 8 hours
+        self.services_last_update = -1
+        self.services = None
+
+
+    def _debug_print(self, message: str):
+        """ Prints a debug message to stderr if the class is in debug mode. """
+        if self.debug:
+            print(message, file=sys.stderr)
+
     async def login(self, depth=0):
-        """ does the login bit """
+        """ Logs into the account and caches the cookie.  """
         if depth>2:
             raise RecursiveDepth("Login recursion depth > 2")
-        print("logging in...")
+        self._debug_print("Logging in...")
 
         url = BASEURL.get('login')
 
-        if not self.has_token_expired():
+        if not self._has_token_expired():
             return True
 
         payload = {
@@ -61,22 +80,26 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 jsondata = await response.json()
             except RateLimitException:
                 return await self.login(depth+1)
-            if self.debug:
-                print(f"Login response status: {response.status}", file=sys.stderr)
-        if self.debug:
-            print(f"Dumping login response: {json.dumps(jsondata)}", file=sys.stderr)
+            self._debug_print(f"Login response status: {response.status}")
+        self._debug_print(f"Dumping login response: {json.dumps(jsondata)}")
+
+        # we expire a little early just because
         self.token_expires = time() + jsondata.get('expiresIn') - 50
         self.myaussie_cookie = response.cookies.get('myaussie_cookie')
         if self.myaussie_cookie:
-            if self.debug:
-                print(f"Login Cookie: {self.myaussie_cookie}", file=sys.stderr)
+            self._debug_print(f"Login Cookie: {self.myaussie_cookie}")
         return True
 
     async def handle_response_fail(self, response, wait_on_rate_limit: bool=True):
-        """ handles response status codes """
+        """ Handles response status codes. Tries to gracefully handle the rate limiting.
+
+        ```
+        @param response - aiohttp.Response - the full response object
+        @param wait_on_rate_limit - bool - if hitting a rate limit, async wait on the time limit
+        ```
+        """
         ratelimit_remaining = int(response.headers.get('x-ratelimit-remaining', -1))
-        if self.debug:
-            print(f"Rate limit header: {response.headers.get('x-ratelimit-remaining', -1)}", file=sys.stderr)
+        self._debug_print(f"Rate limit header: {response.headers.get('x-ratelimit-remaining', -1)}")
         if ratelimit_remaining < 5 and wait_on_rate_limit:
             print("Rate limit below 5, sleeping for 1 second.", file=sys.stderr)
             await asyncio.sleep(1)
@@ -85,9 +108,8 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             raise AuthenticationException(await response.json())
         if response.status == 429:
             jsondata = await response.json()
-            if self.debug:
-                print(f"Dumping headers: {response.headers}", file=sys.stderr)
-                print(f"Dumping response: {jsondata}", file=sys.stderr)
+            self._debug_print(f"Dumping headers: {response.headers}")
+            self._debug_print(f"Dumping response: {jsondata}")
             delay = DEFAULT_BACKOFF_DELAY
             if 'Please try again in ' in str(jsondata.get('errors')):
                 fallback_value = [f"default {DEFAULT_BACKOFF_DELAY} seconds"]
@@ -96,11 +118,10 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 delay = int(delay)+5
 
                 if 0 < delay < 1000:
-                    if self.debug:
-                        print(f"Found delay: {delay}", file=sys.stderr)
+                    self._debug_print(f"Found delay: {delay}")
                     delay = int(delay)
-                elif self.debug:
-                    print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
+                else:
+                    self._debug_print(f"Couldn't parse delay, using default: {delay}")
             else:
                 delay = DEFAULT_BACKOFF_DELAY
                 if self.debug:
@@ -111,14 +132,14 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             raise RateLimitException(jsondata)
         response.raise_for_status()
 
-    def has_token_expired(self):
-        """ returns bool if the token has expired """
+    def _has_token_expired(self):
+        """ Returns bool of if the token has expired """
         if time() > self.token_expires:
             return True
         return False
 
     async def request_get(self, skip_login_check: bool = False, **kwargs) -> dict:
-        """ does a GET request and logs in first if need be, returns the body bytes """
+        """ Performs a GET request and logs in first if needed. """
         depth = kwargs.get('depth', 0)
         if depth > 2:
             raise RecursiveDepth(f"depth: {depth}")
@@ -127,7 +148,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             self.session = aiohttp.ClientSession()
 
         if not skip_login_check:
-            if self.has_token_expired():
+            if self._has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
                 await self.login()
@@ -139,11 +160,14 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 await self.handle_response_fail(response)
                 await response.read()
             except RateLimitException:
-                response = await self.request_get_json(skip_login_check, **kwargs)
+                response = await self.request_get(skip_login_check, **kwargs)
             return response
 
     async def request_get_json(self, skip_login_check: bool = False, **kwargs) -> dict:
-        """ does a GET request and logs in first if need be, returns a dict of json """
+        """ Performs a GET request and logs in first if needed.
+
+        Returns a dict of the JSON response.
+        """
         depth = kwargs.get('depth', 0)
         if depth > 2:
             raise RecursiveDepth(f"depth: {depth}")
@@ -154,7 +178,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         if not skip_login_check:
             if self.debug:
                 print("skip_login_check false", file=sys.stderr)
-            if self.has_token_expired():
+            if self._has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
                 await self.login()
@@ -170,7 +194,10 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return jsondata
 
     async def request_post_json(self, url, **kwargs):
-        """ does a POST request and logs in first if need be"""
+        """ Performs a POST request and logs in first if needed.
+
+        Returns a dict of the response data.
+        """
         depth = kwargs.get('depth', 0)
         if depth > 2:
             raise RecursiveDepth(f"depth: {depth}")
@@ -181,7 +208,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         if not kwargs.get('skip_login_check', False):
             if self.debug:
                 print("skip_login_check false", file=sys.stderr)
-            if self.has_token_expired():
+            if self._has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
                 await self.login()
@@ -199,7 +226,9 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return jsondata
 
     async def get_customer_details(self) -> dict:
-        """ grabs the customer details, returns a dict """
+        """ Grabs the customer details.
+
+        Returns a dict """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         params = {"v":"2"}
@@ -207,40 +236,64 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                                     params=params,
                                     )
 
-    async def get_services(self, page: int=1, servicetypes: list=None):
-        """ returns a list of dicts of services associated with the account
-            if you want a specific kind of service, or services,
-            provide a list of matching strings in servicetypes
-        """
-        frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function)
-        params = {'page' : page}
+    async def _check_reload_cached_services(self):
+        """ If the age of the service data caching is too old, clear it and re-poll.
 
-        responsedata = await self.request_get_json(url=url, params=params)
+        Returns bool - if it reloaded the cache.
+        """
+        if not self.services:
+            await self.get_services(use_cached=False)
+            return True
+        cache_expiry = self.services_last_update + self.services_cache_time
+        if time() >= cache_expiry:
+            await self.get_services(use_cached=False)
+            return True
+        return False
+
+    async def get_services(self, page: int=1, servicetypes: list=None, use_cached: bool=False):
+        """ Returns a `list` of `dicts` of services associated with the account.
+
+            If you want a specific kind of service, or services,
+            provide a list of matching strings in servicetypes.
+
+            If you want to use cached data, call it with `use_cached=True`
+        """
+        if use_cached:
+            self._debug_print("Using cached data for get_services.")
+            await self._check_reload_cached_services()
+        else:
+            frame = inspect.currentframe()
+            url = get_url(inspect.getframeinfo(frame).function)
+            params = {'page' : page}
+
+            responsedata = await self.request_get_json(url=url, params=params)
+            # cache the data
+            self.services_last_update = time()
+            self.services = responsedata.get('data')
+
         # only filter if we need to
-        if servicetypes and responsedata:
-            if self.debug:
-                print(f"Filtering services based on provided list: {servicetypes}", file=sys.stderr)
+        if servicetypes:
+            self._debug_print(f"Filtering services based on provided list: {servicetypes}")
             filtered_responsedata = []
-            for service in responsedata.get('data'):
+            for service in self.services:
                 if service.get('type') in servicetypes:
                     filtered_responsedata.append(service)
                 else:
-                    if self.debug:
-                        print(f"Skipping as type=={service.get('type')} - {service}", file=sys.stderr)
-            # return the filtered responses to the source data
-            responsedata['data'] = filtered_responsedata
+                    self._debug_print(f"Skipping as type=={service.get('type')} - {service}")
+            return filtered_responsedata
 
-        if responsedata.get('last_page') != responsedata.get('current_page'):
-            if self.debug:
-                print("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!", file=sys.stderr) #pylint: disable=line-too-long
-        return responsedata.get('data')
+        return self.services
 
     async def account_transactions(self):
-        """ pulls the json for transactions on your account
-            keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
-            returns a dict where the key is the Month and year of the transaction, eg:
-            ```
+        """ Pulls the data for transactions on your account.
+
+            Returns a dict where the key is the month and year of the transaction.
+
+            Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
+
+            Example output:
+
+            ``` json
             "August 2021": [
               {
                     "id": 12345,
@@ -251,6 +304,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                     "runningBalanceCents": 0
                 }
             ],
+            ```
             """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
@@ -258,9 +312,9 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def billing_invoice(self, invoice_id):
-        """ downloads an invoice
+        """ Downloads an invoice
 
-            this returns the response object
+            This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'invoice_id', invoice_id})
@@ -268,7 +322,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def account_paymentplans(self):
-        """ returns a json blob of payment plans for an account """
+        """ Returns a dict of payment plans for an account """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         responsedata = await self.request_get_json(url=url)
@@ -276,12 +330,12 @@ class AussieBB(): #pylint: disable=too-many-public-methods
 
     async def get_usage(self, service_id: int):
         """
-        returns a json blob of usage for a service
+        Returns a dict of usage for a service.
 
-        will double-check it's not a telephony service and pull the data for that if it is
+        If it's a telephony service (`type=PhoneMobile`) it'll pull from the telephony endpoint.
 
         """
-        services = await self.get_services()
+        services = await self.get_services(use_cached=True)
         for service in services:
             if service_id == service.get('service_id'):
                 if service.get('type') in ['PhoneMobile']:
@@ -293,15 +347,20 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def get_service_tests(self, service_id: int):
-        """ gets the available tests for a given service ID
-        returns list of dicts
+        """ Gets the available tests for a given service ID
+        Returns list of dicts
+
+        Example data:
+
+        ```
         [{
             'name' : str(),
             'description' : str',
             'link' : str(a url to the test)
         },]
+        ```
 
-        this is known to throw 400 errors if you query a VOIP service...
+        This has a habit of throwing 400 errors if you query a VOIP service...
         """
         if self.debug:
             print(f"Getting service tests for {service_id}", file=sys.stderr)
@@ -311,9 +370,9 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def get_test_history(self, service_id: int):
-        """ gets the available tests for a given service ID
+        """ Gets the available tests for a given service ID
 
-        returns a list of dicts with tests which have been run
+        Returns a list of dicts with tests which have been run
         """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
@@ -321,7 +380,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def test_line_state(self, service_id: int):
-        """ tests the line state for a given service ID """
+        """ Tests the line state for a given service ID """
 
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
@@ -334,8 +393,10 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return response
 
     async def run_test(self, service_id: int, test_name: str, test_method: str = 'post'):
-        """ run a test, but it checks it's valid first
+        """ Run a test, but it checks it's valid first
+
             There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
+
             See the README for more analysis
 
             - 'status' of 'InProgress' use 'AussieBB.get_test_history()' and look for the 'id'
@@ -361,9 +422,11 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return result
 
     async def service_plans(self, service_id: int):
-        """ pulls the JSON for the plan data
-            keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
-            """
+        """ Pulls the plan data for a given service.
+
+            Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
+
+        """
 
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
@@ -373,10 +436,11 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def service_outages(self, service_id: int):
-        """ pulls the JSON for outages
-            keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
+        """ Pulls outages associated with a service.
 
-            example data
+            Keys: `['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']`
+
+            Example data:
             ```
             {
                 "networkEvents": [],
@@ -393,7 +457,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 "resolvedNbnOutages": []
             }
             ```
-            """
+        """
 
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
@@ -403,10 +467,12 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def service_boltons(self, service_id: int):
-        """ pulls the JSON for addons associated with the service
-            keys: ['id', 'name', 'description', 'costCents', 'additionalNote', 'active']
+        """ Pulls addons associated with the service.
 
-            example data
+            Keys: `['id', 'name', 'description', 'costCents', 'additionalNote', 'active']`
+
+            Example data:
+
             ```
             [{
                 "id": 4,
@@ -427,17 +493,19 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def service_datablocks(self, service_id: int):
-        """ pulls the JSON for datablocks associated with the service
-            keys: ['current', 'available']
+        """ Pulls datablocks associated with the service.
 
-            example data
+            Keys: `['current', 'available']`
+
+            Example data:
+
             ```
             {
                 "current": [],
                 "available": []
             }
             ```
-            """
+        """
 
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
@@ -447,10 +515,12 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def telephony_usage(self, service_id: int):
-        """ pulls the JSON for telephony usage associated with the service
-            keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
+        """ Pulls the telephony usage associated with the service.
 
-            example data
+            Keys: `['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']`
+
+            Example data:
+
             ```
             {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
             ```
@@ -463,8 +533,9 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         return responsedata
 
     async def support_tickets(self):
-        """ pulls the support tickets associated with the account, returns a list of dicts
-            dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
+        """ Pulls the support tickets associated with the account, returns a list of dicts.
+
+            Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
 
             """
 
@@ -475,9 +546,19 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             print(responsedata, file=sys.stderr)
         return responsedata
 
+    async def get_appointment(self, ticketid: int):
+        """ Pulls the support tickets associated with the account, returns a list of dicts.
+
+            Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
+            """
+        frame = inspect.currentframe()
+        url = get_url(inspect.getframeinfo(frame).function, {'ticketid' : ticketid})
+        return await self.request_get_json(url=url)
+
     async def account_contacts(self):
-        """ pulls the contacts with the account, returns a list of dicts
-            dict keys: ['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']
+        """ Pulls the contacts with the account, returns a list of dicts
+
+            Dict keys: `['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']`
             """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)

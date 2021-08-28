@@ -4,7 +4,7 @@ theme:
   name: "material"
 
 plugins:
-- search
+- search:
 - mkdocstrings:
     default_handler: python
     handlers:
@@ -12,8 +12,8 @@ plugins:
         rendering:
           show_source: true
     watch:
-    - aussiebb/
+    - "aussiebb/"
 
 nav:
-  - "Home" : README.md
-  - "aussiebb": aussiebb.md
+  - "Home": README.md
+  - "API Documentation": aussiebb.md

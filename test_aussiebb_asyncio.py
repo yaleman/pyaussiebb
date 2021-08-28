@@ -37,7 +37,7 @@ async def test_login_cycle():
         assert login
 
         logger.debug("Checking if token has expired...")
-        assert not api.has_token_expired()
+        assert not api._has_token_expired() #pylint: disable=protected-access
 
 
 async def test_get_customer_details():

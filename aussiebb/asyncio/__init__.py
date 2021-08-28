@@ -11,26 +11,35 @@ import sys
 try:
     import aiohttp
 except ImportError as error_message:
-    print("Failed to import aiohttp, bailing: {error_message}", file=sys.stderr)
+    print(f"Failed to import aiohttp, bailing: {error_message}", file=sys.stderr)
     sys.exit(1)
 
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY
 from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 from ..utils import get_url
 
+
 class AussieBB(): #pylint: disable=too-many-public-methods
     """ aiohttp class for interacting with Aussie Broadband APIs """
-    def __init__(self, username: str, password: str, session: aiohttp.client.ClientSession=None, debug: bool=False ):
-        """ class for interacting with Aussie Broadband APIs """
+    def __init__(self, username: str, password: str, session: aiohttp.client.ClientSession=None, debug: bool=False, **kwargs):
+        """ Setup function
+
+            ```
+            @param username: str - username for Aussie Broadband account
+            @param password: str - password for Aussie Broadband account
+            @param debug: bool - debug mode
+            @param services_cache_time: int
+                - seconds between caching get_services()
+                - defaults to 8 hours
+            ```
+        """
         self.username = username
         self.password = password
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
 
-        self.made_own_session = False
-        if session is None:
+        if not session:
             self.session = aiohttp.ClientSession()
-            self.made_own_session = True
         else:
             self.session = session
 
@@ -38,15 +47,32 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         self.token_expires = -1
         self.debug = debug
 
+        self.services_cache_time = kwargs.get('services_cache_time', 28800) # defaults to 8 hours
+        self.services_last_update = -1
+        self.services = None
+
+
+    def _debug_print(self, message: str):
+        """ Prints a debug message to stderr if the class is in debug mode. """
+        if self.debug:
+            print(message, file=sys.stderr)
+
+    async def _check_reload_cached_services(self):
+        """ If the age of the service data caching is too old, clear it and re-poll """
+        cache_expiry = self.services_last_update + self.services_cache_time
+        if time() > cache_expiry:
+            await self.get_services(use_cached=False)
+        return True
+
     async def login(self, depth=0):
-        """ does the login bit """
+        """ Logs into the account and caches the cookie.  """
         if depth>2:
             raise RecursiveDepth("Login recursion depth > 2")
-        print("logging in...")
+        self._debug_print("Logging in...")
 
         url = BASEURL.get('login')
 
-        if not self.has_token_expired():
+        if not self._has_token_expired():
             return True
 
         payload = {
@@ -61,22 +87,20 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 jsondata = await response.json()
             except RateLimitException:
                 return await self.login(depth+1)
-            if self.debug:
-                print(f"Login response status: {response.status}", file=sys.stderr)
-        if self.debug:
-            print(f"Dumping login response: {json.dumps(jsondata)}", file=sys.stderr)
+            self._debug_print(f"Login response status: {response.status}")
+        self._debug_print(f"Dumping login response: {json.dumps(jsondata)}")
+
+        # we expire a little early just because
         self.token_expires = time() + jsondata.get('expiresIn') - 50
         self.myaussie_cookie = response.cookies.get('myaussie_cookie')
         if self.myaussie_cookie:
-            if self.debug:
-                print(f"Login Cookie: {self.myaussie_cookie}", file=sys.stderr)
+            self._debug_print(f"Login Cookie: {self.myaussie_cookie}")
         return True
 
     async def handle_response_fail(self, response, wait_on_rate_limit: bool=True):
         """ handles response status codes """
         ratelimit_remaining = int(response.headers.get('x-ratelimit-remaining', -1))
-        if self.debug:
-            print(f"Rate limit header: {response.headers.get('x-ratelimit-remaining', -1)}", file=sys.stderr)
+        self._debug_print(f"Rate limit header: {response.headers.get('x-ratelimit-remaining', -1)}")
         if ratelimit_remaining < 5 and wait_on_rate_limit:
             print("Rate limit below 5, sleeping for 1 second.", file=sys.stderr)
             await asyncio.sleep(1)
@@ -85,9 +109,8 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             raise AuthenticationException(await response.json())
         if response.status == 429:
             jsondata = await response.json()
-            if self.debug:
-                print(f"Dumping headers: {response.headers}", file=sys.stderr)
-                print(f"Dumping response: {jsondata}", file=sys.stderr)
+            self._debug_print(f"Dumping headers: {response.headers}")
+            self._debug_print(f"Dumping response: {jsondata}")
             delay = DEFAULT_BACKOFF_DELAY
             if 'Please try again in ' in str(jsondata.get('errors')):
                 fallback_value = [f"default {DEFAULT_BACKOFF_DELAY} seconds"]
@@ -96,11 +119,10 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                 delay = int(delay)+5
 
                 if 0 < delay < 1000:
-                    if self.debug:
-                        print(f"Found delay: {delay}", file=sys.stderr)
+                    self._debug_print(f"Found delay: {delay}")
                     delay = int(delay)
-                elif self.debug:
-                    print(f"Couldn't parse delay, using default: {delay}", file=sys.stderr)
+                else:
+                    self._debug_print(f"Couldn't parse delay, using default: {delay}")
             else:
                 delay = DEFAULT_BACKOFF_DELAY
                 if self.debug:
@@ -111,7 +133,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             raise RateLimitException(jsondata)
         response.raise_for_status()
 
-    def has_token_expired(self):
+    def _has_token_expired(self):
         """ returns bool if the token has expired """
         if time() > self.token_expires:
             return True
@@ -127,7 +149,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
             self.session = aiohttp.ClientSession()
 
         if not skip_login_check:
-            if self.has_token_expired():
+            if self._has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
                 await self.login()
@@ -154,7 +176,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         if not skip_login_check:
             if self.debug:
                 print("skip_login_check false", file=sys.stderr)
-            if self.has_token_expired():
+            if self._has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
                 await self.login()
@@ -181,7 +203,7 @@ class AussieBB(): #pylint: disable=too-many-public-methods
         if not kwargs.get('skip_login_check', False):
             if self.debug:
                 print("skip_login_check false", file=sys.stderr)
-            if self.has_token_expired():
+            if self._has_token_expired():
                 if self.debug:
                     print("token has expired, logging in...", file=sys.stderr)
                 await self.login()
@@ -207,18 +229,29 @@ class AussieBB(): #pylint: disable=too-many-public-methods
                                     params=params,
                                     )
 
-    async def get_services(self, page: int=1, servicetypes: list=None):
-        """ returns a list of dicts of services associated with the account
-            if you want a specific kind of service, or services,
-            provide a list of matching strings in servicetypes
-        """
-        frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function)
-        params = {'page' : page}
+    async def get_services(self, page: int=1, servicetypes: list=None, use_cached: bool=False):
+        """ Returns a `list` of `dicts` of services associated with the account.
 
-        responsedata = await self.request_get_json(url=url, params=params)
+            If you want a specific kind of service, or services,
+            provide a list of matching strings in servicetypes.
+
+            If you want to use cached data, call it with `use_cached=True`
+        """
+        if use_cached:
+            self._check_reload_cached_services()
+            responsedata = self.services
+        else:
+            frame = inspect.currentframe()
+            url = get_url(inspect.getframeinfo(frame).function)
+            params = {'page' : page}
+
+            responsedata = await self.request_get_json(url=url, params=params)
+            # cache the data
+            self.services_last_update = time()
+            self.services = responsedata.get('data')
+
         # only filter if we need to
-        if servicetypes and responsedata:
+        if servicetypes:
             if self.debug:
                 print(f"Filtering services based on provided list: {servicetypes}", file=sys.stderr)
             filtered_responsedata = []
@@ -276,12 +309,12 @@ class AussieBB(): #pylint: disable=too-many-public-methods
 
     async def get_usage(self, service_id: int):
         """
-        returns a json blob of usage for a service
+        Returns a dict of usage for a service.
 
-        will double-check it's not a telephony service and pull the data for that if it is
+        If it's a telephony service (`type=PhoneMobile`) it'll pull from the telephony endpoint.
 
         """
-        services = await self.get_services()
+        services = await self.get_services(use_cached=True)
         for service in services:
             if service_id == service.get('service_id'):
                 if service.get('type') in ['PhoneMobile']:

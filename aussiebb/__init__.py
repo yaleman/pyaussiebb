@@ -10,18 +10,30 @@ from loguru import logger
 import requests
 
 from .const import BASEURL, API_ENDPOINTS, default_headers
-from .exceptions import AuthenticationException, RateLimitException
+from .exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 from .utils import get_url
 
 #pylint: disable=too-many-public-methods
 class AussieBB():
     """ A class for interacting with Aussie Broadband APIs """
-    def __init__(self, username: str, password: str, debug: bool=False):
-        """ Setup function. """
+    def __init__(self, username: str, password: str, debug: bool=False, **kwargs):
+        """ Setup function
+
+            ```
+            @param username: str - username for Aussie Broadband account
+            @param password: str - password for Aussie Broadband account
+            @param debug: bool - debug mode
+            @param services_cache_time: int
+                - seconds between caching get_services()
+                - defaults to 8 hours
+            ```
+        """
         self.username = username
         self.password = password
 
         self.debug = debug
+        # TODO: set the debug level in loguru when this is set to False
+
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
         self.session = requests.Session()
@@ -29,9 +41,23 @@ class AussieBB():
         self.myaussie_cookie = ""
         self.token_expires = -1
 
-    def login(self):
-        """ does the login bit """
+        self.services_cache_time = kwargs.get('services_cache_time', 28800) # defaults to 8 hours
+        self.services_last_update = -1
+        self.services = None
+
+    def _check_reload_cached_services(self):
+        """ if the age of the service data caching is too old, clear it and re-poll """
+        cache_expiry = self.services_last_update + self.services_cache_time
+        if time() > cache_expiry:
+            self.get_services(use_cached=False)
+        return True
+
+    def login(self, depth=0):
+        """ Logs into the account and caches the cookie.  """
+        if depth>2:
+            raise RecursiveDepth("Login recursion depth > 2")
         logger.debug("logging in...")
+
         url = BASEURL.get('login')
 
         payload = {
@@ -51,13 +77,16 @@ class AussieBB():
         response.raise_for_status()
 
         jsondata = response.json()
+
+        # we expire a little early just because
         self.token_expires = time() + jsondata.get('expiresIn') - 50
+
         self.myaussie_cookie = response.cookies.get('myaussie_cookie')
         if self.myaussie_cookie:
             logger.debug(f"Login Cookie: {self.myaussie_cookie}")
         return True
 
-    def has_token_expired(self):
+    def _has_token_expired(self):
         """ returns bool if the token has expired """
         if time() > self.token_expires:
             return True
@@ -67,7 +96,7 @@ class AussieBB():
         """ does a GET request and logs in first if need be"""
         if not skip_login_check:
             logger.debug("skip_login_check false")
-            if self.has_token_expired():
+            if self._has_token_expired():
                 logger.debug("token has expired, logging in...")
                 self.login()
         if 'cookies' not in kwargs:
@@ -80,7 +109,7 @@ class AussieBB():
         """ does a GET request and logs in first if need be, returns the JSON dict """
         if not skip_login_check:
             logger.debug("skip_login_check false")
-            if self.has_token_expired():
+            if self._has_token_expired():
                 logger.debug("token has expired, logging in...")
                 self.login()
         if 'cookies' not in kwargs:
@@ -93,7 +122,7 @@ class AussieBB():
         """ does a POST request and logs in first if need be"""
         if not skip_login_check:
             logger.debug("skip_login_check false")
-            if self.has_token_expired():
+            if self._has_token_expired():
                 logger.debug("token has expired, logging in...")
                 self.login()
         if 'cookies' not in kwargs:
@@ -114,20 +143,29 @@ class AussieBB():
                                     )
         return responsedata
 
-    def get_services(self, page: int = 1, servicetypes: list=None):
-        """ returns a list of dicts of services associated with the account
+    def get_services(self, page: int = 1, servicetypes: list=None, use_cached: bool=False):
+        """ Returns a `list` of `dicts` of services associated with the account.
 
-            if you want a specific kind of service, or services,
-            provide a list of matching strings in servicetypes
+            If you want a specific kind of service, or services,
+            provide a list of matching strings in servicetypes.
+
+            If you want to use cached data, call it with `use_cached=True`
         """
+        if use_cached:
+            self._check_reload_cached_services()
+            responsedata = self.services
+        else:
+            frame = inspect.currentframe()
+            url = get_url(inspect.getframeinfo(frame).function)
+            querystring = {'page' : page}
+            responsedata = self.request_get_json(url=url, params=querystring)
 
-        frame = inspect.currentframe()
-        url = get_url(inspect.getframeinfo(frame).function)
-        querystring = {'page' : page}
-        responsedata = self.request_get_json(url=url, params=querystring)
+            # cache the data
+            self.services_last_update = time()
+            self.services = responsedata.get('data')
 
         # only filter if we need to
-        if servicetypes and responsedata:
+        if servicetypes:
             logger.debug("Filtering services based on provided list: {}", servicetypes)
             filtered_responsedata = []
             for service in responsedata.get('data'):
@@ -140,14 +178,19 @@ class AussieBB():
 
         if responsedata.get('last_page') != responsedata.get('current_page'):
             logger.debug("You've got a lot of services - please contact the package maintainer to test the multi-page functionality!") #pylint: disable=line-too-long
+
         return responsedata.get('data')
 
 
     def account_transactions(self):
         """ pulls the json for transactions on your account
-            keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
-            returns a dict where the key is the Month and year of the transaction, eg:
-            ```
+            Returns a dict where the key is the month and year of the transaction.
+
+            Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
+
+            Example output:
+
+            ``` json
             "August 2021": [
               {
                     "id": 12345,
@@ -158,6 +201,7 @@ class AussieBB():
                     "runningBalanceCents": 0
                 }
             ],
+            ```
             """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
@@ -174,13 +218,26 @@ class AussieBB():
         return self.request_get_json(url=url)
 
     def account_paymentplans(self):
-        """ returns a json blob of payment plans for an account """
+        """ Returns a json blob of payment plans for an account """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
+
     def get_usage(self, service_id: int):
-        """ returns a json blob of usage for a service """
+        """
+        Returns a dict of usage for a service.
+
+        If it's a telephony service (`type=PhoneMobile`) it'll pull from the telephony endpoint.
+
+        """
+
+        if not self.services:
+            self.get_services(use_cached=True)
+        for service in self.services:
+            if service_id == service.get('service_id'):
+                if service.get('type') in ['PhoneMobile']:
+                    return self.telephony_usage(service_id)
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
@@ -188,13 +245,16 @@ class AussieBB():
     def get_service_tests(self, service_id: int):
         """ gets the available tests for a given service ID
         returns list of dicts
+
+        ```
         [{
             'name' : str(),
             'description' : str',
             'link' : str(a url to the test)
         },]
+        ```
 
-        this is known to throw 400 errors if you query a VOIP service...
+        This has a habit of throwing 400 errors if you query a VOIP service...
         """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})

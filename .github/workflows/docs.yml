@@ -17,7 +17,7 @@ jobs:
           python-version: '3.9'
       - name: Install dependencies
         run: |
-          python3 setup.py --install
+          python3 setup.py install
           python3 -m pip install --upgrade pip     # install pip
           python3 -m pip install -r test-requirements.txt
       - name: Build site

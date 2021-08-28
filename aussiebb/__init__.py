@@ -13,7 +13,7 @@ from .const import BASEURL, API_ENDPOINTS, default_headers
 from .exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 from .utils import get_url
 
-#pylint: disable=too-many-public-methods
+#pylint: disable=too-many-public-methods,too-many-instance-attributes
 class AussieBB():
     """ A class for interacting with Aussie Broadband APIs """
     def __init__(self, username: str, password: str, debug: bool=False, **kwargs):
@@ -46,7 +46,7 @@ class AussieBB():
         self.services = None
 
     def _check_reload_cached_services(self):
-        """ if the age of the service data caching is too old, clear it and re-poll """
+        """ If the age of the service data caching is too old, clear it and re-poll. """
         cache_expiry = self.services_last_update + self.services_cache_time
         if time() > cache_expiry:
             self.get_services(use_cached=False)
@@ -56,7 +56,7 @@ class AussieBB():
         """ Logs into the account and caches the cookie.  """
         if depth>2:
             raise RecursiveDepth("Login recursion depth > 2")
-        logger.debug("logging in...")
+        logger.debug("Logging in...")
 
         url = BASEURL.get('login')
 
@@ -87,13 +87,15 @@ class AussieBB():
         return True
 
     def _has_token_expired(self):
-        """ returns bool if the token has expired """
+        """ Returns bool of if the token has expired """
         if time() > self.token_expires:
             return True
         return False
 
     def request_get(self, skip_login_check: bool = False, **kwargs):
-        """ does a GET request and logs in first if need be"""
+        """ Performs a GET request and logs in first if needed.
+
+        Returns the `requests.Response` object."""
         if not skip_login_check:
             logger.debug("skip_login_check false")
             if self._has_token_expired():
@@ -106,7 +108,10 @@ class AussieBB():
         return response
 
     def request_get_json(self, skip_login_check: bool = False, **kwargs):
-        """ does a GET request and logs in first if need be, returns the JSON dict """
+        """ Performs a GET request and logs in first if needed.
+
+        Returns a dict of the JSON response.
+        """
         if not skip_login_check:
             logger.debug("skip_login_check false")
             if self._has_token_expired():
@@ -119,7 +124,7 @@ class AussieBB():
         return response.json()
 
     def request_post(self, skip_login_check: bool = False, **kwargs):
-        """ does a POST request and logs in first if need be"""
+        """ Performs a POST request and logs in first if needed."""
         if not skip_login_check:
             logger.debug("skip_login_check false")
             if self._has_token_expired():
@@ -134,7 +139,9 @@ class AussieBB():
         return response
 
     def get_customer_details(self):
-        """ grabs the customer details """
+        """ Grabs the customer details.
+
+        Returns a dict """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         querystring = {"v":"2"}
@@ -152,14 +159,15 @@ class AussieBB():
             If you want to use cached data, call it with `use_cached=True`
         """
         if use_cached:
+            logger.debug("Using cached data for get_services.")
             self._check_reload_cached_services()
             responsedata = self.services
         else:
             frame = inspect.currentframe()
             url = get_url(inspect.getframeinfo(frame).function)
             querystring = {'page' : page}
-            responsedata = self.request_get_json(url=url, params=querystring)
 
+            responsedata = self.request_get_json(url=url, params=querystring)
             # cache the data
             self.services_last_update = time()
             self.services = responsedata.get('data')
@@ -183,7 +191,8 @@ class AussieBB():
 
 
     def account_transactions(self):
-        """ pulls the json for transactions on your account
+        """ Pulls the data for transactions on your account.
+
             Returns a dict where the key is the month and year of the transaction.
 
             Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
@@ -209,16 +218,16 @@ class AussieBB():
 
 
     def billing_invoice(self, invoice_id):
-        """ downloads an invoice
+        """ Downloads an invoice
 
-            this returns the bare response object, parsing the result is an exercise for the consumer
+            This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'invoice_id' : invoice_id})
         return self.request_get_json(url=url)
 
     def account_paymentplans(self):
-        """ Returns a json blob of payment plans for an account """
+        """ Returns a dict of payment plans for an account """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
@@ -243,8 +252,10 @@ class AussieBB():
         return self.request_get_json(url=url)
 
     def get_service_tests(self, service_id: int):
-        """ gets the available tests for a given service ID
-        returns list of dicts
+        """ Gets the available tests for a given service ID
+        Returns list of dicts
+
+        Example data:
 
         ```
         [{
@@ -261,16 +272,16 @@ class AussieBB():
         return self.request_get_json(url=url)
 
     def get_test_history(self, service_id: int):
-        """ gets the available tests for a given service ID
+        """ Gets the available tests for a given service ID
 
-        returns a list of dicts with tests which have been run
+        Returns a list of dicts with tests which have been run
         """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
     def test_line_state(self, service_id: int):
-        """ tests the line state for a given service ID """
+        """ Tests the line state for a given service ID """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         logger.debug("Testing line state, can take a few seconds...")
@@ -278,8 +289,10 @@ class AussieBB():
         return response.json()
 
     def run_test(self, service_id: int, test_name: str, test_method: str = 'post'):
-        """ run a test, but it checks it's valid first
+        """ Run a test, but it checks it's valid first
+
             There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
+
             See the README for more analysis
 
             - 'status' of 'InProgress' use 'AussieBB.get_test_history()' and look for the 'id'
@@ -300,26 +313,49 @@ class AussieBB():
         return self.request_post(url=test_links[0].get('link')).json()
 
     def service_plans(self, service_id: int):
-        """ pulls the JSON for the plan data
-            keys: ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']
-            """
+        """ Pulls the plan data for a given service.
+
+            Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
+
+        """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
     def service_outages(self, service_id: int):
-        """ pulls the JSON for outages
-            keys: ['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']
+        """ Pulls outages associated with a service.
+
+            Keys: `['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']`
+
+            Example data:
+            ```
+            {
+                "networkEvents": [],
+                "aussieOutages": [],
+                "currentNbnOutages": [],
+                "scheduledNbnOutages": [],
+                "resolvedScheduledNbnOutages": [
+                    {
+                        "start_date": "2021-08-17T14:00:00Z",
+                        "end_date": "2021-08-17T20:00:00Z",
+                        "duration": "6.0"
+                    }
+                ],
+                "resolvedNbnOutages": []
+            }
+            ```
         """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
     def service_boltons(self, service_id: int):
-        """ pulls the JSON for addons associated with the service
-            keys: ['id', 'name', 'description', 'costCents', 'additionalNote', 'active']
+        """ Pulls addons associated with the service.
 
-            example data
+            Keys: `['id', 'name', 'description', 'costCents', 'additionalNote', 'active']`
+
+            Example data:
+
             ```
             [{
                 "id": 4,
@@ -336,26 +372,30 @@ class AussieBB():
         return self.request_get_json(url=url)
 
     def service_datablocks(self, service_id: int):
-        """ pulls the JSON for datablocks associated with the service
-            keys: ['current', 'available']
+        """ Pulls datablocks associated with the service.
 
-            example data
+            Keys: `['current', 'available']`
+
+            Example data:
+
             ```
             {
                 "current": [],
                 "available": []
             }
             ```
-            """
+        """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'service_id' : service_id})
         return self.request_get_json(url=url)
 
     def telephony_usage(self, service_id: int):
-        """ pulls the JSON for telephony usage associated with the service
-            keys: ['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']
+        """ Pulls the telephony usage associated with the service.
 
-            example data
+            Keys: `['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']`
+
+            Example data:
+
             ```
             {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
             ```
@@ -365,18 +405,19 @@ class AussieBB():
         return self.request_get_json(url=url)
 
     def support_tickets(self):
-        """ pulls the support tickets associated with the account, returns a list of dicts
-            dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
+        """ Pulls the support tickets associated with the account, returns a list of dicts.
+
+            Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
 
             """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)
         return self.request_get_json(url=url)
 
-    def get_appointment(self, ticketid):
-        """ pulls the support tickets associated with the account, returns a list of dicts
-            dict keys: ['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']
+    def get_appointment(self, ticketid: int):
+        """ Pulls the support tickets associated with the account, returns a list of dicts.
 
+            Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
             """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function, {'ticketid' : ticketid})
@@ -384,9 +425,9 @@ class AussieBB():
 
 
     def account_contacts(self):
-        """ pulls the contacts with the account, returns a list of dicts
-            dict keys: ['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']
+        """ Pulls the contacts with the account, returns a list of dicts
 
+            Dict keys: `['id', 'first_name', 'last_name', 'email', 'dog', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']`
             """
         frame = inspect.currentframe()
         url = get_url(inspect.getframeinfo(frame).function)

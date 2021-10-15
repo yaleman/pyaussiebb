@@ -7,11 +7,13 @@ from ipaddress import ip_network,  IPv4Network, IPv6Network
 from aussiebb import AussieBB
 from loguru import logger
 
+
 from config import USERNAME, PASSWORD
 
 client = AussieBB(USERNAME, PASSWORD)
 
-logger.debug(client.login())
+logger.debug("Logging in")
+client.login()
 
 
 services = client.get_services()

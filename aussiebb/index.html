@@ -8,9 +8,8 @@
       
       
       
-      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8">
     
     
       
@@ -18,10 +17,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6e60f8b8.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
         
       
     
@@ -31,16 +30,15 @@
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
-    
     
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -55,7 +53,6 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
-    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -71,6 +68,7 @@
     <div data-md-component="announce">
       
     </div>
+    
     
       
 
@@ -107,8 +105,7 @@
       <label class="md-header__button md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
       </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
+      <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -214,6 +211,7 @@
       </a>
       
         
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -701,6 +699,7 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -1180,10 +1179,10 @@
             <article class="md-content__inner md-typeset">
               
                 
-                
-                  <h1>API Documentation</h1>
-                
-                <div class="doc doc-object doc-module">
+
+  <h1>API Documentation</h1>
+
+<div class="doc doc-object doc-module">
 
 <a id="aussiebb"></a>
     <div class="doc doc-contents first">
@@ -1216,6 +1215,432 @@ AussieBB        </code>
 
       <p>A class for interacting with Aussie Broadband APIs </p>
 
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/__init__.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AussieBB</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; A class for interacting with Aussie Broadband APIs &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setup function</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            @param username: str - username for Aussie Broadband account</span>
+<span class="sd">            @param password: str - password for Aussie Broadband account</span>
+<span class="sd">            @param debug: bool - debug mode</span>
+<span class="sd">            @param services_cache_time: int</span>
+<span class="sd">                - seconds between caching get_services()</span>
+<span class="sd">                - defaults to 8 hours</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="c1"># TODO: set the debug level in loguru when this is set to False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AuthenticationException</span><span class="p">(</span><span class="s2">&quot;You need to supply both username and password&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">services_cache_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;services_cache_time&#39;</span><span class="p">,</span> <span class="mi">28800</span><span class="p">)</span> <span class="c1"># defaults to 8 hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Logs into the account and caches the cookie.  &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">depth</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RecursiveDepth</span><span class="p">(</span><span class="s2">&quot;Login recursion depth &gt; 2&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Logging in...&quot;</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">BASEURL</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;username&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+            <span class="s1">&#39;password&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">default_headers</span><span class="p">()</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
+                                     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+                                     <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+                                     <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">422</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AuthenticationException</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RateLimitException</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="n">jsondata</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="c1"># we expire a little early just because</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">jsondata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;expiresIn&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">50</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;myaussie_cookie&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Login Cookie: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_has_token_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns bool of if the token has expired &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">request_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_login_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Performs a GET request and logs in first if needed.</span>
+
+<span class="sd">        Returns the `requests.Response` object.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_login_check</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;skip_login_check false&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;token has expired, logging in...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;cookies&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cookies&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;myaussie_cookie&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">request_get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_login_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Performs a GET request and logs in first if needed.</span>
+
+<span class="sd">        Returns a dict of the JSON response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_login_check</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;skip_login_check false&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;token has expired, logging in...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;cookies&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cookies&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;myaussie_cookie&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">request_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_login_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Performs a POST request and logs in first if needed.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_login_check</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;skip_login_check false&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;token has expired, logging in...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;cookies&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cookies&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;myaussie_cookie&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">}</span>
+        <span class="k">if</span> <span class="s1">&#39;headers&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_headers</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">get_customer_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Grabs the customer details.</span>
+
+<span class="sd">        Returns a dict &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">querystring</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;v&quot;</span><span class="p">:</span><span class="s2">&quot;2&quot;</span><span class="p">}</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+                                    <span class="n">params</span><span class="o">=</span><span class="n">querystring</span><span class="p">,</span>
+                                    <span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+
+    <span class="k">def</span> <span class="nf">_check_reload_cached_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If the age of the service data caching is too old, clear it and re-poll.</span>
+
+<span class="sd">        Returns bool - if it reloaded the cache.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">cache_expiry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">services_cache_time</span>
+        <span class="k">if</span> <span class="n">time</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">cache_expiry</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+    <span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_cached</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a `list` of `dicts` of services associated with the account.</span>
+
+<span class="sd">            If you want a specific kind of service, or services,</span>
+<span class="sd">            provide a list of matching strings in servicetypes.</span>
+
+<span class="sd">            If you want to use cached data, call it with `use_cached=True`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_cached</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using cached data for get_services.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_reload_cached_services</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+            <span class="n">querystring</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+
+            <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">querystring</span><span class="p">)</span>
+            <span class="c1"># cache the data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+
+        <span class="c1"># only filter if we need to</span>
+        <span class="k">if</span> <span class="n">servicetypes</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering services based on provided list: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">)</span>
+            <span class="n">filtered_responsedata</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
+                    <span class="n">filtered_responsedata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">{}</span><span class="s2"> - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span> <span class="n">service</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">filtered_responsedata</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span>
+
+
+    <span class="k">def</span> <span class="nf">account_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the data for transactions on your account.</span>
+
+<span class="sd">            Returns a dict where the key is the month and year of the transaction.</span>
+
+<span class="sd">            Keys: `[&#39;current&#39;, &#39;pending&#39;, &#39;available&#39;, &#39;filters&#39;, &#39;typicalEveningSpeeds&#39;]`</span>
+
+<span class="sd">            Example output:</span>
+
+<span class="sd">            ``` json</span>
+<span class="sd">            &quot;August 2021&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                    &quot;id&quot;: 12345,</span>
+<span class="sd">                    &quot;type&quot;: &quot;receipt&quot;,</span>
+<span class="sd">                    &quot;time&quot;: &quot;2021-08-06&quot;,</span>
+<span class="sd">                    &quot;description&quot;: &quot;Payment #12345&quot;,</span>
+<span class="sd">                    &quot;amountCents&quot;: -8400,</span>
+<span class="sd">                    &quot;runningBalanceCents&quot;: 0</span>
+<span class="sd">                }</span>
+<span class="sd">            ],</span>
+<span class="sd">            ```</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">billing_invoice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">invoice_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Downloads an invoice</span>
+
+<span class="sd">            This returns the bare response object, parsing the result is an exercise for the consumer. It&#39;s a PDF file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;invoice_id&#39;</span> <span class="p">:</span> <span class="n">invoice_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">account_paymentplans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a dict of payment plans for an account &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dict of usage for a service.</span>
+
+<span class="sd">        If it&#39;s a telephony service (`type=PhoneMobile`) it&#39;ll pull from the telephony endpoint.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;service_id&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;PhoneMobile&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">telephony_usage</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_service_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets the available tests for a given service ID</span>
+<span class="sd">        Returns list of dicts</span>
+
+<span class="sd">        Example data:</span>
+
+<span class="sd">        ```</span>
+<span class="sd">        [{</span>
+<span class="sd">            &#39;name&#39; : str(),</span>
+<span class="sd">            &#39;description&#39; : str&#39;,</span>
+<span class="sd">            &#39;link&#39; : str(a url to the test)</span>
+<span class="sd">        },]</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        This has a habit of throwing 400 errors if you query a VOIP service...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_test_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets the available tests for a given service ID</span>
+
+<span class="sd">        Returns a list of dicts with tests which have been run</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_line_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Tests the line state for a given service ID &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Testing line state, can take a few seconds...&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">run_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">test_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;post&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Run a test, but it checks it&#39;s valid first</span>
+
+<span class="sd">            There doesn&#39;t seem to be a valid way to identify what method you&#39;re supposed to use on each test.</span>
+
+<span class="sd">            See the README for more analysis</span>
+
+<span class="sd">            - &#39;status&#39; of &#39;InProgress&#39; use &#39;AussieBB.get_test_history()&#39; and look for the &#39;id&#39;</span>
+<span class="sd">            - &#39;status&#39; of &#39;Completed&#39; means you&#39;ve got the full response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">test_links</span> <span class="o">=</span> <span class="p">[</span><span class="n">test</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service_tests</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)]</span> <span class="c1">#pylint: disable=line-too-long</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">test_links</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_links</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Too many tests? </span><span class="si">{</span><span class="n">test_links</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">test_name</span> <span class="o">=</span> <span class="n">test_links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running </span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">test_method</span> <span class="o">==</span> <span class="s1">&#39;get&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">test_links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">test_links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">service_plans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the plan data for a given service.</span>
+
+<span class="sd">            Keys: `[&#39;current&#39;, &#39;pending&#39;, &#39;available&#39;, &#39;filters&#39;, &#39;typicalEveningSpeeds&#39;]`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">service_outages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls outages associated with a service.</span>
+
+<span class="sd">            Keys: `[&#39;networkEvents&#39;, &#39;aussieOutages&#39;, &#39;currentNbnOutages&#39;, &#39;scheduledNbnOutages&#39;, &#39;resolvedScheduledNbnOutages&#39;, &#39;resolvedNbnOutages&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+<span class="sd">            ```</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;networkEvents&quot;: [],</span>
+<span class="sd">                &quot;aussieOutages&quot;: [],</span>
+<span class="sd">                &quot;currentNbnOutages&quot;: [],</span>
+<span class="sd">                &quot;scheduledNbnOutages&quot;: [],</span>
+<span class="sd">                &quot;resolvedScheduledNbnOutages&quot;: [</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;start_date&quot;: &quot;2021-08-17T14:00:00Z&quot;,</span>
+<span class="sd">                        &quot;end_date&quot;: &quot;2021-08-17T20:00:00Z&quot;,</span>
+<span class="sd">                        &quot;duration&quot;: &quot;6.0&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                ],</span>
+<span class="sd">                &quot;resolvedNbnOutages&quot;: []</span>
+<span class="sd">            }</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">service_boltons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls addons associated with the service.</span>
+
+<span class="sd">            Keys: `[&#39;id&#39;, &#39;name&#39;, &#39;description&#39;, &#39;costCents&#39;, &#39;additionalNote&#39;, &#39;active&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            [{</span>
+<span class="sd">                &quot;id&quot;: 4,</span>
+<span class="sd">                &quot;name&quot;: &quot;Small Change Big Change Donation&quot;,</span>
+<span class="sd">                &quot;description&quot;: &quot;Charitable donation to the Small Change Big Change program, part of the Telco Together Foundation, which helps build resilient young Australians&quot;,</span>
+<span class="sd">                &quot;costCents&quot;: 100,</span>
+<span class="sd">                &quot;additionalNote&quot;: null,</span>
+<span class="sd">                &quot;active&quot;: false</span>
+<span class="sd">            }]</span>
+<span class="sd">            ```</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">service_datablocks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls datablocks associated with the service.</span>
+
+<span class="sd">            Keys: `[&#39;current&#39;, &#39;available&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;current&quot;: [],</span>
+<span class="sd">                &quot;available&quot;: []</span>
+<span class="sd">            }</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">telephony_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the telephony usage associated with the service.</span>
+
+<span class="sd">            Keys: `[&#39;national&#39;, &#39;mobile&#39;, &#39;international&#39;, &#39;sms&#39;, &#39;internet&#39;, &#39;voicemail&#39;, &#39;other&#39;, &#39;daysTotal&#39;, &#39;daysRemaining&#39;, &#39;historical&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            {&quot;national&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;mobile&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;international&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;sms&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;internet&quot;:{&quot;kbytes&quot;:0,&quot;cost&quot;:0},&quot;voicemail&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;other&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;daysTotal&quot;:31,&quot;daysRemaining&quot;:2,&quot;historical&quot;:[]}</span>
+<span class="sd">            ```</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">support_tickets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the support tickets associated with the account, returns a list of dicts.</span>
+
+<span class="sd">            Dict keys: `[&#39;ref&#39;, &#39;create&#39;, &#39;updated&#39;, &#39;service_id&#39;, &#39;type&#39;, &#39;subject&#39;, &#39;status&#39;, &#39;closed&#39;, &#39;awaiting_customer_reply&#39;, &#39;expected_response_minutes&#39;]`</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_appointment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticketid</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the support tickets associated with the account, returns a list of dicts.</span>
+
+<span class="sd">            Dict keys: `[&#39;ref&#39;, &#39;create&#39;, &#39;updated&#39;, &#39;service_id&#39;, &#39;type&#39;, &#39;subject&#39;, &#39;status&#39;, &#39;closed&#39;, &#39;awaiting_customer_reply&#39;, &#39;expected_response_minutes&#39;]`</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;ticketid&#39;</span> <span class="p">:</span> <span class="n">ticketid</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">account_contacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the contacts with the account, returns a list of dicts</span>
+
+<span class="sd">            Dict keys: `[&#39;id&#39;, &#39;first_name&#39;, &#39;last_name&#39;, &#39;email&#39;, &#39;dog&#39;, &#39;home_phone&#39;, &#39;work_phone&#39;, &#39;mobile_phone&#39;, &#39;work_mobile&#39;, &#39;primary_contact&#39;]`</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2301,6 +2726,557 @@ AussieBB        </code>
 
       <p>aiohttp class for interacting with Aussie Broadband APIs </p>
 
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/asyncio/__init__.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AussieBB</span><span class="p">():</span> <span class="c1">#pylint: disable=too-many-public-methods,too-many-instance-attributes</span>
+    <span class="sd">&quot;&quot;&quot; aiohttp class for interacting with Aussie Broadband APIs &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">ClientSession</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setup function</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            @param username: str - username for Aussie Broadband account</span>
+<span class="sd">            @param password: str - password for Aussie Broadband account</span>
+<span class="sd">            @param debug: bool - debug mode</span>
+<span class="sd">            @param services_cache_time: int</span>
+<span class="sd">                - seconds between caching get_services()</span>
+<span class="sd">                - defaults to 8 hours</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AuthenticationException</span><span class="p">(</span><span class="s2">&quot;You need to supply both username and password&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">services_cache_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;services_cache_time&#39;</span><span class="p">,</span> <span class="mi">28800</span><span class="p">)</span> <span class="c1"># defaults to 8 hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+    <span class="k">def</span> <span class="nf">_debug_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Prints a debug message to stderr if the class is in debug mode. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Logs into the account and caches the cookie.  &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">depth</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RecursiveDepth</span><span class="p">(</span><span class="s2">&quot;Login recursion depth &gt; 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="s2">&quot;Logging in...&quot;</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">BASEURL</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;username&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+            <span class="s1">&#39;password&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">default_headers</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_response_fail</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+                <span class="n">jsondata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">RateLimitException</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Login response status: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dumping login response: </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">jsondata</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># we expire a little early just because</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">jsondata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;expiresIn&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;myaussie_cookie&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Login Cookie: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_response_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">wait_on_rate_limit</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Handles response status codes. Tries to gracefully handle the rate limiting.</span>
+
+<span class="sd">        ```</span>
+<span class="sd">        @param response - aiohttp.Response - the full response object</span>
+<span class="sd">        @param wait_on_rate_limit - bool - if hitting a rate limit, async wait on the time limit</span>
+<span class="sd">        ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ratelimit_remaining</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x-ratelimit-remaining&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate limit header: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x-ratelimit-remaining&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ratelimit_remaining</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">wait_on_rate_limit</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rate limit below 5, sleeping for 1 second.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">422</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AuthenticationException</span><span class="p">(</span><span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
+            <span class="n">jsondata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dumping headers: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dumping response: </span><span class="si">{</span><span class="n">jsondata</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="n">DEFAULT_BACKOFF_DELAY</span>
+            <span class="k">if</span> <span class="s1">&#39;Please try again in &#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">jsondata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;errors&#39;</span><span class="p">)):</span>
+                <span class="n">fallback_value</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;default </span><span class="si">{</span><span class="n">DEFAULT_BACKOFF_DELAY</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">]</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="n">jsondata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;errors&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="n">fallback_value</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+                <span class="c1"># give it some extra time to cool off</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span>
+
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">delay</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found delay: </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">delay</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t parse delay, using default: </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="n">DEFAULT_BACKOFF_DELAY</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t parse delay, using default: </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wait_on_rate_limit</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate limit on Aussie API calls raised, sleeping for </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2"> seconds.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RateLimitException</span><span class="p">(</span><span class="n">jsondata</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_has_token_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns bool of if the token has expired &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">request_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_login_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Performs a GET request and logs in first if needed. &quot;&quot;&quot;</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RecursiveDepth</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;depth: </span><span class="si">{</span><span class="n">depth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_login_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;token has expired, logging in...&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;cookies&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cookies&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;myaussie_cookie&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">}</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_response_fail</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">RateLimitException</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get</span><span class="p">(</span><span class="n">skip_login_check</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">request_get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_login_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Performs a GET request and logs in first if needed.</span>
+
+<span class="sd">        Returns a dict of the JSON response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RecursiveDepth</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;depth: </span><span class="si">{</span><span class="n">depth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_login_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skip_login_check false&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;token has expired, logging in...&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;cookies&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cookies&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;myaussie_cookie&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">}</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_response_fail</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+                <span class="n">jsondata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">RateLimitException</span><span class="p">:</span>
+                <span class="n">jsondata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">skip_login_check</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsondata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">request_post_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Performs a POST request and logs in first if needed.</span>
+
+<span class="sd">        Returns a dict of the response data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RecursiveDepth</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;depth: </span><span class="si">{</span><span class="n">depth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;skip_login_check&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skip_login_check false&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_token_expired</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;token has expired, logging in...&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1">#if &#39;cookies&#39; not in kwargs:</span>
+        <span class="c1">#    kwargs[&#39;cookies&#39;] = {&#39;myaussie_cookie&#39; : self.myaussie_cookie}</span>
+        <span class="n">cookies</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cookies&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;myaussie_cookie&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">})</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;headers&#39;</span><span class="p">,</span> <span class="n">default_headers</span><span class="p">())</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_response_fail</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+                <span class="n">jsondata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">RateLimitException</span><span class="p">:</span>
+                <span class="n">jsondata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_post_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsondata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_customer_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Grabs the customer details.</span>
+
+<span class="sd">        Returns a dict &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;v&quot;</span><span class="p">:</span><span class="s2">&quot;2&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+                                    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                                    <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_check_reload_cached_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If the age of the service data caching is too old, clear it and re-poll.</span>
+
+<span class="sd">        Returns bool - if it reloaded the cache.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">cache_expiry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">services_cache_time</span>
+        <span class="k">if</span> <span class="n">time</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">cache_expiry</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_cached</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a `list` of `dicts` of services associated with the account.</span>
+
+<span class="sd">            If you want a specific kind of service, or services,</span>
+<span class="sd">            provide a list of matching strings in servicetypes.</span>
+
+<span class="sd">            If you want to use cached data, call it with `use_cached=True`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_cached</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="s2">&quot;Using cached data for get_services.&quot;</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_reload_cached_services</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+
+            <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="c1"># cache the data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+
+        <span class="c1"># only filter if we need to</span>
+        <span class="k">if</span> <span class="n">servicetypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtering services based on provided list: </span><span class="si">{</span><span class="n">servicetypes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">filtered_responsedata</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
+                    <span class="n">filtered_responsedata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_debug_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping as type==</span><span class="si">{</span><span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">filtered_responsedata</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">account_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the data for transactions on your account.</span>
+
+<span class="sd">            Returns a dict where the key is the month and year of the transaction.</span>
+
+<span class="sd">            Keys: `[&#39;current&#39;, &#39;pending&#39;, &#39;available&#39;, &#39;filters&#39;, &#39;typicalEveningSpeeds&#39;]`</span>
+
+<span class="sd">            Example output:</span>
+
+<span class="sd">            ``` json</span>
+<span class="sd">            &quot;August 2021&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                    &quot;id&quot;: 12345,</span>
+<span class="sd">                    &quot;type&quot;: &quot;receipt&quot;,</span>
+<span class="sd">                    &quot;time&quot;: &quot;2021-08-06&quot;,</span>
+<span class="sd">                    &quot;description&quot;: &quot;Payment #12345&quot;,</span>
+<span class="sd">                    &quot;amountCents&quot;: -8400,</span>
+<span class="sd">                    &quot;runningBalanceCents&quot;: 0</span>
+<span class="sd">                }</span>
+<span class="sd">            ],</span>
+<span class="sd">            ```</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">billing_invoice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">invoice_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Downloads an invoice</span>
+
+<span class="sd">            This returns the bare response object, parsing the result is an exercise for the consumer. It&#39;s a PDF file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;invoice_id&#39;</span><span class="p">,</span> <span class="n">invoice_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">account_paymentplans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a dict of payment plans for an account &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dict of usage for a service.</span>
+
+<span class="sd">        If it&#39;s a telephony service (`type=PhoneMobile`) it&#39;ll pull from the telephony endpoint.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;service_id&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;PhoneMobile&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">telephony_usage</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_service_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets the available tests for a given service ID</span>
+<span class="sd">        Returns list of dicts</span>
+
+<span class="sd">        Example data:</span>
+
+<span class="sd">        ```</span>
+<span class="sd">        [{</span>
+<span class="sd">            &#39;name&#39; : str(),</span>
+<span class="sd">            &#39;description&#39; : str&#39;,</span>
+<span class="sd">            &#39;link&#39; : str(a url to the test)</span>
+<span class="sd">        },]</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        This has a habit of throwing 400 errors if you query a VOIP service...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting service tests for </span><span class="si">{</span><span class="n">service_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_test_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets the available tests for a given service ID</span>
+
+<span class="sd">        Returns a list of dicts with tests which have been run</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_line_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Tests the line state for a given service ID &quot;&quot;&quot;</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Testing line state, can take a few seconds...&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_post_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">test_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">test_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;post&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Run a test, but it checks it&#39;s valid first</span>
+
+<span class="sd">            There doesn&#39;t seem to be a valid way to identify what method you&#39;re supposed to use on each test.</span>
+
+<span class="sd">            See the README for more analysis</span>
+
+<span class="sd">            - &#39;status&#39; of &#39;InProgress&#39; use &#39;AussieBB.get_test_history()&#39; and look for the &#39;id&#39;</span>
+<span class="sd">            - &#39;status&#39; of &#39;Completed&#39; means you&#39;ve got the full response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">service_tests</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service_tests</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
+        <span class="n">test_links</span> <span class="o">=</span> <span class="p">[</span><span class="n">test</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">service_tests</span> <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)]</span> <span class="c1">#pylint: disable=line-too-long</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">test_links</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_links</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Too many tests? </span><span class="si">{</span><span class="n">test_links</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="n">test_name</span> <span class="o">=</span> <span class="n">test_links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running </span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">test_method</span> <span class="o">==</span> <span class="s1">&#39;get&#39;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">test_links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_post_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">test_links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">service_plans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the plan data for a given service.</span>
+
+<span class="sd">            Keys: `[&#39;current&#39;, &#39;pending&#39;, &#39;available&#39;, &#39;filters&#39;, &#39;typicalEveningSpeeds&#39;]`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">service_outages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls outages associated with a service.</span>
+
+<span class="sd">            Keys: `[&#39;networkEvents&#39;, &#39;aussieOutages&#39;, &#39;currentNbnOutages&#39;, &#39;scheduledNbnOutages&#39;, &#39;resolvedScheduledNbnOutages&#39;, &#39;resolvedNbnOutages&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+<span class="sd">            ```</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;networkEvents&quot;: [],</span>
+<span class="sd">                &quot;aussieOutages&quot;: [],</span>
+<span class="sd">                &quot;currentNbnOutages&quot;: [],</span>
+<span class="sd">                &quot;scheduledNbnOutages&quot;: [],</span>
+<span class="sd">                &quot;resolvedScheduledNbnOutages&quot;: [</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;start_date&quot;: &quot;2021-08-17T14:00:00Z&quot;,</span>
+<span class="sd">                        &quot;end_date&quot;: &quot;2021-08-17T20:00:00Z&quot;,</span>
+<span class="sd">                        &quot;duration&quot;: &quot;6.0&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                ],</span>
+<span class="sd">                &quot;resolvedNbnOutages&quot;: []</span>
+<span class="sd">            }</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">service_boltons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls addons associated with the service.</span>
+
+<span class="sd">            Keys: `[&#39;id&#39;, &#39;name&#39;, &#39;description&#39;, &#39;costCents&#39;, &#39;additionalNote&#39;, &#39;active&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            [{</span>
+<span class="sd">                &quot;id&quot;: 4,</span>
+<span class="sd">                &quot;name&quot;: &quot;Small Change Big Change Donation&quot;,</span>
+<span class="sd">                &quot;description&quot;: &quot;Charitable donation to the Small Change Big Change program, part of the Telco Together Foundation, which helps build resilient young Australians&quot;,</span>
+<span class="sd">                &quot;costCents&quot;: 100,</span>
+<span class="sd">                &quot;additionalNote&quot;: null,</span>
+<span class="sd">                &quot;active&quot;: false</span>
+<span class="sd">            }]</span>
+<span class="sd">            ```</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">service_datablocks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls datablocks associated with the service.</span>
+
+<span class="sd">            Keys: `[&#39;current&#39;, &#39;available&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;current&quot;: [],</span>
+<span class="sd">                &quot;available&quot;: []</span>
+<span class="sd">            }</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">telephony_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the telephony usage associated with the service.</span>
+
+<span class="sd">            Keys: `[&#39;national&#39;, &#39;mobile&#39;, &#39;international&#39;, &#39;sms&#39;, &#39;internet&#39;, &#39;voicemail&#39;, &#39;other&#39;, &#39;daysTotal&#39;, &#39;daysRemaining&#39;, &#39;historical&#39;]`</span>
+
+<span class="sd">            Example data:</span>
+
+<span class="sd">            ```</span>
+<span class="sd">            {&quot;national&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;mobile&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;international&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;sms&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;internet&quot;:{&quot;kbytes&quot;:0,&quot;cost&quot;:0},&quot;voicemail&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;other&quot;:{&quot;calls&quot;:0,&quot;cost&quot;:0},&quot;daysTotal&quot;:31,&quot;daysRemaining&quot;:2,&quot;historical&quot;:[]}</span>
+<span class="sd">            ```</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">support_tickets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the support tickets associated with the account, returns a list of dicts.</span>
+
+<span class="sd">            Dict keys: `[&#39;ref&#39;, &#39;create&#39;, &#39;updated&#39;, &#39;service_id&#39;, &#39;type&#39;, &#39;subject&#39;, &#39;status&#39;, &#39;closed&#39;, &#39;awaiting_customer_reply&#39;, &#39;expected_response_minutes&#39;]`</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_appointment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticketid</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the support tickets associated with the account, returns a list of dicts.</span>
+
+<span class="sd">            Dict keys: `[&#39;ref&#39;, &#39;create&#39;, &#39;updated&#39;, &#39;service_id&#39;, &#39;type&#39;, &#39;subject&#39;, &#39;status&#39;, &#39;closed&#39;, &#39;awaiting_customer_reply&#39;, &#39;expected_response_minutes&#39;]`</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;ticketid&#39;</span> <span class="p">:</span> <span class="n">ticketid</span><span class="p">})</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">account_contacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pulls the contacts with the account, returns a list of dicts</span>
+
+<span class="sd">            Dict keys: `[&#39;id&#39;, &#39;first_name&#39;, &#39;last_name&#39;, &#39;email&#39;, &#39;dog&#39;, &#39;home_phone&#39;, &#39;work_phone&#39;, &#39;mobile_phone&#39;, &#39;work_mobile&#39;, &#39;primary_contact&#39;]`</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getframeinfo</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">responsedata</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responsedata</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -3687,6 +4663,12 @@ AuthenticationException            (<span title="BaseException">BaseException</s
 
       <p>authentication error for AussieBB </p>
 
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AuthenticationException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; authentication error for AussieBB &quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -3712,6 +4694,12 @@ InvalidTestForService            (<span title="BaseException">BaseException</spa
 
       <p>user specified an invalid test </p>
 
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">InvalidTestForService</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; user specified an invalid test &quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -3737,6 +4725,12 @@ RateLimitException            (<span title="BaseException">BaseException</span>)
 
       <p>rate limit error for AussieBB </p>
 
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RateLimitException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; rate limit error for AussieBB &quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -3762,6 +4756,12 @@ RecursiveDepth            (<span title="BaseException">BaseException</span>)
 
       <p>you've gone too far down the rabbit hole </p>
 
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RecursiveDepth</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; you&#39;ve gone too far down the rabbit hole &quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -3857,11 +4857,6 @@ RecursiveDepth            (<span title="BaseException">BaseException</span>)
     </div>
 
   </div>
-                
-              
-              
-                
-
 
               
             </article>
@@ -3870,8 +4865,7 @@ RecursiveDepth            (<span title="BaseException">BaseException</span>)
         
       </main>
       
-        
-<footer class="md-footer">
+        <footer class="md-footer">
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
@@ -3895,16 +4889,15 @@ RecursiveDepth            (<span title="BaseException">BaseException</span>)
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-        
-          Made with
-          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-            Material for MkDocs
-          </a>
-        
-        
-      </div>
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
       
     </div>
   </div>
@@ -3914,10 +4907,10 @@ RecursiveDepth            (<span title="BaseException">BaseException</span>)
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
+      <script src="../assets/javascripts/bundle.960e086b.min.js"></script>
       
     
   </body>

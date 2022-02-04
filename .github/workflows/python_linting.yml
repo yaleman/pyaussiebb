@@ -21,7 +21,7 @@ jobs:
         run: |
             python -m pip install --quiet --no-cache-dir --upgrade poetry
             poetry install
-            ./run_pylint.sh
+            poetry run pylint $(grep -E name pyproject.toml | awk '{print $NF}' | tr -d '"')
   mypy:
     runs-on: ubuntu-latest
     steps:
@@ -37,14 +37,5 @@ jobs:
           python --version
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
-          ./run_mypy.sh
+          poetry run python -m mypy $(grep -E name pyproject.toml | awk '{print $NF}' | tr -d '"')
 
-  shellcheck:
-
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Run ShellCheck
-      uses: ludeeus/action-shellcheck@master
-      env:
-        SHELLCHECK_OPTS: -e SC2148

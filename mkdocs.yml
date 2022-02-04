@@ -17,3 +17,5 @@ plugins:
 nav:
   - "Home": README.md
   - "API Documentation": aussiebb.md
+  - Changelog: CHANGELOG.md
+  - Releasing: release.md

@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "pyaussiebb"
+version = "0.0.10"
+description = "Aussie Broadband API module"
+authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
+license = "MIT"
+
+repository = "https://github.com/yaleman/aussiebb"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.27.1"
+loguru = "^0.6.0"
+aiohttp = "^3.8.1"
+pydantic = "^1.9.0"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.12.2"
+mypy = "^0.931"
+black = "^22.1.0"
+pytest = "^6.2.5"
+types-requests = "^2.27.8"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.9">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.6e60f8b8.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.2b4465f4.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.e6a45f82.min.css">
@@ -211,6 +211,36 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CHANGELOG/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release/" class="md-nav__link">
+        Releasing
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -245,7 +275,6 @@
 <h1 id="pyaussiebb">pyAussieBB</h1>
 <p><a href="https://droneio.yaleman.org/yaleman/aussiebb"><img alt="Build Status" src="https://droneio.yaleman.org/api/badges/yaleman/aussiebb/status.svg" /></a></p>
 <p>This is a very simple module for interacting with the Aussie Broadband APIs.</p>
-<p>I wrote this so I can pull a line test periodically and show the NBN how garbage they are.</p>
 <h1 id="usage">Usage</h1>
 <pre><code>pip install --user pyaussiebb
 python
@@ -260,7 +289,7 @@ python
 <p>If you hit the rate limit it'll raise a <code>RateLimit</code> exception. I haven't put that functionality into the blocking version yet, since ... that tends not to hit it. 🤣</p>
 <h1 id="development">Development</h1>
 <h2 id="example-service-tests-ive-seen">Example service tests I've seen</h2>
-<p>All the "endpoints" below should be tacked onto <code>aussiebb.BASEURL['api']</code>.</p>
+<p>All the "endpoints" below should be tacked onto <code>aussiebb.const.BASEURL['api']</code>.</p>
 <p><strong>Warning:</strong> <code>/nbn/{service_id}/connection</code> seems to have both a GET and POST method endpoint - tests on other endpoints may be similar.</p>
 <p>These can be run by using <code>AussieBB.run_test()</code> with the string after the last forward-slash as the "test" - ie, <code>connection</code> or <code>linestate</code>.</p>
 <h3 id="hfc">HFC</h3>
@@ -456,25 +485,7 @@ python
 </tbody>
 </table>
 <h1 id="changelog">Changelog</h1>
-<ul>
-<li>0.0.3 - Added <code>get_service_plans</code> so the gigabit-desperate crowd can check for their new hotness.</li>
-<li>0.0.4 - Added <code>asyncio</code> submodule, split constants and exceptions out into their own files/modules.</li>
-<li>0.0.5/6 - Fixing rate limiting</li>
-<li>0.0.7 <ul>
-<li>Added the following new functions: <code>account_transactions</code>, <code>billing_invoice</code>, <code>service_outages</code>, <code>service_boltons</code>, <code>service_datablocks</code>, <code>support_tickets</code>, <code>account contacts</code>. Renamed <code>get_service_plans</code> to <code>service_plans</code></li>
-</ul>
-</li>
-<li>0.0.8<ul>
-<li>renamed serviceid to service_id to match the api</li>
-<li>added request_get_json to the sync class</li>
-<li>added telephony_usage</li>
-<li>added get_appointment which gets service appointments</li>
-<li>updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service</li>
-<li>abstracted how URLS are generated so I don't have to keep adding them twice</li>
-<li>added a filter on get_services which allows you to filter by type</li>
-</ul>
-</li>
-</ul>
+<p>See <a href="CHANGELOG/">CHANGELOG.md</a></p>
 
               
             </article>

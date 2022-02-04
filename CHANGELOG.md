@@ -1,0 +1,44 @@
+# CHANGELOG
+
+## v0.0.10
+
+### Major change: Minimum supported Python is now 3.9
+
+   - re-defined the API Classes as children of a base class (aussiebb.baseclass.BaseClass).
+   - added significantly better typing to inputs/responses.
+   - removed all the usage of `inspect`.
+   - moved from setup.py to [Poetry](https://python-poetry.org) for build/packaging.
+   - removed loguru dependency, class init now takes a logger as an option or uses python default logging if not. Also removed _debug_print from async version.
+   - added NBN_TYPES and PHONE_TYPES to aussiebb.const, to allow one to check if the service matches a known identifier for "phone" (mobile/VOIP) or "NBN" (internet) types - this matters when parsing the resulting service info.
+   - added test and fixed result of the asyncio get_service_tests function
+
+## v0.0.8
+
+   - renamed serviceid to service_id to match the api
+   - added request_get_json to the sync class
+   - added telephony_usage
+   - added get_appointment which gets service appointments
+   - updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service
+   - abstracted how URLS are generated so I don't have to keep adding them twice
+   - added a filter on get_services which allows you to filter by type
+
+## 0.0.7 
+
+   - Added the following new functions: `account_transactions`, `billing_invoice`, `service_outages`, `service_boltons`, `service_datablocks`, `support_tickets`, `account contacts`. Renamed `get_service_plans` to `service_plans`
+
+## v0.0.6 
+
+   - Fixed rate limiting
+
+## v0.0.5
+
+   - Fixing rate limiting
+   - Didn't actually fix it...
+
+## 0.0.4 
+
+   - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.
+
+## 0.0.3 
+
+   - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.

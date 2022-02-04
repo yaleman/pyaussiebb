@@ -4,8 +4,6 @@
 
 This is a very simple module for interacting with the Aussie Broadband APIs.
 
-I wrote this so I can pull a line test periodically and show the NBN how garbage they are.
-
 # Usage
 
 ```
@@ -30,7 +28,7 @@ If you hit the rate limit it'll raise a `RateLimit` exception. I haven't put tha
 
 ## Example service tests I've seen
 
-All the "endpoints" below should be tacked onto `aussiebb.BASEURL['api']`.
+All the "endpoints" below should be tacked onto `aussiebb.const.BASEURL['api']`.
 
 **Warning:** `/nbn/{service_id}/connection` seems to have both a GET and POST method endpoint - tests on other endpoints may be similar.
 
@@ -85,18 +83,4 @@ These are as-yet untested.
 
 # Changelog
 
- * 0.0.3 - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.
- * 0.0.4 - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.
- * 0.0.5/6 - Fixing rate limiting
- * 0.0.7 
-    - Added the following new functions: `account_transactions`, `billing_invoice`, `service_outages`, `service_boltons`, `service_datablocks`, `support_tickets`, `account contacts`. Renamed `get_service_plans` to `service_plans`
- * 0.0.8
-    - renamed serviceid to service_id to match the api
-    - added request_get_json to the sync class
-    - added telephony_usage
-    - added get_appointment which gets service appointments
-    - updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service
-    - abstracted how URLS are generated so I don't have to keep adding them twice
-    - added a filter on get_services which allows you to filter by type
-
-
+See [CHANGELOG.md](CHANGELOG.md)

@@ -4,8 +4,9 @@
 import os
 import sys
 import pytest
-from loguru import logger
+
 from aussiebb.asyncio import AussieBB
+import aussiebb.const
 
 try:
     import aiohttp #pylint: disable=unused-import
@@ -20,23 +21,20 @@ try:
     from config import USERNAME, PASSWORD
     from config import USERNAME2, PASSWORD2
 except ImportError:
-    USERNAME = os.environ.get('username')
-    PASSWORD = os.environ.get('password')
-    USERNAME2 = os.environ.get('username2')
-    PASSWORD2 = os.environ.get('password2')
+    USERNAME = os.environ.get('username', "")
+    PASSWORD = os.environ.get('password', "")
+    USERNAME2 = os.environ.get('username2', "")
+    PASSWORD2 = os.environ.get('password2', "")
 
 
 async def test_login_cycle():
     """ test the login step """
-
-    logger.info("Testing login")
-
     async with aiohttp.ClientSession() as session:
         api = AussieBB(username=USERNAME, password=PASSWORD, debug=True, session=session)
         login = await api.login()
         assert login
 
-        logger.debug("Checking if token has expired...")
+        api.logger.debug("Checking if token has expired...")
         assert not api._has_token_expired() #pylint: disable=protected-access
 
 
@@ -45,7 +43,7 @@ async def test_get_customer_details():
 
     async with aiohttp.ClientSession() as session:
         api = AussieBB(username=USERNAME, password=PASSWORD, debug=True, session=session)
-        logger.info("Testing get_details")
+        api.logger.info("Testing get_details")
         response = await api.get_customer_details()
         assert response.get('customer_number', False)
 
@@ -58,13 +56,13 @@ async def test_get_services():
         api2 = AussieBB(username=USERNAME2, password=PASSWORD2, debug=True, session=session)
 
         services = await api.get_services()
-        logger.debug("Dumping services for api1")
-        logger.debug(services)
+        api.logger.debug("Dumping services for api1")
+        api.logger.debug(services)
         assert services
 
         # api2 has a VOIP service
         services2 = await api2.get_services()
-        logger.debug("Dumping VOIP services for api2")
+        api2.logger.debug("Dumping VOIP services for api2")
         voip_service = [service for service in services2 if service.get('type') == 'VOIP']
         assert voip_service
 
@@ -91,6 +89,28 @@ async def test_get_usage():
 
         usage = await api.get_usage(service_id)
         assert usage.get('daysTotal')
+
+
+async def test_get_service_tests():
+    """ test the get_service_tests function and its return type """
+
+    async with aiohttp.ClientSession() as session:
+        test_api = AussieBB(username=USERNAME, password=PASSWORD, debug=True, session=session)
+        services = await test_api.get_services()
+        if services is None:
+            pytest.skip("No services returned")
+        test_service = None
+        for service in services:
+            if service["type"] in aussiebb.const.NBN_TYPES:
+                test_service = service
+                break
+
+        if test_service is None:
+            pytest.skip("Didn't find any NBN services")
+
+        service_tests = await test_api.get_service_tests(test_service["service_id"])
+        print(service_tests)
+        assert isinstance(service_tests, list)
 
 
 async def test_get_service_plans():

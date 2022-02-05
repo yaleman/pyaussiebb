@@ -133,6 +133,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "cookies"
+version = "2.2.1"
+description = "Friendlier RFC 6265-compliant cookie parser/renderer"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "frozenlist"
 version = "1.3.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -335,6 +343,19 @@ mkdocs = ">=1.2"
 mkdocs-autorefs = ">=0.1"
 pymdown-extensions = ">=6.3"
 pytkdocs = ">=0.14.0"
+
+[[package]]
+name = "mock"
+version = "4.0.3"
+description = "Rolling backport of unittest.mock for all Pythons"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+build = ["twine", "wheel", "blurb"]
+docs = ["sphinx"]
+test = ["pytest (<5.4)", "pytest-cov"]
 
 [[package]]
 name = "multidict"
@@ -548,6 +569,23 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
+name = "requests-testing"
+version = "0.2.0"
+description = "A utility library for mocking out the `requests` Python library."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cookies = "*"
+mock = "*"
+requests = ">=2.0"
+six = "*"
+
+[package.extras]
+tests = ["pytest", "coverage (>=3.7.1,<5.0.0)", "pytest-cov", "pytest-localserver", "flake8", "idna"]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -657,7 +695,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "e4988dc2d0f52a4979526a6df9326e5095e7b0711a092d5cdaac72c722dd7a12"
+content-hash = "79d7eb14f570e251d276d5df945d1c694b4b3cdbd7541898ef21071cf4bc189c"
 
 [metadata.files]
 aiohttp = [
@@ -794,6 +832,10 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+cookies = [
+    {file = "cookies-2.2.1-py2.py3-none-any.whl", hash = "sha256:15bee753002dff684987b8df8c235288eb8d45f8191ae056254812dfd42c81d3"},
+    {file = "cookies-2.2.1.tar.gz", hash = "sha256:d6b698788cae4cfa4e62ef8643a9ca332b79bd96cb314294b864ae8d7eb3ee8e"},
 ]
 frozenlist = [
     {file = "frozenlist-1.3.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d2257aaba9660f78c7b1d8fea963b68f3feffb1a9d5d05a18401ca9eb3e8d0a3"},
@@ -1022,6 +1064,10 @@ mkdocstrings = [
     {file = "mkdocstrings-0.17.0-py3-none-any.whl", hash = "sha256:103fc1dd58cb23b7e0a6da5292435f01b29dc6fa0ba829132537f3f556f985de"},
     {file = "mkdocstrings-0.17.0.tar.gz", hash = "sha256:75b5cfa2039aeaf3a5f5cf0aa438507b0330ce76c8478da149d692daa7213a98"},
 ]
+mock = [
+    {file = "mock-4.0.3-py3-none-any.whl", hash = "sha256:122fcb64ee37cfad5b3f48d7a7d51875d7031aaf3d8be7c42e2bee25044eee62"},
+    {file = "mock-4.0.3.tar.gz", hash = "sha256:7d3fbbde18228f4ff2f1f119a45cdffa458b4c0dee32eb4d2bb2f82554bac7bc"},
+]
 multidict = [
     {file = "multidict-6.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:0b9e95a740109c6047602f4db4da9949e6c5945cefbad34a1299775ddc9a62e2"},
     {file = "multidict-6.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ac0e27844758d7177989ce406acc6a83c16ed4524ebc363c1f748cba184d89d3"},
@@ -1199,6 +1245,9 @@ pyyaml-env-tag = [
 requests = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
     {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
+]
+requests-testing = [
+    {file = "requests_testing-0.2.0-py2.py3-none-any.whl", hash = "sha256:99045f6505469ad84ffc75fbd74bfa690e8aebca45b3c98a79d2cde7d3b481dc"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

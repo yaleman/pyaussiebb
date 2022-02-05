@@ -5,8 +5,8 @@ import logging
 from time import time
 from typing import Any, Dict, Optional
 
-from .const import API_ENDPOINTS, BASEURL
-from .exceptions import AuthenticationException, RateLimitException
+from .const import API_ENDPOINTS, BASEURL, PHONE_TYPES, NBN_TYPES
+from .exceptions import AuthenticationException, RateLimitException, UnrecognisedServiceType
 
 class BaseClass:
     """ Base class for aussiebb API clients """
@@ -18,8 +18,8 @@ class BaseClass:
         self,
         username: str,
         password: str,
-        debug: bool=False,
-        services_cache_time: int=28800,
+        debug: bool = False,
+        services_cache_time: int = 28800,
         logger = None
         ):
 
@@ -64,7 +64,9 @@ class BaseClass:
         jsondata: Dict[str, Any],
         cookies: Dict[str, Morsel],
         ) -> bool:
-        """ handles the login response we expire a little early just because, and if we don't get an expiry, we just bail """
+        """ Handles the login response.
+
+        We expire the session a little early just to be safe, and if we don't get an expiry, we just bail. """
 
         # just reset it in case
         self.token_expires = -1
@@ -73,6 +75,10 @@ class BaseClass:
             raise AuthenticationException(jsondata)
         if status_code == 429:
             raise RateLimitException(jsondata)
+
+        # expected response from the API looks like
+        # data: { "expiresIn" : 500 }
+        # cookies:  { "myaussie_cookie" : "somerandomcookiethings" }
 
         if "expiresIn" not in jsondata:
             return False
@@ -84,3 +90,11 @@ class BaseClass:
         self.myaussie_cookie = cookies["myaussie_cookie"]
         self.logger.debug("Login Cookie: %s", self.myaussie_cookie)
         return True
+
+    @classmethod
+    def validate_service_type(cls, service: Dict[str, Any]) -> None:
+        """ Check the service types against known types """
+        if "type" not in service:
+            raise ValueError("field 'type' not found in service data")
+        if service["type"] not in NBN_TYPES + PHONE_TYPES:
+            raise UnrecognisedServiceType(f"Service type {service['type']} not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new")

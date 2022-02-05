@@ -250,16 +250,20 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             self.services_last_update = int(time())
             self.services = responsedata.get('data')
 
+        # TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)
+
         # only filter if we need to
         if servicetypes is not None:
             self.logger.debug("Filtering services based on provided list: %s", servicetypes)
             filtered_responsedata: List[Any]= []
             if self.services is not None:
                 for service in self.services:
-                    if service.get('type') in servicetypes:
+                    if "type" not in service:
+                        raise ValueError(f"No type field in service info: {service}")
+                    if service["type"] in servicetypes:
                         filtered_responsedata.append(service)
                     else:
-                        self.logger.debug("Skipping as type==%s - %s", service.get('type'), service)
+                        self.logger.debug("Skipping as type==%s - %s", service["type"], service)
             return filtered_responsedata
 
         return self.services
@@ -305,19 +309,20 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(self, service_id: int):
+    async def get_usage(self, service_id: int, use_cached: bool=True):
         """
         Returns a dict of usage for a service.
 
-        If it's a telephony service (`type in ["PhoneMobile","VOIP"]`) it'll pull from the telephony endpoint.
+        If it's a telephony service (`type in aussiebb.const.PHONE_TYPES`) it'll pull from the telephony endpoint.
 
         """
-        services = await self.get_services(use_cached=True)
+        services = await self.get_services(use_cached=use_cached)
         for service in services:
-            if service_id == service.get('service_id'):
-                if service.get('type') in PHONE_TYPES:
+            if service_id == service["service_id"]:
+                # throw an error if we're trying to parse something we can't
+                self.validate_service_type(service)
+                if service["type"] in PHONE_TYPES:
                     return await self.telephony_usage(service_id)
-
         url = self.get_url("get_usage", {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         return responsedata

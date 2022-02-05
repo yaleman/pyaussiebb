@@ -5,6 +5,7 @@ from time import time
 from typing import Any, Dict, List, Optional
 
 import requests
+import requests.sessions
 
 from .baseclass import BaseClass
 from .const import BASEURL, default_headers, PHONE_TYPES
@@ -19,6 +20,7 @@ class AussieBB(BaseClass):
         password: str,
         debug: bool=False,
         services_cache_time: int = 28800,
+        session : requests.sessions.Session = None,
         ):
         """ Setup function
 
@@ -29,10 +31,14 @@ class AussieBB(BaseClass):
             @param services_cache_time: int
                 - seconds between caching get_services()
                 - defaults to 8 hours
+            @param session : requests.session - session object
             ```
         """
         super().__init__(username, password, debug, services_cache_time)
-        self.session = requests.Session()
+        if session is None:
+            self.session = requests.Session()
+        else:
+            self.session = session
 
     def login(self, depth=0):
         """ Logs into the account and caches the cookie.  """
@@ -50,7 +56,7 @@ class AussieBB(BaseClass):
 
         response = self.session.post(url,
                                      headers=headers,
-                                     data=json.dumps(payload),
+                                     json=payload,
                                      )
 
         response.raise_for_status()
@@ -152,7 +158,11 @@ class AussieBB(BaseClass):
             responsedata = self.request_get_json(url=url, params=querystring)
             # cache the data
             self.services_last_update = int(time())
-            self.services = responsedata.get('data')
+            if "data" not in responsedata:
+                raise ValueError("Couldn't get 'data' element from response.")
+            self.services = responsedata["data"]
+
+        # TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)
 
         # only filter if we need to
         if servicetypes is not None:
@@ -160,10 +170,12 @@ class AussieBB(BaseClass):
             filtered_responsedata: List[str] = []
             if self.services is not None:
                 for service in self.services:
-                    if service.get('type') in servicetypes:
+                    if "type" not in service:
+                        raise ValueError(f"No type field in service info: {service}")
+                    if service["type"] in servicetypes:
                         filtered_responsedata.append(service)
                     else:
-                        self.logger.debug("Skipping as type==%s - %s", service.get('type'), service)
+                        self.logger.debug("Skipping as type==%s - %s", service["type"], service)
                 return filtered_responsedata
 
         return self.services
@@ -208,7 +220,7 @@ class AussieBB(BaseClass):
         url = self.get_url("account_paymentplans")
         return self.request_get_json(url=url)
 
-    def get_usage(self, service_id: int) -> Dict[str, Any]:
+    def get_usage(self, service_id: int, use_cached: bool=True) -> Dict[str, Any]:
         """
         Returns a dict of usage for a service.
 
@@ -216,11 +228,14 @@ class AussieBB(BaseClass):
 
         """
         if self.services is None:
-            self.get_services(use_cached=True)
+            self.get_services(use_cached=use_cached)
+
         if self.services is not None:
             for service in self.services:
-                if service_id == service.get('service_id'):
-                    if service.get('type') in PHONE_TYPES:
+                if service_id == service["service_id"]:
+                    # throw an error if we're trying to parse something we can't
+                    self.validate_service_type(service)
+                    if service["type"] in PHONE_TYPES:
                         return self.telephony_usage(service_id)
             url = self.get_url("get_usage", {'service_id' : service_id})
             return self.request_get_json(url=url)

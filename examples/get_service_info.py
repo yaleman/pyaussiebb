@@ -32,10 +32,9 @@ async def main(mainloop):
             client.logger.error("No services found")
             return
         for service in services:
-            client.logger.info(json.dumps(service, indent=4, ensure_ascii=False))
-
+            client.logger.error(json.dumps(service, indent=4, ensure_ascii=False))
             usage = await client.get_usage(service["service_id"])
-            client.logger.success(json.dumps(usage, indent=4, ensure_ascii=False))
+            client.logger.error(json.dumps(usage, indent=4, ensure_ascii=False))
 
 
 

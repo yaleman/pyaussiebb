@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.0.12 (in development)
+
+  - Added `pydantic` as a dependency, which allows for better type checking.
+  - Rewrote a bunch of the tests because the bike shed needed to be green and driven by JSON.
+
 ## v0.0.11
 
   - Added `aussiebb.exceptions.UnrecognisedServiceType` and some quick validation when you run `get_usage` so it doesn't break.

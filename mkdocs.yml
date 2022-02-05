@@ -3,6 +3,10 @@ site_name: aussiebb
 theme:
   name: "material"
 
+site_url: https://yaleman.github.io/aussiebb/
+repo_name: 'yaleman/aussiebb'
+repo_url: 'https://github.com/yaleman/aussiebb'
+
 plugins:
 - search:
 - mkdocstrings:

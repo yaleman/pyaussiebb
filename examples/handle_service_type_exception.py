@@ -6,8 +6,8 @@ from pathlib import Path
 import sys
 
 
-filepath = Path(__file__)
-sys.path.append(filepath.parent.parent.as_posix())
+script_path = Path(__file__)
+sys.path.append(script_path.parent.parent.as_posix())
 
 # pylint: disable=import-error,wrong-import-position
 from aussiebb import AussieBB

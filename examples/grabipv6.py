@@ -3,20 +3,34 @@
 """ pulls and lists the IPv6 addresess for your services """
 
 from ipaddress import ip_network,  IPv4Network, IPv6Network
+import json
+
+import os
 from pathlib import Path
 import sys
 
-filepath = Path(__file__)
-sys.path.append(filepath.parent.parent.as_posix())
+script_path = Path(__file__)
+sys.path.append(script_path.parent.parent.as_posix())
 
 
 # pylint: disable=import-error,wrong-import-position
 from aussiebb.asyncio import AussieBB
-from config import USERNAME, PASSWORD
+from aussiebb.types import AussieBBConfigFile
 
+
+def configloader():
+    """ loads config """
+    for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
+        filepath = Path(filename).resolve()
+        if filepath.exists():
+            try:
+                return AussieBBConfigFile.parse_file(filepath)
+            except json.JSONDecodeError as json_error:
+                sys.exit(f"Failed to parse config file: {json_error}")
 def main():
     """ Example of getting ipv6 services """
-    client = AussieBB(USERNAME, PASSWORD)
+    user = configloader().users[0]
+    client = AussieBB(user.username, user.password)
 
     client.logger.debug("Logging in")
     client.login()

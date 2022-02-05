@@ -47,6 +47,8 @@ mkdocstrings = "^0.17.0"
 mkdocs-material = "^8.1.9"
 mkdocs = "^1.2.3"
 requests-testing = "^0.2.0"
+pydantic = "^1.9.0"
+pylint-pydantic = "^0.1.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

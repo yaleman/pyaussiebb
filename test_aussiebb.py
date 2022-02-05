@@ -1,114 +1,129 @@
-#!/usr/bin/env python
-""" test some things """
+"""
+Using this
 
+You really need a file called "aussiebb.json" in either the local dir or ~/.config/.
+
+It needs at least one user in the "users" field. eg:
+
+{
+    "users" : [
+        { "username" : "mickeymouse.123", "password" : "hunter2" }
+    ]
+}
+"""
+
+import json
 import os
+from pathlib import Path
+from typing import List
 
 import pytest
 
 from aussiebb import AussieBB
 import aussiebb.const
+from aussiebb.types import GetServicesResponse, AussieBBConfigFile
 
-try:
-    from config import USERNAME, PASSWORD
-    from config import USERNAME2, PASSWORD2
-except ImportError:
-    USERNAME = os.environ.get('username', "")
-    PASSWORD = os.environ.get('password', "")
-    USERNAME2 = os.environ.get('username2', "")
-    PASSWORD2 = os.environ.get('password2', "")
 
-@pytest.fixture(name="test_api", scope="session")
-def test_api_one():
+def configloader():
+    """ loads config """
+    for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
+        filepath = Path(filename).resolve()
+        if filepath.exists():
+            try:
+                return AussieBBConfigFile.parse_file(filepath)
+            except json.JSONDecodeError as json_error:
+                pytest.exit(f"Failed to parse config file: {json_error}")
+
+CONFIG = configloader()
+if len(CONFIG.users) == 0:
+    pytest.exit("You need some users in config.json")
+
+@pytest.fixture(name="users", scope="session")
+def userfactory():
     """ API factory """
-    return AussieBB(username=USERNAME, password=PASSWORD)
+    return [ AussieBB(username=user.username, password=user.password) for user in CONFIG.users ]
 
-@pytest.fixture(name="api2", scope="session")
-def test_api_two():
-    """ API factory """
-    return AussieBB(username=USERNAME2, password=PASSWORD2)
-
-TESTAPI = AussieBB(username=USERNAME, password=PASSWORD)
-TESTAPI2 = AussieBB(username=USERNAME2, password=PASSWORD2)
-
-def test_login_cycle(test_api):
+def test_login_cycle(users):
     """ test the login step """
+
+    test_api = users[0]
     test_api.logger.info("Testing login")
     assert test_api.login()
 
     test_api.logger.debug("Checking if token has expired...")
     assert not test_api._has_token_expired() #pylint: disable=protected-access
 
-def test_customer_details(test_api):
+def test_customer_details(users):
     """ test get_customer_details """
-    test_api.logger.info("Testing get_details")
-    response = test_api.get_customer_details()
-    assert response.get('customer_number', False)
+    for test_api in users:
+        test_api.logger.info("Testing get_details")
+        response = test_api.get_customer_details()
+        assert response.get('customer_number', False)
 
-def test_get_services(test_api, api2):
+def test_get_services(users: List[AussieBB]):
     """ test get_services """
-    test_api.logger.debug(test_api.get_services())
-    assert test_api.get_services()
 
-    # api2 has a VOIP service
-    voip_service = [service for service in api2.get_services() if service.get('type') == 'VOIP']
-    assert voip_service
+    for test_api in users:
+        test_api.logger.debug(test_api.get_services())
+        services = test_api.get_services()
+        assert services
+        for service in services:
+            test_api.validate_service_type(service)
 
-def test_line_state(test_api):
+def test_line_state(users):
     """ test test_line_state """
-    service_id = test_api.get_services()[0].get('service_id')
-    assert test_api.test_line_state(service_id).get('id')
+    for test_api in users:
+        services = test_api.get_services()
+        for service in services:
+            if service['type'] in aussiebb.const.NBN_TYPES:
+                assert test_api.test_line_state(service["service_id"]).get('id')
+                return
 
-def test_get_usage(test_api):
+def test_get_usage(users):
     """ test get_usage """
-    service_id = test_api.get_services()[0].get('service_id')
-    assert test_api.get_usage(service_id).get('daysTotal')
+    for test_api in users:
+        service_id = test_api.get_services()[0].get('service_id')
+        assert test_api.get_usage(service_id).get('daysTotal')
 
-def test_get_service_plans():
+def test_get_service_plans(users):
     """ tests the plan pulling for services """
-    for test_username, test_password in [ [USERNAME, PASSWORD], [USERNAME2, PASSWORD2]]:
-        test_api = AussieBB(test_username, test_password)
-        test_services = [ service for service in test_api.get_services() if service.get('type') == 'NBN' ]
+    for test_api in users:
+        test_services = [ service for service in test_api.get_services() if service.get('type') in aussiebb.const.NBN_TYPES ]
         if test_services:
             test_plans = test_api.service_plans(test_services[0].get('service_id'))
             assert test_plans
             for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
                 assert key in test_plans.keys()
 
-def test_get_service_tests(test_api):
-    """ blah """
-    services = test_api.get_services()
-    if services is None:
-        pytest.skip("No services returned")
-    test_service = None
-    for service in services:
-        if service["type"] in aussiebb.const.NBN_TYPES:
-            test_service = service
-            break
-
-    if test_service is None:
-        pytest.skip("Didn't find any NBN services")
-
-    service_tests = test_api.get_service_tests(test_service["service_id"])
-    print(service_tests)
-    assert isinstance(service_tests, list)
-
-
-def test_dump_services():
-    """ dumps a list of services """
-    for user_name, password_value in [ [USERNAME, PASSWORD], [USERNAME2, PASSWORD2]]:
-        api = AussieBB(user_name, password_value)
-
-        if api.get_services() is None:
-            return
-
-        services = [ service for service in api.get_services() if service.get('type') == 'NBN' ]
+def test_get_service_tests(users):
+    """ tests... getting the tests for services. """
+    for user in users:
+        services = user.get_services()
+        if services is None:
+            pytest.skip("No services returned")
+        test_service = None
         for service in services:
-            plans = api.service_plans(service.get('service_id'))
+            if service["type"] in aussiebb.const.NBN_TYPES:
+                test_service = service
+                break
 
-            for plan in plans.get('available'):
-                if plan.get('download') >= 900:
-                    api.logger.info(plan.get('name'))
-                    api.logger.info("OVER 900!")
+        if test_service is None:
+            pytest.skip("Didn't find any NBN services")
 
-if __name__ == '__main__':
-    test_dump_services()
+        service_tests = user.get_service_tests(test_service["service_id"])
+        print(service_tests)
+        assert isinstance(service_tests, list)
+
+
+def test_get_services_raw(users: List[AussieBB]):
+    """ allows one to dump the full result of a get_services call """
+    for user in users:
+        url = user.get_url("get_services", { "page" : 1 })
+        response : GetServicesResponse = user.request_get_json(url=url)
+        print(json.dumps(response, indent=4))
+
+        while "links" in response and "next" in response["links"] and response["links"]["next"]:
+            print("Theres's another page!")
+            url = response["links"]["next"]
+            response = user.request_get_json(url=url)
+            print(json.dumps(response, indent=4))

@@ -6,24 +6,41 @@
 
 import asyncio
 import json
+import os
 from pathlib import Path
 import sys
 
 import aiohttp
 
-filepath = Path(__file__)
-sys.path.append(filepath.parent.parent.as_posix())
+script_path = Path(__file__)
+sys.path.append(script_path.parent.parent.as_posix())
 
 
 # pylint: disable=import-error
 from aussiebb.asyncio import AussieBB
-from config import USERNAME2, PASSWORD2
+from aussiebb.types import AussieBBConfigFile
 
+def configloader():
+    """ loads config """
+    for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
+        filepath = Path(filename).resolve()
+        if filepath.exists():
+            try:
+                return AussieBBConfigFile.parse_file(filepath)
+            except json.JSONDecodeError as json_error:
+                sys.exit(f"Failed to parse config file: {json_error}")
+
+
+CONFIG = configloader()
+if len(CONFIG.users) == 0:
+    print("no users in config, bailint")
+    sys.exit(1)
 
 async def main(mainloop):
     """ cli """
+    user = CONFIG.users[0]
     async with aiohttp.ClientSession(loop=mainloop) as session:
-        client = AussieBB(USERNAME2, PASSWORD2, session=session)
+        client = AussieBB(user.username, user.password, session=session)
         await client.login()
 
         services = await client.get_services()

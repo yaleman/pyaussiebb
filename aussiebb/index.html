@@ -265,6 +265,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#aussiebb.AussieBB.referral_code" class="md-nav__link">
+    referral_code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#aussiebb.AussieBB.__init__" class="md-nav__link">
     __init__()
   </a>
@@ -452,6 +459,13 @@
   
     <nav class="md-nav" aria-label="AussieBB">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aussiebb.asyncio.AussieBB.referral_code" class="md-nav__link">
+    referral_code
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#aussiebb.asyncio.AussieBB.__init__" class="md-nav__link">
@@ -899,6 +913,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#aussiebb.AussieBB.referral_code" class="md-nav__link">
+    referral_code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#aussiebb.AussieBB.__init__" class="md-nav__link">
     __init__()
   </a>
@@ -1086,6 +1107,13 @@
   
     <nav class="md-nav" aria-label="AussieBB">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aussiebb.asyncio.AussieBB.referral_code" class="md-nav__link">
+    referral_code
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#aussiebb.asyncio.AussieBB.__init__" class="md-nav__link">
@@ -1616,6 +1644,13 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
                                     <span class="p">)</span>
         <span class="k">return</span> <span class="n">responsedata</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">referral_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; returns the referral code, which is just the customer number &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_customer_details</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;customer_number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get customer_number from customer_details call.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;customer_number&quot;</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_check_reload_cached_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; If the age of the service data caching is too old, clear it and re-poll.</span>
@@ -1919,6 +1954,29 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 
 
 
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="aussiebb.AussieBB.referral_code" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">referral_code</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>returns the referral code, which is just the customer number </p>
+    </div>
+
+  </div>
 
 
 
@@ -3196,6 +3254,14 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
                                     <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
                                     <span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">referral_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; returns the referral code, which is just the customer number &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_customer_details</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;customer_number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get customer_number from customer_details call.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;customer_number&quot;</span><span class="p">])</span>
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_check_reload_cached_services</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; If the age of the service data caching is too old, clear it and re-poll.</span>
 
@@ -3527,6 +3593,29 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 
 
 
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="aussiebb.asyncio.AussieBB.referral_code" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">referral_code</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>returns the referral code, which is just the customer number </p>
+    </div>
+
+  </div>
 
 
 

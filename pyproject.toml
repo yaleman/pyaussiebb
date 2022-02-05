@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "aussiebb"
+name = "pyaussiebb"
 version = "0.0.11"
 description = "Aussie Broadband API module"
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
@@ -23,6 +23,10 @@ classifiers=[
     "Programming Language :: Python :: 3.10",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+]
+
+packages = [
+    { include = "aussiebb" }
 ]
 
 [tool.poetry.urls]

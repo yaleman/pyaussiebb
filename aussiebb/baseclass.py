@@ -64,7 +64,9 @@ class BaseClass:
         jsondata: Dict[str, Any],
         cookies: Dict[str, Morsel],
         ) -> bool:
-        """ handles the login response we expire a little early just because, and if we don't get an expiry, we just bail """
+        """ Handles the login response.
+
+        We expire the session a little early just to be safe, and if we don't get an expiry, we just bail. """
 
         # just reset it in case
         self.token_expires = -1
@@ -73,6 +75,10 @@ class BaseClass:
             raise AuthenticationException(jsondata)
         if status_code == 429:
             raise RateLimitException(jsondata)
+
+        # expected response from the API looks like
+        # data: { "expiresIn" : 500 }
+        # cookies:  { "myaussie_cookie" : "somerandomcookiethings" }
 
         if "expiresIn" not in jsondata:
             return False

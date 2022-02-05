@@ -250,10 +250,7 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             self.services_last_update = int(time())
             self.services = responsedata.get('data')
 
-        # checking that service types are valid
-        if self.services is not None:
-            for service in self.services:
-                self.validate_service_type(service)
+        # TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)
 
         # only filter if we need to
         if servicetypes is not None:
@@ -261,10 +258,12 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             filtered_responsedata: List[Any]= []
             if self.services is not None:
                 for service in self.services:
-                    if service.get('type') in servicetypes:
+                    if "type" not in service:
+                        raise ValueError(f"No type field in service info: {service}")
+                    if service["type"] in servicetypes:
                         filtered_responsedata.append(service)
                     else:
-                        self.logger.debug("Skipping as type==%s - %s", service.get('type'), service)
+                        self.logger.debug("Skipping as type==%s - %s", service["type"], service)
             return filtered_responsedata
 
         return self.services
@@ -319,10 +318,11 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
         """
         services = await self.get_services(use_cached=use_cached)
         for service in services:
-            if service_id == service.get('service_id'):
-                if service.get('type') in PHONE_TYPES:
+            if service_id == service["service_id"]:
+                # throw an error if we're trying to parse something we can't
+                self.validate_service_type(service)
+                if service["type"] in PHONE_TYPES:
                     return await self.telephony_usage(service_id)
-
         url = self.get_url("get_usage", {'service_id' : service_id})
         responsedata = await self.request_get_json(url=url)
         return responsedata

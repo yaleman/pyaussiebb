@@ -126,4 +126,4 @@ def test_get_services_raw(users: List[AussieBB]):
             print("Theres's another page!")
             url = response["links"]["next"]
             response = user.request_get_json(url=url)
-            print(json.dumps(response, indent=4))
+            print(json.dumps(response["links"], indent=4))

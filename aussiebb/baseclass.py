@@ -86,7 +86,7 @@ class BaseClass:
         return True
 
     @classmethod
-    def validate_service_type(cls, service: Dict[str, Any]):
+    def validate_service_type(cls, service: Dict[str, Any]) -> None:
         """ Check the service types against known types """
         if "type" not in service:
             raise ValueError("field 'type' not found in service data")

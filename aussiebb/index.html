@@ -635,6 +635,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#aussiebb.baseclass.BaseClass.validate_service_type" class="md-nav__link">
+    validate_service_type()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -697,6 +704,13 @@
           <li class="md-nav__item">
   <a href="#aussiebb.exceptions.RecursiveDepth" class="md-nav__link">
     RecursiveDepth
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aussiebb.exceptions.UnrecognisedServiceType" class="md-nav__link">
+    UnrecognisedServiceType
   </a>
   
 </li>
@@ -1214,6 +1228,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#aussiebb.baseclass.BaseClass.validate_service_type" class="md-nav__link">
+    validate_service_type()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1276,6 +1297,13 @@
           <li class="md-nav__item">
   <a href="#aussiebb.exceptions.RecursiveDepth" class="md-nav__link">
     RecursiveDepth
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aussiebb.exceptions.UnrecognisedServiceType" class="md-nav__link">
+    UnrecognisedServiceType
   </a>
   
 </li>
@@ -1378,6 +1406,7 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
         <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">services_cache_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">28800</span><span class="p">,</span>
+        <span class="n">session</span> <span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Setup function</span>
 
@@ -1388,10 +1417,14 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 <span class="sd">            @param services_cache_time: int</span>
 <span class="sd">                - seconds between caching get_services()</span>
 <span class="sd">                - defaults to 8 hours</span>
+<span class="sd">            @param session : requests.session - session object</span>
 <span class="sd">            ```</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">services_cache_time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
 
     <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Logs into the account and caches the cookie.  &quot;&quot;&quot;</span>
@@ -1409,7 +1442,7 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
                                      <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-                                     <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+                                     <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
                                      <span class="p">)</span>
 
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
@@ -1511,7 +1544,11 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
             <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">querystring</span><span class="p">)</span>
             <span class="c1"># cache the data</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">responsedata</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get &#39;data&#39; element from response.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+        <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
 
         <span class="c1"># only filter if we need to</span>
         <span class="k">if</span> <span class="n">servicetypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1519,10 +1556,12 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
             <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No type field in service info: </span><span class="si">{</span><span class="n">service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
                         <span class="n">filtered_responsedata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span> <span class="n">service</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">service</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">filtered_responsedata</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span>
@@ -1567,7 +1606,7 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;account_paymentplans&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_cached</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dict of usage for a service.</span>
 
@@ -1575,11 +1614,14 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="n">use_cached</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;service_id&#39;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;service_id&quot;</span><span class="p">]:</span>
+                    <span class="c1"># throw an error if we&#39;re trying to parse something we can&#39;t</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">validate_service_type</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
                         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">telephony_usage</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
             <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_usage&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
@@ -1776,7 +1818,7 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 
 
 <h3 id="aussiebb.AussieBB.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">services_cache_time</span><span class="o">=</span><span class="mi">28800</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">services_cache_time</span><span class="o">=</span><span class="mi">28800</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1793,6 +1835,7 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 @param services_cache_time: int
     - seconds between caching get_services()
     - defaults to 8 hours
+@param session : requests.session - session object
 </code></pre>
 
         <details class="quote">
@@ -1803,6 +1846,7 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
     <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">services_cache_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">28800</span><span class="p">,</span>
+    <span class="n">session</span> <span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Setup function</span>
 
@@ -1813,10 +1857,14 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
 <span class="sd">        @param services_cache_time: int</span>
 <span class="sd">            - seconds between caching get_services()</span>
 <span class="sd">            - defaults to 8 hours</span>
+<span class="sd">        @param session : requests.session - session object</span>
 <span class="sd">        ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">services_cache_time</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
 </code></pre></div>
         </details>
     </div>
@@ -2171,7 +2219,11 @@ provide a list of matching strings in servicetypes.</p>
         <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">querystring</span><span class="p">)</span>
         <span class="c1"># cache the data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">responsedata</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get &#39;data&#39; element from response.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+    <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
 
     <span class="c1"># only filter if we need to</span>
     <span class="k">if</span> <span class="n">servicetypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2179,10 +2231,12 @@ provide a list of matching strings in servicetypes.</p>
         <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No type field in service info: </span><span class="si">{</span><span class="n">service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
                     <span class="n">filtered_responsedata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span> <span class="n">service</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">service</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">filtered_responsedata</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span>
@@ -2231,7 +2285,7 @@ provide a list of matching strings in servicetypes.</p>
 
 
 <h3 id="aussiebb.AussieBB.get_usage" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">,</span> <span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 </h3>
@@ -2243,7 +2297,7 @@ provide a list of matching strings in servicetypes.</p>
 
         <details class="quote">
           <summary>Source code in <code>aussiebb/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_cached</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dict of usage for a service.</span>
 
@@ -2251,11 +2305,14 @@ provide a list of matching strings in servicetypes.</p>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="n">use_cached</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;service_id&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;service_id&quot;</span><span class="p">]:</span>
+                <span class="c1"># throw an error if we&#39;re trying to parse something we can&#39;t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">validate_service_type</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">telephony_usage</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_usage&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
@@ -2300,7 +2357,7 @@ provide a list of matching strings in servicetypes.</p>
 
     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
                                  <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-                                 <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+                                 <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
                                  <span class="p">)</span>
 
     <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
@@ -3066,16 +3123,20 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
             <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 
+        <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
+
         <span class="c1"># only filter if we need to</span>
         <span class="k">if</span> <span class="n">servicetypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering services based on provided list: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">)</span>
             <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No type field in service info: </span><span class="si">{</span><span class="n">service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
                         <span class="n">filtered_responsedata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span> <span class="n">service</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">service</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">filtered_responsedata</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span>
@@ -3121,19 +3182,20 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
         <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">responsedata</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_cached</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dict of usage for a service.</span>
 
-<span class="sd">        If it&#39;s a telephony service (`type in [&quot;PhoneMobile&quot;,&quot;VOIP&quot;]`) it&#39;ll pull from the telephony endpoint.</span>
+<span class="sd">        If it&#39;s a telephony service (`type in aussiebb.const.PHONE_TYPES`) it&#39;ll pull from the telephony endpoint.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">services</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="n">use_cached</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;service_id&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;service_id&quot;</span><span class="p">]:</span>
+                <span class="c1"># throw an error if we&#39;re trying to parse something we can&#39;t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">validate_service_type</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
                     <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">telephony_usage</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
-
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_usage&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
         <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">responsedata</span>
@@ -3801,16 +3863,20 @@ provide a list of matching strings in servicetypes.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 
+    <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
+
     <span class="c1"># only filter if we need to</span>
     <span class="k">if</span> <span class="n">servicetypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering services based on provided list: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">)</span>
         <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No type field in service info: </span><span class="si">{</span><span class="n">service</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">servicetypes</span><span class="p">:</span>
                     <span class="n">filtered_responsedata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span> <span class="n">service</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping as type==</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">service</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">filtered_responsedata</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span>
@@ -3864,7 +3930,7 @@ provide a list of matching strings in servicetypes.</p>
 
 
 <h4 id="aussiebb.asyncio.AussieBB.get_usage" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">,</span> <span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3875,23 +3941,24 @@ provide a list of matching strings in servicetypes.</p>
     <div class="doc doc-contents ">
 
       <p>Returns a dict of usage for a service.</p>
-<p>If it's a telephony service (<code>type in ["PhoneMobile","VOIP"]</code>) it'll pull from the telephony endpoint.</p>
+<p>If it's a telephony service (<code>type in aussiebb.const.PHONE_TYPES</code>) it'll pull from the telephony endpoint.</p>
 
         <details class="quote">
           <summary>Source code in <code>aussiebb/asyncio/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_cached</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dict of usage for a service.</span>
 
-<span class="sd">    If it&#39;s a telephony service (`type in [&quot;PhoneMobile&quot;,&quot;VOIP&quot;]`) it&#39;ll pull from the telephony endpoint.</span>
+<span class="sd">    If it&#39;s a telephony service (`type in aussiebb.const.PHONE_TYPES`) it&#39;ll pull from the telephony endpoint.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">services</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">services</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_services</span><span class="p">(</span><span class="n">use_cached</span><span class="o">=</span><span class="n">use_cached</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;service_id&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">service_id</span> <span class="o">==</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;service_id&quot;</span><span class="p">]:</span>
+            <span class="c1"># throw an error if we&#39;re trying to parse something we can&#39;t</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">validate_service_type</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">telephony_usage</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
-
     <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_usage&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;service_id&#39;</span> <span class="p">:</span> <span class="n">service_id</span><span class="p">})</span>
     <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">responsedata</span>
@@ -4665,8 +4732,8 @@ BaseClass        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">services_cache_time</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">28800</span><span class="p">,</span>
+        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">services_cache_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">28800</span><span class="p">,</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">):</span>
 
@@ -4711,7 +4778,9 @@ BaseClass        </code>
         <span class="n">jsondata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">cookies</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Morsel</span><span class="p">],</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; handles the login response we expire a little early just because, and if we don&#39;t get an expiry, we just bail &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Handles the login response.</span>
+
+<span class="sd">        We expire the session a little early just to be safe, and if we don&#39;t get an expiry, we just bail. &quot;&quot;&quot;</span>
 
         <span class="c1"># just reset it in case</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token_expires</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -4720,6 +4789,10 @@ BaseClass        </code>
             <span class="k">raise</span> <span class="n">AuthenticationException</span><span class="p">(</span><span class="n">jsondata</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RateLimitException</span><span class="p">(</span><span class="n">jsondata</span><span class="p">)</span>
+
+        <span class="c1"># expected response from the API looks like</span>
+        <span class="c1"># data: { &quot;expiresIn&quot; : 500 }</span>
+        <span class="c1"># cookies:  { &quot;myaussie_cookie&quot; : &quot;somerandomcookiethings&quot; }</span>
 
         <span class="k">if</span> <span class="s2">&quot;expiresIn&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">jsondata</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -4731,6 +4804,14 @@ BaseClass        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span> <span class="o">=</span> <span class="n">cookies</span><span class="p">[</span><span class="s2">&quot;myaussie_cookie&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Login Cookie: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">myaussie_cookie</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">validate_service_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">service</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Check the service types against known types &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;field &#39;type&#39; not found in service data&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NBN_TYPES</span> <span class="o">+</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnrecognisedServiceType</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Service type </span><span class="si">{</span><span class="n">service</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -4775,6 +4856,40 @@ BaseClass        </code>
         <span class="n">api_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">API_ENDPOINTS</span><span class="p">[</span><span class="n">function_name</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">BASEURL</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;api&#39;</span><span class="p">)</span><span class="si">}{</span><span class="n">api_endpoint</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="aussiebb.baseclass.BaseClass.validate_service_type" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">validate_service_type</span><span class="p">(</span><span class="n">service</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Check the service types against known types </p>
+
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/baseclass.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">validate_service_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">service</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Check the service types against known types &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;field &#39;type&#39; not found in service data&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NBN_TYPES</span> <span class="o">+</span> <span class="n">PHONE_TYPES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">UnrecognisedServiceType</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Service type </span><span class="si">{</span><span class="n">service</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -5020,6 +5135,37 @@ RecursiveDepth            (<span title="BaseException">BaseException</span>)
           <summary>Source code in <code>aussiebb/exceptions.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RecursiveDepth</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; you&#39;ve gone too far down the rabbit hole &quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="aussiebb.exceptions.UnrecognisedServiceType" class="doc doc-heading">
+        <code>
+UnrecognisedServiceType            (<span title="BaseException">BaseException</span>)
+        </code>
+
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>You've got a service type we haven't seen before </p>
+
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UnrecognisedServiceType</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; You&#39;ve got a service type we haven&#39;t seen before &quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 

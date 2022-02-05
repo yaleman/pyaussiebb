@@ -21,7 +21,7 @@ jobs:
         run: |
             python -m pip install --quiet --no-cache-dir --upgrade poetry
             poetry install
-            poetry run pylint $(grep -E name pyproject.toml | awk '{print $NF}' | tr -d '"')
+            poetry run pylint aussiebb
   mypy:
     runs-on: ubuntu-latest
     steps:
@@ -37,5 +37,5 @@ jobs:
           python --version
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
-          poetry run python -m mypy $(grep -E name pyproject.toml | awk '{print $NF}' | tr -d '"')
+          poetry run python -m mypy aussiebb
 

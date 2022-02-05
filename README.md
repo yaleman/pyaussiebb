@@ -1,8 +1,9 @@
 # pyAussieBB
 
-[![Build Status](https://droneio.yaleman.org/api/badges/yaleman/aussiebb/status.svg)](https://droneio.yaleman.org/yaleman/aussiebb)
-
 This is a very simple module for interacting with the Aussie Broadband APIs.
+
+![Python Checks](https://github.com/yaleman/aussiebb/actions/workflows/python_linting.yml/badge.svg)
+![Shellcheck](https://github.com/yaleman/aussiebb/actions/workflows/shellcheck.yml/badge.svg)
 
 # Usage
 

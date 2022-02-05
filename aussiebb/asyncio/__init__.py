@@ -250,6 +250,11 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             self.services_last_update = int(time())
             self.services = responsedata.get('data')
 
+        # checking that service types are valid
+        if self.services is not None:
+            for service in self.services:
+                self.validate_service_type(service)
+
         # only filter if we need to
         if servicetypes is not None:
             self.logger.debug("Filtering services based on provided list: %s", servicetypes)

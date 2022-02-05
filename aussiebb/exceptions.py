@@ -11,3 +11,6 @@ class RateLimitException(BaseException):
 
 class RecursiveDepth(BaseException):
     """ you've gone too far down the rabbit hole """
+
+class UnrecognisedServiceType(BaseException):
+    """ You've got a service type we haven't seen before """

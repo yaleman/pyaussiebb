@@ -5,8 +5,8 @@ import logging
 from time import time
 from typing import Any, Dict, Optional
 
-from .const import API_ENDPOINTS, BASEURL
-from .exceptions import AuthenticationException, RateLimitException
+from .const import API_ENDPOINTS, BASEURL, PHONE_TYPES, NBN_TYPES
+from .exceptions import AuthenticationException, RateLimitException, UnrecognisedServiceType
 
 class BaseClass:
     """ Base class for aussiebb API clients """
@@ -84,3 +84,11 @@ class BaseClass:
         self.myaussie_cookie = cookies["myaussie_cookie"]
         self.logger.debug("Login Cookie: %s", self.myaussie_cookie)
         return True
+
+    @classmethod
+    def validate_service_type(cls, service: Dict[str, Any]):
+        """ Check the service types against known types """
+        if "type" not in service:
+            raise ValueError("field 'type' not found in service data")
+        if service["type"] not in NBN_TYPES + PHONE_TYPES:
+            raise UnrecognisedServiceType(f"Service type {service['type']} not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new")

@@ -18,8 +18,8 @@ class BaseClass:
         self,
         username: str,
         password: str,
-        debug: bool=False,
-        services_cache_time: int=28800,
+        debug: bool = False,
+        services_cache_time: int = 28800,
         logger = None
         ):
 

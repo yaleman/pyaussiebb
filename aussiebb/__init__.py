@@ -213,7 +213,7 @@ class AussieBB(BaseClass):
         url = self.get_url("account_paymentplans")
         return self.request_get_json(url=url)
 
-    def get_usage(self, service_id: int) -> Dict[str, Any]:
+    def get_usage(self, service_id: int, use_cached: bool=True) -> Dict[str, Any]:
         """
         Returns a dict of usage for a service.
 
@@ -221,7 +221,8 @@ class AussieBB(BaseClass):
 
         """
         if self.services is None:
-            self.get_services(use_cached=True)
+            self.get_services(use_cached=use_cached)
+
         if self.services is not None:
             for service in self.services:
                 if service_id == service.get('service_id'):

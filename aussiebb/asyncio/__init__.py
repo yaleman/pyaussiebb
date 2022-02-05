@@ -310,14 +310,14 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(self, service_id: int):
+    async def get_usage(self, service_id: int, use_cached: bool=True):
         """
         Returns a dict of usage for a service.
 
-        If it's a telephony service (`type in ["PhoneMobile","VOIP"]`) it'll pull from the telephony endpoint.
+        If it's a telephony service (`type in aussiebb.const.PHONE_TYPES`) it'll pull from the telephony endpoint.
 
         """
-        services = await self.get_services(use_cached=True)
+        services = await self.get_services(use_cached=use_cached)
         for service in services:
             if service_id == service.get('service_id'):
                 if service.get('type') in PHONE_TYPES:

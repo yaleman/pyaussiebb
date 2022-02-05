@@ -537,6 +537,36 @@ toml = "*"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-aiohttp"
+version = "1.0.3"
+description = "Pytest plugin for aiohttp support"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+aiohttp = ">=3.8.1"
+pytest = ">=6.1.0"
+pytest-asyncio = ">=0.17.2"
+
+[package.extras]
+testing = ["coverage (==6.2)", "mypy (==0.931)"]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.17.2"
+description = "Pytest support for asyncio"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+pytest = ">=6.1.0"
+
+[package.extras]
+testing = ["coverage (==6.2)", "hypothesis (>=5.7.1)", "flaky (>=3.5.0)", "mypy (==0.931)"]
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -722,7 +752,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9b25ce19d0e2540affad1a8a4afd18c56b5bee65927c39e8d1545058da5068a1"
+content-hash = "7415bdcf0da9a711fc8737c88181baf91d16f82e544d522fce7633f844fc1196"
 
 [metadata.files]
 aiohttp = [
@@ -1261,6 +1291,14 @@ pyparsing = [
 pytest = [
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
     {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
+]
+pytest-aiohttp = [
+    {file = "pytest-aiohttp-1.0.3.tar.gz", hash = "sha256:0c8feb48dc8eb80870e2b153acaf62bbbcc207977ebcb74365ffcfe16adc9f15"},
+    {file = "pytest_aiohttp-1.0.3-py3-none-any.whl", hash = "sha256:51d8e0ac8799ebedb76ed7f6cf28cd9159cd2b5757ebdc8195a5766eb7a2afe9"},
+]
+pytest-asyncio = [
+    {file = "pytest-asyncio-0.17.2.tar.gz", hash = "sha256:6d895b02432c028e6957d25fc936494e78c6305736e785d9fee408b1efbc7ff4"},
+    {file = "pytest_asyncio-0.17.2-py3-none-any.whl", hash = "sha256:e0fe5dbea40516b661ef1bcfe0bd9461c2847c4ef4bb40012324f2454fb7d56d"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},

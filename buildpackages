@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if [ "$(basename "$(pwd)")" != "pyaussiebb" ]; then
-    echo "This must be run from the build directory"
-    exit 1
-fi
-rm dist/*
-python3 setup.py sdist bdist_wheel

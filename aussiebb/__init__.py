@@ -118,6 +118,13 @@ class AussieBB(BaseClass):
                                     )
         return responsedata
 
+    @property
+    def referral_code(self):
+        """ returns the referral code, which is just the customer number """
+        response = self.get_customer_details()
+        if "customer_number" not in response:
+            raise ValueError("Couldn't get customer_number from customer_details call.")
+        return int(response["customer_number"])
 
     def _check_reload_cached_services(self):
         """ If the age of the service data caching is too old, clear it and re-poll.

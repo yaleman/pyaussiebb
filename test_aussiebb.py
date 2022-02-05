@@ -127,3 +127,9 @@ def test_get_services_raw(users: List[AussieBB]):
             url = response["links"]["next"]
             response = user.request_get_json(url=url)
             print(json.dumps(response["links"], indent=4))
+
+
+def test_get_referral_code(users: List[AussieBB]):
+    """ tests the referral code func """
+    for user in users:
+        assert isinstance(user.referral_code, int)

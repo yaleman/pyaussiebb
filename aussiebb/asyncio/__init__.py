@@ -211,6 +211,14 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
                                     params=params,
                                     )
 
+    @property
+    async def referral_code(self):
+        """ returns the referral code, which is just the customer number """
+        response = await self.get_customer_details()
+        if "customer_number" not in response:
+            raise ValueError("Couldn't get customer_number from customer_details call.")
+        return int(response["customer_number"])
+
     async def _check_reload_cached_services(self):
         """ If the age of the service data caching is too old, clear it and re-poll.
 

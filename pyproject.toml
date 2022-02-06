@@ -4,6 +4,7 @@ version = "0.0.11"
 description = "Aussie Broadband API module"
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
+readme = "README.md"
 
 homepage = "https://github.com/yaleman/aussiebb"
 repository = "https://github.com/yaleman/aussiebb"

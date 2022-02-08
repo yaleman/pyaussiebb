@@ -13,29 +13,19 @@ It needs at least one user in the "users" field. eg:
 """
 
 import json
-import os
-from pathlib import Path
+
 from typing import List
 
 import pytest
 
 from aussiebb import AussieBB
 import aussiebb.const
-from aussiebb.types import GetServicesResponse, AussieBBConfigFile
+from aussiebb.types import GetServicesResponse
 
-
-def configloader():
-    """ loads config """
-    for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
-        filepath = Path(filename).resolve()
-        if filepath.exists():
-            try:
-                return AussieBBConfigFile.parse_file(filepath)
-            except json.JSONDecodeError as json_error:
-                pytest.exit(f"Failed to parse config file: {json_error}")
+from test_utils import configloader
 
 CONFIG = configloader()
-if len(CONFIG.users) == 0:
+if CONFIG is None or len(CONFIG.users) == 0:
     pytest.exit("You need some users in config.json")
 
 @pytest.fixture(name="users", scope="session")

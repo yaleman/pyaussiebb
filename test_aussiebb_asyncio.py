@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ test some things """
 
+import sys
 from typing import List
 
 import aiohttp
@@ -8,16 +9,28 @@ import pytest
 
 from aussiebb.asyncio import AussieBB
 import aussiebb.const
-from test_aussiebb import configloader
+
+from test_utils import configloader
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
 CONFIG = configloader()
+if CONFIG is None:
+    pytest.exit("No config found!")
+    sys.exit(1)
 if len(CONFIG.users) == 0:
     pytest.exit("You need some users in config.json")
 
-async def test_login_cycle(users: List[AussieBB] = CONFIG.users):
+@pytest.fixture(name="users")
+def fixture_users(config=CONFIG):
+    """ users fixture """
+    if config is None:
+        return []
+    return config.users
+
+
+async def test_login_cycle(users: List[AussieBB]):
     """ test the login step """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -29,7 +42,7 @@ async def test_login_cycle(users: List[AussieBB] = CONFIG.users):
             assert not api._has_token_expired() #pylint: disable=protected-access
 
 
-async def test_get_customer_details(users: List[AussieBB] = CONFIG.users):
+async def test_get_customer_details(users: List[AussieBB]):
     """ test get_customer_details """
 
     for user in users:
@@ -39,7 +52,7 @@ async def test_get_customer_details(users: List[AussieBB] = CONFIG.users):
             response = await api.get_customer_details()
             assert response.get('customer_number', False)
 
-async def test_get_services(users: List[AussieBB] = CONFIG.users):
+async def test_get_services(users: List[AussieBB]):
     """ test get_services """
 
     for user in users:
@@ -50,7 +63,7 @@ async def test_get_services(users: List[AussieBB] = CONFIG.users):
             api.logger.debug(services)
             assert services
 
-async def test_line_state(users: List[AussieBB] = CONFIG.users):
+async def test_line_state(users: List[AussieBB]):
     """ test test_line_state """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -64,7 +77,7 @@ async def test_line_state(users: List[AussieBB] = CONFIG.users):
             assert line_state.get('id')
 
 
-async def test_get_usage(users: List[AussieBB] = CONFIG.users):
+async def test_get_usage(users: List[AussieBB]):
     """ test get_usage """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -76,7 +89,7 @@ async def test_get_usage(users: List[AussieBB] = CONFIG.users):
             assert usage.get('daysTotal')
 
 
-async def test_get_service_tests(users: List[AussieBB] = CONFIG.users):
+async def test_get_service_tests(users: List[AussieBB]):
     """ test the get_service_tests function and its return type """
 
     for user in users:
@@ -99,7 +112,7 @@ async def test_get_service_tests(users: List[AussieBB] = CONFIG.users):
             assert isinstance(service_tests, list)
 
 
-async def test_get_service_plans(users: List[AussieBB] = CONFIG.users):
+async def test_get_service_plans(users: List[AussieBB]):
     """ tests the plan pulling for services """
 
     for user in users:
@@ -117,7 +130,7 @@ async def test_get_service_plans(users: List[AussieBB] = CONFIG.users):
 
 
 
-async def test_get_referral_code(users: List[AussieBB] = CONFIG.users):
+async def test_get_referral_code(users: List[AussieBB]):
     """ tests the referral code func """
     for user in users:
         async with aiohttp.ClientSession() as session:

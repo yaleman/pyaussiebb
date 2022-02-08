@@ -4,7 +4,7 @@ from copy import deepcopy
 import json
 
 import pytest
-import requests_testing
+import requests_testing # type: ignore
 
 from aussiebb import AussieBB
 import aussiebb

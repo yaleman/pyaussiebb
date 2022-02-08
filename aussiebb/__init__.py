@@ -1,6 +1,6 @@
 """ A class for interacting with Aussie Broadband APIs """
 
-import json
+# import json
 from time import time
 from typing import Any, Dict, List, Optional
 
@@ -10,7 +10,7 @@ import requests.sessions
 from .baseclass import BaseClass
 from .const import BASEURL, default_headers, PHONE_TYPES
 from .exceptions import RecursiveDepth
-from .types import ServiceTest, AccountTransaction
+from .types import ServiceTest, AccountTransaction, AussieBBOutage
 
 class AussieBB(BaseClass):
     """ A class for interacting with Aussie Broadband APIs """
@@ -316,31 +316,17 @@ class AussieBB(BaseClass):
         url = self.get_url("service_plans", {'service_id' : service_id})
         return self.request_get_json(url=url)
 
-    def service_outages(self, service_id: int):
+
+    def service_outages(self, service_id: int) -> Dict[str, Any]:
         """ Pulls outages associated with a service.
 
             Keys: `['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']`
 
-            Example data:
-            ```
-            {
-                "networkEvents": [],
-                "aussieOutages": [],
-                "currentNbnOutages": [],
-                "scheduledNbnOutages": [],
-                "resolvedScheduledNbnOutages": [
-                    {
-                        "start_date": "2021-08-17T14:00:00Z",
-                        "end_date": "2021-08-17T20:00:00Z",
-                        "duration": "6.0"
-                    }
-                ],
-                "resolvedNbnOutages": []
-            }
             ```
         """
         url = self.get_url("service_outages", {'service_id' : service_id})
-        return self.request_get_json(url=url)
+        result = AussieBBOutage.parse_obj(self.request_get_json(url=url))
+        return result.dict()
 
     def service_boltons(self, service_id: int):
         """ Pulls addons associated with the service.

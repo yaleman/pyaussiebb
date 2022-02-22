@@ -1,5 +1,8 @@
 """ constants and utilities """
 
+from typing import TypedDict
+
+
 BASEURL = {
     'api' : 'https://myaussie-api.aussiebroadband.com.au',
     'login' : "https://myaussie-auth.aussiebroadband.com.au/login"
@@ -7,14 +10,22 @@ BASEURL = {
 
 DEFAULT_BACKOFF_DELAY = 90
 
-def default_headers():
+DefaultHeaders = TypedDict("DefaultHeaders", {
+    "Accept" : str,
+    "Cache-Control" : str,
+    "Content-Type" : str,
+    "Origin": str,
+    "Referer" : str,
+})
+
+def default_headers() -> DefaultHeaders:
     """ returns a default set of headers """
     return {
         'Accept': "application/json",
         'Content-Type': "application/json",
         'Origin': "https://my.aussiebroadband.com.au",
         'Referer': "https://my.aussiebroadband.com.au/",
-        'cache-control': "no-cache",
+        'Cache-Control': "no-cache",
     }
 
 API_ENDPOINTS = {
@@ -24,9 +35,10 @@ API_ENDPOINTS = {
     'billing_invoices' : '/billing/invoices/{invoice_id}',
     'get_appointment' : '/tickets/{ticketid}/appointment',
     'get_customer_details' : '/customer',
-    'test_line_state' : '/tests/{service_id}/linestate',
-    'get_services' : '/services',
+    'get_order' : '/orders/nbn/{order_id}',
+    'get_orders' : '/orders?v=2',
     'get_service_tests' : '/tests/{service_id}/available',
+    'get_services' : '/services',
     'get_test_history' : '/tests/{service_id}',
     'get_usage' : '/broadband/{service_id}/usage',
     'service_boltons' : '/nbn/{service_id}/boltons',
@@ -35,6 +47,7 @@ API_ENDPOINTS = {
     'service_plans' : '/planchange/{service_id}',
     'support_tickets' : '/tickets',
     'telephony_usage' : '/telephony/{service_id}/usage',
+    'test_line_state' : '/tests/{service_id}/linestate',
 }
 
 

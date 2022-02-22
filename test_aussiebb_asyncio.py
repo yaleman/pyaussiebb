@@ -70,11 +70,14 @@ async def test_line_state(users: List[AussieBB]):
             api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
 
             services = await api.get_services()
-            service_id = services[0].get('service_id')
-
-            print(f"Got service ID: {service_id}")
-            line_state = await api.test_line_state(service_id)
-            assert line_state.get('id')
+            for service in services:
+                if service["type"] in aussiebb.const.NBN_TYPES:
+                    service_id = service['service_id']
+                    print(f"Got service ID: {service_id}")
+                    print(f"Service:\n{service}")
+                    line_state = await api.test_line_state(service_id)
+                    assert line_state.get('id')
+                    break
 
 
 async def test_get_usage(users: List[AussieBB]):

@@ -6,7 +6,7 @@ import asyncio
 import json
 from time import time
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from unittest import skip
 
 try:
@@ -20,7 +20,7 @@ from ..baseclass import BaseClass
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
 from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 
-from ..types import ServiceTest, AccountTransaction
+from ..types import ServiceTest, AccountTransaction, OrderDetailResponseModel, OrderResponse
 
 class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
     """ aiohttp class for interacting with Aussie Broadband APIs """
@@ -82,7 +82,11 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
 
         return self._handle_login_response(response.status, jsondata, response.cookies)
 
-    async def handle_response_fail(self, response, wait_on_rate_limit: bool=True):
+    async def handle_response_fail(
+        self,
+        response: ClientResponse,
+        wait_on_rate_limit: bool=True,
+        ) -> None:
         """ Handles response status codes. Tries to gracefully handle the rate limiting.
 
         ```
@@ -131,9 +135,14 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
                 self.logger.debug("token has expired, logging in...")
                 await self.login()
 
-    async def request_get(self, skip_login_check: bool = False, **kwargs) -> ClientResponse:
+    async def request_get(
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        depth: int = 0,
+        **kwargs: Dict[str, Any],
+        ) -> ClientResponse:
         """ Performs a GET request and logs in first if needed. """
-        depth = kwargs.get('depth', 0)
         if depth > 2:
             raise RecursiveDepth(f"depth: {depth}")
 
@@ -144,15 +153,16 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
 
         if 'cookies' not in kwargs:
             kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
-        async with self.session.get(**kwargs) as response:
-            try:
-                await self.handle_response_fail(response)
-                await response.read()
-            except RateLimitException:
-                response = await self.request_get(skip_login_check, **kwargs)
-            return response
+        response = await self.session.get(url=url, **kwargs) # type: ignore
+        # async with self.session.get(url=url, **kwargs) as response:
+        try:
+            await self.handle_response_fail(response)
+            await response.read()
+        except RateLimitException:
+            response = await self.request_get(url=url, skip_login_check=skip_login_check, depth=depth, **kwargs)
+        return response
 
-    async def request_get_json(self, skip_login_check: bool = False, **kwargs):
+    async def request_get_json(self, skip_login_check: bool = False, **kwargs) -> Any:
         """ Performs a GET request and logs in first if needed.
 
         Returns a dict of the JSON response.
@@ -176,40 +186,46 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
                 jsondata = await self.request_get_json(skip_login_check, **kwargs)
         return jsondata
 
-    async def request_post_json(self, url, **kwargs):
+    async def request_post_json(
+        self,
+        url=str,
+        depth: int=0,
+        skip_login_check: bool=False,
+        **kwargs: Dict[str, Any],
+        ) -> Dict[str, Any]:
         """ Performs a POST request and logs in first if needed.
 
         Returns a dict of the response data.
         """
-        depth = kwargs.get('depth', 0)
         if depth > 2:
             raise RecursiveDepth(f"depth: {depth}")
 
         if self.session is None:
             self.session = aiohttp.ClientSession()
 
-        await self.do_login_check(kwargs.get("skip_login_check", False))
+        await self.do_login_check(skip_login_check)
 
         cookies = kwargs.get('cookies', {'myaussie_cookie' : self.myaussie_cookie})
         headers = kwargs.get('headers', default_headers())
         async with self.session.post(url=url, cookies=cookies, headers=headers) as response:
             try:
                 await self.handle_response_fail(response)
-                jsondata = await response.json()
+                jsondata: Dict[str, Any] = await response.json()
             except RateLimitException:
-                jsondata = await self.request_post_json(url=url, depth=depth+1, **kwargs)
+                jsondata = await self.request_post_json(url=url, depth=depth+1, skip_login_check=skip_login_check, **kwargs)
         return jsondata
 
-    async def get_customer_details(self) -> dict:
+    async def get_customer_details(self) -> Dict[str, Any]:
         """ Grabs the customer details.
 
         Returns a dict """
 
         url = self.get_url("get_customer_details")
         params = {"v":"2"}
-        return await self.request_get_json(url=url,
+        result: Dict[str, Any] = await self.request_get_json(url=url,
                                     params=params,
                                     )
+        return result
 
     @property
     async def referral_code(self):
@@ -219,7 +235,7 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             raise ValueError("Couldn't get customer_number from customer_details call.")
         return int(response["customer_number"])
 
-    async def _check_reload_cached_services(self):
+    async def _check_reload_cached_services(self) -> bool:
         """ If the age of the service data caching is too old, clear it and re-poll.
 
         Returns bool - if it reloaded the cache.
@@ -299,15 +315,15 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             ```
             """
         url = self.get_url("account_transactions")
-        responsedata = await self.request_get_json(url=url)
+        responsedata: Dict[str, AccountTransaction] = await self.request_get_json(url=url)
         return responsedata
 
-    async def billing_invoice(self, invoice_id):
+    async def billing_invoice(self, invoice_id: int):
         """ Downloads an invoice
 
             This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
-        url = self.get_url("billing_invoice", {'invoice_id', invoice_id})
+        url = self.get_url("billing_invoice", {'invoice_id': invoice_id})
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
@@ -370,6 +386,7 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
 
     async def test_line_state(self, service_id: int):
         """ Tests the line state for a given service ID """
+        # TODO: check if this is valid for the service id
         url = self.get_url("test_line_state", {'service_id' : service_id})
 
         if self.debug:
@@ -541,3 +558,17 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
         if self.debug:
             print(responsedata, file=sys.stderr)
         return responsedata
+
+    async def get_orders(self):
+        """ pulls the outstanding orders for an account """
+        url = self.get_url("get_orders")
+        responsedata = await self.request_get_json(url=url)
+        result = OrderDetailResponseModel(**responsedata)
+        return result.dict()
+
+    async def get_order(self, order_id: int):
+        """ gets a specific order """
+        url = self.get_url("get_order", {"order_id" : order_id})
+        responsedata = await self.request_get_json(url=url)
+        result = OrderDetailResponseModel(**responsedata)
+        return result.dict()

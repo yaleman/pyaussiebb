@@ -49,6 +49,7 @@ def test_customer_details(users):
         test_api.logger.info("Testing get_details")
         response = test_api.get_customer_details()
         assert response.get('customer_number', False)
+        print(json.dumps(response, indent=4, default=str))
 
 def test_get_services(users: List[AussieBB]):
     """ test get_services """
@@ -66,8 +67,9 @@ def test_line_state(users):
         services = test_api.get_services()
         for service in services:
             if service['type'] in aussiebb.const.NBN_TYPES:
+                print(service)
                 assert test_api.test_line_state(service["service_id"]).get('id')
-                return
+                break
 
 def test_get_usage(users):
     """ test get_usage """

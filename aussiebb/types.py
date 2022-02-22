@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional, TypedDict
 
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, SecretStr, Field
 
 class AccountTransaction(TypedDict):
     """ Transaction data typing, returns from account_transactions """
@@ -122,6 +122,45 @@ class AussieBBOutage(BaseModel):
     scheduledNbnOutages: List[ScheduledOutageRecord] # TODO: define scheduledNbnOutages
     resolvedScheduledNbnOutages: List[ScheduledOutageRecord] # TODO: define resolvedScheduledNbnOutages
     resolvedNbnOutages: List[Any] # TODO: define resolvedNbnOutages
+
+    class Config:
+        """ config """
+        arbitrary_types_allowed=True
+
+
+
+class OrderData(TypedDict):
+    """ order element for OrderResponse get_orders """
+    id: int
+    status: str
+    type: str
+    description: str
+
+class OrderDetailResponseModel(BaseModel):
+    """ order Response for get_order(int) """
+    id: int
+    status: str
+    plan: str
+    address: str
+    appointment: str
+    appointment_reschedule_code: int = Field(..., alias="appointmentRescheduleCode")
+    statuses: List[str]
+
+OrderDetailResponse = TypedDict("OrderDetailResponse", {
+    "id" : int,
+    "status" : str,
+    "plan": str,
+    "address": str,
+    "appointment": str,
+    "appointment_reschedule_code": int,
+    "statuses": List[str]
+})
+
+class OrderResponse(BaseModel):
+    """ response from get_orders """
+    data: List[OrderData]
+    links: APIResponseLinks
+    meta: APIResponseMeta
 
     class Config:
         """ config """

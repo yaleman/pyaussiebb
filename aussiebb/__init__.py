@@ -1,16 +1,19 @@
 """ A class for interacting with Aussie Broadband APIs """
 
 # import json
+from email.policy import default
+from http.cookiejar import CookieJar
+from http.cookies import SimpleCookie
 from time import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast, Union
 
 import requests
 import requests.sessions
 
 from .baseclass import BaseClass
-from .const import BASEURL, default_headers, PHONE_TYPES
+from .const import BASEURL, DefaultHeaders, default_headers, PHONE_TYPES
 from .exceptions import RecursiveDepth
-from .types import ServiceTest, AccountTransaction, AussieBBOutage
+from .types import ServiceTest, AccountTransaction, AussieBBOutage, OrderResponse, OrderDetailResponse, OrderDetailResponseModel
 
 class AussieBB(BaseClass):
     """ A class for interacting with Aussie Broadband APIs """
@@ -20,7 +23,7 @@ class AussieBB(BaseClass):
         password: str,
         debug: bool=False,
         services_cache_time: int = 28800,
-        session : requests.sessions.Session = None,
+        session : Optional[requests.sessions.Session] = None,
         ):
         """ Setup function
 
@@ -40,13 +43,13 @@ class AussieBB(BaseClass):
         else:
             self.session = session
 
-    def login(self, depth=0):
+    def login(self, depth: int=0) -> bool:
         """ Logs into the account and caches the cookie.  """
         if depth>2:
             raise RecursiveDepth("Login recursion depth > 2")
         self.logger.debug("Logging in...")
 
-        url = BASEURL.get('login')
+        url = BASEURL["login"]
 
         payload = {
             'username' : self.username,
@@ -73,18 +76,48 @@ class AussieBB(BaseClass):
                 self.logger.debug("token has expired, logging in...")
                 self.login()
 
-    def request_get(self, skip_login_check: bool = False, **kwargs):
+    def request_get( # type: ignore
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        cookies: Optional[Any] = None,
+        **kwargs,
+        ):
         """ Performs a GET request and logs in first if needed.
 
         Returns the `requests.Response` object."""
         self.do_login_check(skip_login_check)
-        if 'cookies' not in kwargs:
-            kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
-        response = self.session.get(**kwargs)
+        if cookies is None:
+            cookies = {'myaussie_cookie' : self.myaussie_cookie}
+
+        response = self.session.get(url=url, cookies=cookies, **kwargs)
         response.raise_for_status()
         return response
 
-    def request_get_json(self, skip_login_check: bool = False, **kwargs):
+
+    def request_get_list(
+        self,
+        skip_login_check: bool = False,
+        **kwargs: Any
+        ) -> List[Any]:
+        """ Performs a GET request and logs in first if needed.
+
+        Returns a list from the response.
+        """
+        if 'cookies' not in kwargs:
+            kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
+        self.do_login_check(skip_login_check)
+        response = self.session.get(**kwargs)
+        response.raise_for_status()
+        result: List[Any] = response.json()
+        return result
+
+    def request_get_json(
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        **kwargs: Dict[str, Any],
+        ):
         """ Performs a GET request and logs in first if needed.
 
         Returns a dict of the JSON response.
@@ -92,28 +125,36 @@ class AussieBB(BaseClass):
         if 'cookies' not in kwargs:
             kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
         self.do_login_check(skip_login_check)
-        response = self.session.get(**kwargs)
+        response = self.session.get(url, **kwargs) # type: ignore
         response.raise_for_status()
         return response.json()
 
-    def request_post(self, skip_login_check: bool = False, **kwargs):
+    def request_post(
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        **kwargs: Dict[str, Any]
+        ):
         """ Performs a POST request and logs in first if needed."""
         self.do_login_check(skip_login_check)
         if 'cookies' not in kwargs:
             kwargs['cookies'] = {'myaussie_cookie' : self.myaussie_cookie}
-        if 'headers' not in kwargs:
-            kwargs['headers'] = default_headers()
-        response = self.session.post(**kwargs)
+
+        response = self.session.post(
+            url=url,
+            headers=kwargs.get("headers", default_headers()),
+            **kwargs, # type: ignore
+            )
         response.raise_for_status()
         return response
 
-    def get_customer_details(self):
+    def get_customer_details(self) -> Dict[str, Any]:
         """ Grabs the customer details.
 
         Returns a dict """
         url = self.get_url("get_customer_details")
         querystring = {"v":"2"}
-        responsedata = self.request_get_json(url=url,
+        responsedata: Dict[str, Any] = self.request_get_json(url=url,
                                     params=querystring,
                                     )
         return responsedata
@@ -126,7 +167,7 @@ class AussieBB(BaseClass):
             raise ValueError("Couldn't get customer_number from customer_details call.")
         return int(response["customer_number"])
 
-    def _check_reload_cached_services(self):
+    def _check_reload_cached_services(self) -> bool:
         """ If the age of the service data caching is too old, clear it and re-poll.
 
         Returns bool - if it reloaded the cache.
@@ -145,7 +186,7 @@ class AussieBB(BaseClass):
     def get_services(
         self,
         page: int = 1,
-        servicetypes: list=None,
+        servicetypes: Optional[List[str]]=None,
         use_cached: bool=False,
         ) -> Optional[List[Dict[str, Any]]]:
         """ Returns a `list` of `dicts` of services associated with the account.
@@ -211,16 +252,18 @@ class AussieBB(BaseClass):
             ```
             """
         url = self.get_url("account_transactions")
-        return self.request_get_json(url=url)
+        result: Dict[str, AccountTransaction] = self.request_get_json(url=url)
+        return result
 
 
-    def billing_invoice(self, invoice_id):
+    def billing_invoice(self, invoice_id: int) -> Dict[str, Any]:
         """ Downloads an invoice
 
             This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
         url = self.get_url("billing_invoice", {'invoice_id' : invoice_id})
-        return self.request_get_json(url=url)
+        result: Dict[str, Any] = self.request_get_json(url=url)
+        return result
 
     def account_paymentplans(self):
         """ Returns a dict of payment plans for an account """
@@ -278,6 +321,7 @@ class AussieBB(BaseClass):
 
     def test_line_state(self, service_id: int):
         """ Tests the line state for a given service ID """
+        # TODO: check if this is valid for the service id
         url = self.get_url("test_line_state", {'service_id' : service_id})
         self.logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
@@ -304,8 +348,8 @@ class AussieBB(BaseClass):
         test_name = test_links[0]["name"]
         self.logger.debug("Running %s", test_name)
         if test_method == 'get':
-            return self.request_get_json(url=test_links[0].get('link'))
-        return self.request_post(url=test_links[0].get('link')).json()
+            return self.request_get_json(url=test_links[0]['link'])
+        return self.request_post(url=test_links[0]['link']).json()
 
     def service_plans(self, service_id: int):
         """ Pulls the plan data for a given service.
@@ -397,7 +441,6 @@ class AussieBB(BaseClass):
         url = self.get_url("get_appointment", {'ticketid' : ticketid})
         return self.request_get_json(url=url)
 
-
     def account_contacts(self):
         """ Pulls the contacts with the account, returns a list of dicts
 
@@ -405,3 +448,15 @@ class AussieBB(BaseClass):
             """
         url = self.get_url("account_contacts")
         return self.request_get_json(url=url)
+
+    def get_orders(self):
+        """ pulls the outstanding orders for an account """
+        url = self.get_url("get_orders")
+        result = OrderResponse(**self.request_get_json(url=url))
+        return result.dict()
+
+    def get_order(self, order_id: int) -> OrderDetailResponse:
+        """ gets a specific order """
+        url = self.get_url("get_order", {"order_id" : order_id})
+        result = cast(OrderDetailResponse, OrderDetailResponseModel(**self.request_get_json(url=url)).dict())
+        return result

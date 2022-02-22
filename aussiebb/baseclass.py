@@ -1,9 +1,11 @@
 """ base class def """
 
-from http.cookies import Morsel
+from http.cookies import SimpleCookie, Morsel
 import logging
 from time import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
+
+from requests.cookies import RequestsCookieJar
 
 from .const import API_ENDPOINTS, BASEURL, PHONE_TYPES, NBN_TYPES
 from .exceptions import AuthenticationException, RateLimitException, UnrecognisedServiceType
@@ -20,14 +22,14 @@ class BaseClass:
         password: str,
         debug: bool = False,
         services_cache_time: int = 28800,
-        logger = None
+        logger: logging.Logger = logging.getLogger()
         ):
 
 
         if not (username and password):
             raise AuthenticationException("You need to supply both username and password")
 
-        self.myaussie_cookie: Optional[Morsel] = None
+        self.myaussie_cookie: Optional[Union[Morsel[Any],SimpleCookie[Any]]] = None
         self.token_expires = -1
 
         self.services_cache_time = services_cache_time # defaults to 8 hours
@@ -35,13 +37,11 @@ class BaseClass:
         self.services = None
         self.username = username
         self.password = password
-
-        if not logger:
-            self.logger = logging.getLogger()
+        self.logger = logger
         self.debug = debug
 
 
-    def get_url(self, function_name: str, data: dict=None):
+    def get_url(self, function_name: str, data: Optional[Dict[str, Any]]=None) -> str:
         """ gets the URL based on the data/function """
         if function_name not in self.API_ENDPOINTS:
             raise ValueError(f"Function name {function_name} not found, cannot find URL")
@@ -52,7 +52,7 @@ class BaseClass:
 
         return f"{self.BASEURL.get('api')}{api_endpoint}"
 
-    def _has_token_expired(self):
+    def _has_token_expired(self) -> bool:
         """ Returns bool of if the token has expired """
         if time() > self.token_expires:
             return True
@@ -62,7 +62,7 @@ class BaseClass:
         self,
         status_code: int,
         jsondata: Dict[str, Any],
-        cookies: Dict[str, Morsel],
+        cookies: Union[RequestsCookieJar, SimpleCookie[Any]],
         ) -> bool:
         """ Handles the login response.
 

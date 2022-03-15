@@ -13,7 +13,7 @@ import requests.sessions
 from .baseclass import BaseClass
 from .const import BASEURL, DefaultHeaders, default_headers, PHONE_TYPES
 from .exceptions import RecursiveDepth
-from .types import ServiceTest, AccountTransaction, AussieBBOutage, OrderResponse, OrderDetailResponse, OrderDetailResponseModel
+from .types import ServiceTest, AccountTransaction, AussieBBOutage, OrderResponse, OrderDetailResponse, OrderDetailResponseModel, GetServicesResponse
 
 class AussieBB(BaseClass):
     """ A class for interacting with Aussie Broadband APIs """
@@ -201,21 +201,28 @@ class AussieBB(BaseClass):
             self._check_reload_cached_services()
         else:
             url = self.get_url("get_services")
-            querystring = {'page' : page}
+            services_list: List[Dict[str,Any]] = []
+            while True:
+                params = {'page' : page}
+                responsedata = self.request_get_json(url=url, params=params)
+                servicedata = GetServicesResponse.parse_obj(responsedata)
 
-            responsedata = self.request_get_json(url=url, params=querystring)
-            # cache the data
+                for link in servicedata.data:
+                    services_list.append(link)
+
+                if servicedata.links.next is None:
+                    break
+                url = servicedata.links.next
+                page = servicedata.meta["current_page"]
+
+            self.services = services_list
             self.services_last_update = int(time())
-            if "data" not in responsedata:
-                raise ValueError("Couldn't get 'data' element from response.")
-            self.services = responsedata["data"]
 
-        # TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)
 
         # only filter if we need to
         if servicetypes is not None:
             self.logger.debug("Filtering services based on provided list: %s", servicetypes)
-            filtered_responsedata: List[str] = []
+            filtered_responsedata: List[Dict[str,Any]] = []
             if self.services is not None:
                 for service in self.services:
                     if "type" not in service:

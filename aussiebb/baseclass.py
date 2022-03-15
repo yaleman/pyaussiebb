@@ -3,7 +3,7 @@
 from http.cookies import SimpleCookie, Morsel
 import logging
 from time import time
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from requests.cookies import RequestsCookieJar
 
@@ -34,7 +34,7 @@ class BaseClass:
 
         self.services_cache_time = services_cache_time # defaults to 8 hours
         self.services_last_update = -1
-        self.services = None
+        self.services: List[Dict[str, Any]] = []
         self.username = username
         self.password = password
         self.logger = logger

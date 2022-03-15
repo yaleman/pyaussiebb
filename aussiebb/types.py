@@ -21,7 +21,7 @@ class ServiceTest(TypedDict):
     link: str
 
 
-class APIResponseLinks(TypedDict):
+class APIResponseLinks(BaseModel):
     """ the links field from an API response"""
     first: str
     last: str
@@ -39,11 +39,15 @@ APIResponseMeta = TypedDict("APIResponseMeta",
     "total": int
 })
 
-class GetServicesResponse(TypedDict):
+class GetServicesResponse(BaseModel):
     """ the format for a response from the get_services call """
     data: List[Dict[str, Any]]
     links: APIResponseLinks
     meta: APIResponseMeta
+
+    class Config:
+        """ metadata """
+        arbitrary_types_allowed = True
 
 class ConfigUser(BaseModel):
     """ just a username and password field """

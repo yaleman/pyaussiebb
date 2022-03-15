@@ -269,8 +269,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v0012-in-development" class="md-nav__link">
-    v0.0.12 (in development)
+  <a href="#v0012" class="md-nav__link">
+    v0.0.12
   </a>
   
 </li>
@@ -394,8 +394,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v0012-in-development" class="md-nav__link">
-    v0.0.12 (in development)
+  <a href="#v0012" class="md-nav__link">
+    v0.0.12
   </a>
   
 </li>
@@ -487,10 +487,16 @@
 
 
 <h1 id="changelog">CHANGELOG</h1>
-<h2 id="v0012-in-development">v0.0.12 (in development)</h2>
+<h2 id="v0012">v0.0.12</h2>
 <ul>
 <li>Added <code>pydantic</code> as a dependency, which allows for better type checking.</li>
 <li>Rewrote a bunch of the tests because the bike shed needed to be green and driven by JSON.</li>
+<li>Added first run of handling for folks with more than 10 services - paginated calls</li>
+<li>Some things will return nicer pydantic-ish objects, typing is starting to be enforced on output<ul>
+<li><code>account_contacts</code> is one, for example</li>
+</ul>
+</li>
+<li>Added service type of <code>Opticomm</code> to <code>NBN_TYPES</code></li>
 </ul>
 <h2 id="v0011">v0.0.11</h2>
 <ul>

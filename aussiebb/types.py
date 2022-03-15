@@ -5,8 +5,10 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 from pydantic import BaseModel, SecretStr, Field
 
+
 class AccountTransaction(TypedDict):
-    """ Transaction data typing, returns from account_transactions """
+    """Transaction data typing, returns from account_transactions"""
+
     id: int
     type: str
     time: str
@@ -14,56 +16,70 @@ class AccountTransaction(TypedDict):
     amountCents: int
     runningBalanceCents: int
 
+
 class ServiceTest(TypedDict):
-    """ A service test object """
+    """A service test object"""
+
     name: str
     description: str
     link: str
 
 
 class APIResponseLinks(BaseModel):
-    """ the links field from an API response"""
+    """the links field from an API response"""
+
     first: str
     last: str
     prev: Optional[str]
     next: Optional[str]
 
-APIResponseMeta = TypedDict("APIResponseMeta",
-{
-    "current_page": int,
-    "from": int,
-    "last_page": int,
-    "path": str,
-    "per_page": int,
-    "to": int,
-    "total": int
-})
+
+APIResponseMeta = TypedDict(
+    "APIResponseMeta",
+    {
+        "current_page": int,
+        "from": int,
+        "last_page": int,
+        "path": str,
+        "per_page": int,
+        "to": int,
+        "total": int,
+    },
+)
+
 
 class GetServicesResponse(BaseModel):
-    """ the format for a response from the get_services call """
+    """the format for a response from the get_services call"""
+
     data: List[Dict[str, Any]]
     links: APIResponseLinks
     meta: APIResponseMeta
 
     class Config:
-        """ metadata """
+        """metadata"""
+
         arbitrary_types_allowed = True
 
+
 class ConfigUser(BaseModel):
-    """ just a username and password field """
+    """just a username and password field"""
+
     username: str
     password: str
 
 
 class AussieBBConfigFile(BaseModel):
-    """ config file definition """
+    """config file definition"""
+
     users: List[ConfigUser]
-    username : Optional[str]
-    password : Optional[SecretStr]
+    username: Optional[str]
+    password: Optional[SecretStr]
 
     class Config:
-        """ metadata """
+        """metadata"""
+
         arbitrary_types_allowed = True
+
 
 # Example extended data for an Aussie Outage
 # {
@@ -103,7 +119,8 @@ class AussieBBConfigFile(BaseModel):
 #     "resolvedNbnOutages": []
 # }
 class OutageRecord(BaseModel):
-    """ outage def """
+    """outage def"""
+
     reference: int
     title: str
     summary: str
@@ -112,36 +129,45 @@ class OutageRecord(BaseModel):
     restored_at: Optional[datetime]
     last_updated: Optional[datetime]
 
+
 class ScheduledOutageRecord:
-    """ scheduled outage record """
+    """scheduled outage record"""
+
     start_date: datetime
     end_date: datetime
     duration: float
 
+
 class AussieBBOutage(BaseModel):
-    """ outage class """
+    """outage class"""
+
     networkEvents: List[OutageRecord]
     aussieOutages: Dict[str, List[OutageRecord]]
-    currentNbnOutages: List[Any] # TODO: define currentNbnOutages
-    scheduledNbnOutages: List[ScheduledOutageRecord] # TODO: define scheduledNbnOutages
-    resolvedScheduledNbnOutages: List[ScheduledOutageRecord] # TODO: define resolvedScheduledNbnOutages
-    resolvedNbnOutages: List[Any] # TODO: define resolvedNbnOutages
+    currentNbnOutages: List[Any]  # TODO: define currentNbnOutages
+    scheduledNbnOutages: List[ScheduledOutageRecord]  # TODO: define scheduledNbnOutages
+    resolvedScheduledNbnOutages: List[
+        ScheduledOutageRecord
+    ]  # TODO: define resolvedScheduledNbnOutages
+    resolvedNbnOutages: List[Any]  # TODO: define resolvedNbnOutages
 
     class Config:
-        """ config """
-        arbitrary_types_allowed=True
+        """config"""
 
+        arbitrary_types_allowed = True
 
 
 class OrderData(TypedDict):
-    """ order element for OrderResponse get_orders """
+    """order element for OrderResponse get_orders"""
+
     id: int
     status: str
     type: str
     description: str
 
+
 class OrderDetailResponseModel(BaseModel):
-    """ order Response for get_order(int) """
+    """order Response for get_order(int)"""
+
     id: int
     status: str
     plan: str
@@ -150,35 +176,64 @@ class OrderDetailResponseModel(BaseModel):
     appointment_reschedule_code: int = Field(..., alias="appointmentRescheduleCode")
     statuses: List[str]
 
-OrderDetailResponse = TypedDict("OrderDetailResponse", {
-    "id" : int,
-    "status" : str,
-    "plan": str,
-    "address": str,
-    "appointment": str,
-    "appointment_reschedule_code": int,
-    "statuses": List[str]
-})
+
+OrderDetailResponse = TypedDict(
+    "OrderDetailResponse",
+    {
+        "id": int,
+        "status": str,
+        "plan": str,
+        "address": str,
+        "appointment": str,
+        "appointment_reschedule_code": int,
+        "statuses": List[str],
+    },
+)
+
 
 class OrderResponse(BaseModel):
-    """ response from get_orders """
+    """response from get_orders"""
+
     data: List[OrderData]
     links: APIResponseLinks
     meta: APIResponseMeta
 
     class Config:
-        """ config """
-        arbitrary_types_allowed=True
+        """config"""
+
+        arbitrary_types_allowed = True
+
 
 class VOIPDevice(BaseModel):
-    """ an individual service device """
+    """an individual service device"""
+
     username: str
     password: str
-    registered: bool # is it online?
+    registered: bool  # is it online?
+
 
 class VOIPService(BaseModel):
-    """ individual VOIP service """
+    """individual VOIP service"""
+
     phoneNumber: str
     barInternational: bool
     divertNumber: Optional[str]
     supportsNumberDiversion: bool
+
+
+class AccountContact(BaseModel):
+    """account contact data"""
+
+    contact_id: int = Field(..., alias="id")
+    first_name: str
+    last_name: str
+    email: List[str]
+    dob: str
+    home_phone: Optional[str]
+    work_phone: Optional[str]
+    mobile_phone: Optional[str]
+    work_mobile: Optional[str]
+    primary_contact: bool
+    username: Optional[str]
+    preferred_name: Optional[str]
+    middle_name: Optional[str]

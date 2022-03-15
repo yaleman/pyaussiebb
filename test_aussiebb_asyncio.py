@@ -142,6 +142,15 @@ async def test_get_referral_code(users: List[AussieBB]):
             refcode = await api.referral_code
             assert isinstance(refcode, int)
 
+async def test_get_account_contacts(users: List[AussieBB]):
+    """ tests the account_contacts function """
+    for user in users:
+        async with aiohttp.ClientSession() as session:
+            api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
+            contacts = await api.account_contacts()
+            print(contacts)
+            assert len(contacts) > 0
+
 
 async def test_get_voip_devices(users: List[AussieBB]):
     """ finds voip services and returns the devices """

@@ -128,6 +128,13 @@ def test_get_referral_code(users: List[AussieBB]):
     for user in users:
         assert isinstance(user.referral_code, int)
 
+def test_account_contacts(users: List[AussieBB]):
+    """ tests the referral code func """
+    for user in users:
+        contacts = user.account_contacts()
+        print(contacts)
+        assert len(contacts) > 0
+
 def test_get_voip_devices(users: List[AussieBB]):
     """ finds voip services and returns the devices """
     for user in users:

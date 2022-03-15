@@ -127,3 +127,35 @@ def test_get_referral_code(users: List[AussieBB]):
     """ tests the referral code func """
     for user in users:
         assert isinstance(user.referral_code, int)
+
+def test_get_voip_devices(users: List[AussieBB]):
+    """ finds voip services and returns the devices """
+    for user in users:
+        services = user.get_services()
+        if services is None:
+            print(f"no services for user {user}")
+            continue
+
+        for service in services:
+            if service['type'] not in aussiebb.const.PHONE_TYPES:
+                continue
+            print(f"Found a voip service! {service['service_id']}")
+
+            service_devices = user.get_voip_devices(service_id=int(service['service_id']))
+            print(json.dumps(service_devices, indent=4, default=str))
+
+def test_get_voip_service(users: List[AussieBB]):
+    """ finds voip services and returns the specific info endpoint """
+    for user in users:
+        services = user.get_services()
+        if services is None:
+            print(f"no services for user {user}")
+            continue
+
+        for service in services:
+            if service['type'] not in aussiebb.const.PHONE_TYPES:
+                continue
+            print(f"Found a voip service! {service['service_id']}")
+
+            service_devices = user.get_voip_service(service_id=int(service['service_id']))
+            print(json.dumps(service_devices, indent=4, default=str))

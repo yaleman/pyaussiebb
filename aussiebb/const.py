@@ -48,6 +48,8 @@ API_ENDPOINTS = {
     'support_tickets' : '/tickets',
     'telephony_usage' : '/telephony/{service_id}/usage',
     'test_line_state' : '/tests/{service_id}/linestate',
+    'voip_devices' : '/voip/{service_id}/devices',
+    'voip_service' : '/voip/{service_id}',
 }
 
 

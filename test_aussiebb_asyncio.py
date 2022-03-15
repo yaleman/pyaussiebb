@@ -141,3 +141,40 @@ async def test_get_referral_code(users: List[AussieBB]):
             api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
             refcode = await api.referral_code
             assert isinstance(refcode, int)
+
+
+async def test_get_voip_devices(users: List[AussieBB]):
+    """ finds voip services and returns the devices """
+    for user in users:
+        async with aiohttp.ClientSession() as session:
+            api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
+            services = await api.get_services()
+            if services is None:
+                print(f"no services for user {user}")
+                continue
+
+            for service in services:
+                if service['type'] not in aussiebb.const.PHONE_TYPES:
+                    continue
+                print(f"Found a voip service! {service['service_id']}")
+
+                service_devices = await api.get_voip_devices(service_id=int(service['service_id']))
+                print(json.dumps(service_devices, indent=4, default=str))
+
+async def test_get_voip_service(users: List[AussieBB]):
+    """ finds voip services and returns the specific info endpoint """
+    for user in users:
+        async with aiohttp.ClientSession() as session:
+            api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
+            services = await api.get_services()
+            if services is None:
+                print(f"no services for user {user}")
+                continue
+
+            for service in services:
+                if service['type'] not in aussiebb.const.PHONE_TYPES:
+                    continue
+                print(f"Found a voip service! {service['service_id']}")
+
+                service_devices = await api.get_voip_service(service_id=int(service['service_id']))
+                print(json.dumps(service_devices, indent=4, default=str))

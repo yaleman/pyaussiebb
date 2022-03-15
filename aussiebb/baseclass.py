@@ -40,6 +40,10 @@ class BaseClass:
         self.logger = logger
         self.debug = debug
 
+    def __str__(self):
+        """ string repr of account - returns username """
+        return self.username
+
 
     def get_url(self, function_name: str, data: Optional[Dict[str, Any]]=None) -> str:
         """ gets the URL based on the data/function """

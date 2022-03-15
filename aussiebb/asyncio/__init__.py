@@ -20,7 +20,7 @@ from ..baseclass import BaseClass
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
 from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 
-from ..types import ServiceTest, AccountTransaction, OrderDetailResponseModel, OrderResponse, APIResponseLinks, GetServicesResponse
+from ..types import ServiceTest, AccountTransaction, OrderDetailResponseModel, GetServicesResponse, VOIPDevice, VOIPService
 
 class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
     """ aiohttp class for interacting with Aussie Broadband APIs """
@@ -582,3 +582,18 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
         responsedata = await self.request_get_json(url=url)
         result = OrderDetailResponseModel(**responsedata)
         return result.dict()
+
+    async def get_voip_devices(self, service_id: int) -> List[VOIPDevice]:
+        """ gets the devices associatd with a VOIP service """
+        url = self.get_url("voip_devices", {"service_id" : service_id})
+        service_list: List[VOIPDevice] = []
+        data = await self.request_get_json(url=url)
+        for service in data:
+            service_list.append(VOIPDevice.parse_obj(service))
+        return service_list
+
+    async def get_voip_service(self, service_id: int) -> VOIPService:
+        """ gets the details of a VOIP service  """
+        url = self.get_url("voip_service", {"service_id" : service_id})
+        data = await self.request_get_json(url=url)
+        return VOIPService.parse_obj(data)

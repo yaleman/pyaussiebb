@@ -13,7 +13,7 @@ import requests.sessions
 from .baseclass import BaseClass
 from .const import BASEURL, DefaultHeaders, default_headers, PHONE_TYPES
 from .exceptions import RecursiveDepth
-from .types import ServiceTest, AccountTransaction, AussieBBOutage, OrderResponse, OrderDetailResponse, OrderDetailResponseModel, GetServicesResponse
+from .types import ServiceTest, AccountTransaction, AussieBBOutage, OrderResponse, OrderDetailResponse, OrderDetailResponseModel, GetServicesResponse, VOIPDevice, VOIPService
 
 class AussieBB(BaseClass):
     """ A class for interacting with Aussie Broadband APIs """
@@ -467,3 +467,16 @@ class AussieBB(BaseClass):
         url = self.get_url("get_order", {"order_id" : order_id})
         result = cast(OrderDetailResponse, OrderDetailResponseModel(**self.request_get_json(url=url)).dict())
         return result
+
+    def get_voip_devices(self, service_id: int) -> List[VOIPDevice]:
+        """ gets the devices associatd with a VOIP service """
+        url = self.get_url("voip_devices", {"service_id" : service_id})
+        service_list: List[VOIPDevice] = []
+        for service in self.request_get_json(url=url):
+            service_list.append(VOIPDevice.parse_obj(service))
+        return service_list
+
+    def get_voip_service(self, service_id: int) -> VOIPService:
+        """ gets the details of a VOIP service  """
+        url = self.get_url("voip_service", {"service_id" : service_id})
+        return VOIPService.parse_obj(self.request_get_json(url=url))

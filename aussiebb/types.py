@@ -169,3 +169,16 @@ class OrderResponse(BaseModel):
     class Config:
         """ config """
         arbitrary_types_allowed=True
+
+class VOIPDevice(BaseModel):
+    """ an individual service device """
+    username: str
+    password: str
+    registered: bool # is it online?
+
+class VOIPService(BaseModel):
+    """ individual VOIP service """
+    phoneNumber: str
+    barInternational: bool
+    divertNumber: Optional[str]
+    supportsNumberDiversion: bool

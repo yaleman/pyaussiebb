@@ -869,6 +869,19 @@
     GetServicesResponse
   </a>
   
+    <nav class="md-nav" aria-label="GetServicesResponse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aussiebb.types.GetServicesResponse.Config" class="md-nav__link">
+    Config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1620,6 +1633,19 @@
     GetServicesResponse
   </a>
   
+    <nav class="md-nav" aria-label="GetServicesResponse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aussiebb.types.GetServicesResponse.Config" class="md-nav__link">
+    Config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1930,21 +1956,28 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_reload_cached_services</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_services&quot;</span><span class="p">)</span>
-            <span class="n">querystring</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+            <span class="n">services_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+                <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">servicedata</span> <span class="o">=</span> <span class="n">GetServicesResponse</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">responsedata</span><span class="p">)</span>
 
-            <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">querystring</span><span class="p">)</span>
-            <span class="c1"># cache the data</span>
+                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="n">services_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span>
+                <span class="n">page</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;current_page&quot;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">services_list</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
-            <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">responsedata</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get &#39;data&#39; element from response.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
-        <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
 
         <span class="c1"># only filter if we need to</span>
         <span class="k">if</span> <span class="n">servicetypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering services based on provided list: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">)</span>
-            <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
                     <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
@@ -2688,21 +2721,28 @@ provide a list of matching strings in servicetypes.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_reload_cached_services</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_services&quot;</span><span class="p">)</span>
-        <span class="n">querystring</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+        <span class="n">services_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+            <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">servicedata</span> <span class="o">=</span> <span class="n">GetServicesResponse</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">responsedata</span><span class="p">)</span>
 
-        <span class="n">responsedata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">querystring</span><span class="p">)</span>
-        <span class="c1"># cache the data</span>
+            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">services_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;current_page&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">services_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
-        <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">responsedata</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get &#39;data&#39; element from response.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
-    <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
 
     <span class="c1"># only filter if we need to</span>
     <span class="k">if</span> <span class="n">servicetypes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering services based on provided list: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">servicetypes</span><span class="p">)</span>
-        <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">filtered_responsedata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span>
@@ -3646,12 +3686,22 @@ AussieBB            (<a title="aussiebb.baseclass.BaseClass" href="#aussiebb.bas
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_reload_cached_services</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_services&quot;</span><span class="p">)</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+            <span class="n">services_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+                <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">servicedata</span> <span class="o">=</span> <span class="n">GetServicesResponse</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">responsedata</span><span class="p">)</span>
 
-            <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-            <span class="c1"># cache the data</span>
+                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="n">services_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span>
+                <span class="n">page</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;current_page&quot;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">services_list</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 
         <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
 
@@ -4491,12 +4541,22 @@ provide a list of matching strings in servicetypes.</p>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_reload_cached_services</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;get_services&quot;</span><span class="p">)</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+        <span class="n">services_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;page&#39;</span> <span class="p">:</span> <span class="n">page</span><span class="p">}</span>
+            <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">servicedata</span> <span class="o">=</span> <span class="n">GetServicesResponse</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">responsedata</span><span class="p">)</span>
 
-        <span class="n">responsedata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_get_json</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-        <span class="c1"># cache the data</span>
+            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">services_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">servicedata</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;current_page&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">services_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">responsedata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 
     <span class="c1"># TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)</span>
 
@@ -5397,7 +5457,7 @@ BaseClass        </code>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">services_cache_time</span> <span class="o">=</span> <span class="n">services_cache_time</span> <span class="c1"># defaults to 8 hours</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">services_last_update</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
@@ -5869,10 +5929,13 @@ UnrecognisedServiceType            (<span title="BaseException">BaseException</s
 
 <h3 id="aussiebb.types.APIResponseLinks" class="doc doc-heading">
         <code>
-APIResponseLinks            (<span title="dict">dict</span>)
+APIResponseLinks            (<span title="pydantic.main.BaseModel">BaseModel</span>)
         </code>
 
 
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
 
 </h3>
 
@@ -5882,7 +5945,7 @@ APIResponseLinks            (<span title="dict">dict</span>)
 
         <details class="quote">
           <summary>Source code in <code>aussiebb/types.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">APIResponseLinks</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">APIResponseLinks</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; the links field from an API response&quot;&quot;&quot;</span>
     <span class="n">first</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">last</span><span class="p">:</span> <span class="nb">str</span>
@@ -5894,6 +5957,11 @@ APIResponseLinks            (<span title="dict">dict</span>)
 
 
   <div class="doc doc-children">
+
+
+
+
+
 
 
 
@@ -6235,10 +6303,13 @@ ConfigUser            (<span title="pydantic.main.BaseModel">BaseModel</span>)
 
 <h3 id="aussiebb.types.GetServicesResponse" class="doc doc-heading">
         <code>
-GetServicesResponse            (<span title="dict">dict</span>)
+GetServicesResponse            (<span title="pydantic.main.BaseModel">BaseModel</span>)
         </code>
 
 
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-pydantic-model"><code>pydantic-model</code></small>
+  </span>
 
 </h3>
 
@@ -6248,14 +6319,85 @@ GetServicesResponse            (<span title="dict">dict</span>)
 
         <details class="quote">
           <summary>Source code in <code>aussiebb/types.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GetServicesResponse</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GetServicesResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; the format for a response from the get_services call &quot;&quot;&quot;</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
     <span class="n">links</span><span class="p">:</span> <span class="n">APIResponseLinks</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">APIResponseMeta</span>
+
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; metadata &quot;&quot;&quot;</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
 </code></pre></div>
         </details>
 
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h4 id="aussiebb.types.GetServicesResponse.Config" class="doc doc-heading">
+        <code>
+Config        </code>
+
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>metadata </p>
+
+        <details class="quote">
+          <summary>Source code in <code>aussiebb/types.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; metadata &quot;&quot;&quot;</span>
+    <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+  </div>
 
     </div>
 

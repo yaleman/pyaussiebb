@@ -1,9 +1,13 @@
 # CHANGELOG
 
-## v0.0.12 (in development)
+## v0.0.12
 
   - Added `pydantic` as a dependency, which allows for better type checking.
   - Rewrote a bunch of the tests because the bike shed needed to be green and driven by JSON.
+  - Added first run of handling for folks with more than 10 services - paginated calls
+  - Some things will return nicer pydantic-ish objects, typing is starting to be enforced on output
+    - `account_contacts` is one, for example
+  - Added service type of `Opticomm` to `NBN_TYPES`
 
 ## v0.0.11
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ test some things """
 
+import json
 import sys
 from typing import List
 
@@ -60,7 +61,7 @@ async def test_get_services(users: List[AussieBB]):
             api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
             services = await api.get_services()
             api.logger.debug("Dumping services for api1")
-            api.logger.debug(services)
+            print(json.dumps(services, indent=4, default=str))
             assert services
 
 async def test_line_state(users: List[AussieBB]):

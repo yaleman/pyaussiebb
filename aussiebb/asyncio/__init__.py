@@ -20,7 +20,7 @@ from ..baseclass import BaseClass
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
 from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
 
-from ..types import ServiceTest, AccountTransaction, OrderDetailResponseModel, OrderResponse
+from ..types import ServiceTest, AccountTransaction, OrderDetailResponseModel, OrderResponse, APIResponseLinks, GetServicesResponse
 
 class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
     """ aiohttp class for interacting with Aussie Broadband APIs """
@@ -267,12 +267,22 @@ class AussieBB(BaseClass): #pylint: disable=too-many-public-methods
             await self._check_reload_cached_services()
         else:
             url = self.get_url("get_services")
-            params = {'page' : page}
+            services_list: List[Dict[str,Any]] = []
+            while True:
+                params = {'page' : page}
+                responsedata = await self.request_get_json(url=url, params=params)
+                servicedata = GetServicesResponse.parse_obj(responsedata)
 
-            responsedata = await self.request_get_json(url=url, params=params)
-            # cache the data
+                for link in servicedata.data:
+                    services_list.append(link)
+
+                if servicedata.links.next is None:
+                    break
+                url = servicedata.links.next
+                page = servicedata.meta["current_page"]
+
+            self.services = services_list
             self.services_last_update = int(time())
-            self.services = responsedata.get('data')
 
         # TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)
 

@@ -95,6 +95,6 @@ class BaseClass:
     def validate_service_type(cls, service: Dict[str, Any]) -> None:
         """ Check the service types against known types """
         if "type" not in service:
-            raise ValueError("field 'type' not found in service data")
+            raise ValueError("Field 'type' not found in service data")
         if service["type"] not in NBN_TYPES + PHONE_TYPES:
-            raise UnrecognisedServiceType(f"Service type {service['type']} not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new")
+            raise UnrecognisedServiceType(f"Service type '{service['type']}' not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new")

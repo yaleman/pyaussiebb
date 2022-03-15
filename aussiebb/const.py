@@ -92,7 +92,8 @@ TEST_MOCKDATA = {
 
 
 NBN_TYPES = [
-    "NBN"
+    "NBN",
+    "Opticomm",
 ]
 
 PHONE_TYPES = [

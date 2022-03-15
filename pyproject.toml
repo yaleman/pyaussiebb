@@ -6,9 +6,9 @@ authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
 readme = "README.md"
 
-homepage = "https://github.com/yaleman/aussiebb"
-repository = "https://github.com/yaleman/aussiebb"
-documentation = "https://yaleman.github.io/aussiebb/"
+homepage = "https://github.com/yaleman/pyaussiebb"
+repository = "https://github.com/yaleman/pyaussiebb"
+documentation = "https://yaleman.github.io/pyaussiebb/"
 
 keywords = [
     "api",
@@ -31,7 +31,7 @@ packages = [
 ]
 
 [tool.poetry.urls]
-"Issues" = "https://github.com/yaleman/aussiebb/issues/"
+"Issues" = "https://github.com/yaleman/pyaussiebb/issues/"
 
 [tool.poetry.dependencies]
 python = "^3.9"

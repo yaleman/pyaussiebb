@@ -38,6 +38,7 @@ API_ENDPOINTS = {
     "account_paymentplans": "/billing/paymentplans",
     "account_transactions": "/billing/transactions?group=true",
     "billing_invoices": "/billing/invoices/{invoice_id}",
+    "fetch_service": "/fetch/{service_id}",
     "get_appointment": "/tickets/{ticketid}/appointment",
     "get_customer_details": "/customer",
     "get_order": "/orders/nbn/{order_id}",
@@ -124,9 +125,11 @@ TEST_MOCKDATA = {
     },
 }
 
+FETCH_TYPES = [
+    "FETCHTV",
+]
 
 NBN_TYPES = [
-    "FETCHTV",
     "NBN",
     "Opticomm",
 ]

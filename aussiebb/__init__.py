@@ -4,6 +4,7 @@
 from email.policy import default
 from http.cookiejar import CookieJar
 from http.cookies import SimpleCookie
+from re import M
 from time import time
 from typing import Any, Dict, List, Optional, cast, Union
 
@@ -14,6 +15,7 @@ from .baseclass import BaseClass
 from .const import BASEURL, DefaultHeaders, default_headers, PHONE_TYPES
 from .exceptions import RecursiveDepth
 from .types import (
+    FetchService,
     ServiceTest,
     AccountContact,
     AccountTransaction,
@@ -23,9 +25,8 @@ from .types import (
     OrderDetailResponseModel,
     GetServicesResponse,
     VOIPDevice,
-    VOIPService,
+    VOIPDetails,
 )
-
 
 class AussieBB(BaseClass):
     """A class for interacting with Aussie Broadband APIs"""
@@ -195,8 +196,9 @@ class AussieBB(BaseClass):
     def get_services(
         self,
         page: int = 1,
-        servicetypes: Optional[List[str]] = None,
         use_cached: bool = False,
+        servicetypes: Optional[List[str]] = None,
+        drop_types: Optional[List[str]] = None
     ) -> Optional[List[Dict[str, Any]]]:
         """Returns a `list` of `dicts` of services associated with the account.
 
@@ -216,8 +218,8 @@ class AussieBB(BaseClass):
                 responsedata = self.request_get_json(url=url, params=params)
                 servicedata = GetServicesResponse.parse_obj(responsedata)
 
-                for link in servicedata.data:
-                    services_list.append(link)
+                for service in servicedata.data:
+                    services_list.append(service)
 
                 if servicedata.links.next is None:
                     break
@@ -227,23 +229,10 @@ class AussieBB(BaseClass):
             self.services = services_list
             self.services_last_update = int(time())
 
-        # only filter if we need to
-        if servicetypes is not None:
-            self.logger.debug(
-                "Filtering services based on provided list: %s", servicetypes
+        self.services = self.filter_services(
+            service_types=servicetypes,
+            drop_types=drop_types,
             )
-            filtered_responsedata: List[Dict[str, Any]] = []
-            if self.services is not None:
-                for service in self.services:
-                    if "type" not in service:
-                        raise ValueError(f"No type field in service info: {service}")
-                    if service["type"] in servicetypes:
-                        filtered_responsedata.append(service)
-                    else:
-                        self.logger.debug(
-                            "Skipping as type==%s - %s", service["type"], service
-                        )
-                return filtered_responsedata
 
         return self.services
 
@@ -493,7 +482,12 @@ class AussieBB(BaseClass):
             service_list.append(VOIPDevice.parse_obj(service))
         return service_list
 
-    def get_voip_service(self, service_id: int) -> VOIPService:
+    def get_voip_service(self, service_id: int) -> VOIPDetails:
         """gets the details of a VOIP service"""
         url = self.get_url("voip_service", {"service_id": service_id})
-        return VOIPService.parse_obj(self.request_get_json(url=url))
+        return VOIPDetails.parse_obj(self.request_get_json(url=url))
+
+    def get_fetch_service(self, service_id: int) -> FetchService:
+        """ gets the details of a Fetch service """
+        url = self.get_url("fetch_service", { "service_id" : service_id })
+        return FetchService.parse_obj(self.request_get_json(url=url))

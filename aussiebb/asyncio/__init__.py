@@ -24,11 +24,12 @@ from ..types import (
     ServiceTest,
     AccountContact,
     AccountTransaction,
+    FetchService,
     OrderDetailResponse,
     OrderDetailResponseModel,
     GetServicesResponse,
     VOIPDevice,
-    VOIPService,
+    VOIPDetails,
 )
 
 
@@ -285,8 +286,9 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
     async def get_services(
         self,
         page: int = 1,
-        servicetypes: Optional[List[str]] = None,
         use_cached: bool = False,
+        servicetypes: Optional[List[str]] = None,
+        drop_types: Optional[List[str]] = None,
     ):
         """Returns a `list` of `dicts` of services associated with the account.
 
@@ -294,6 +296,8 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         provide a list of matching strings in servicetypes.
 
         If you want to use cached data, call it with `use_cached=True`
+
+        If you want to drop service types, then pass a list of strings to drop_types
         """
         if use_cached:
             self.logger.debug("Using cached data for get_services.")
@@ -306,8 +310,8 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
                 responsedata = await self.request_get_json(url=url, params=params)
                 servicedata = GetServicesResponse.parse_obj(responsedata)
 
-                for link in servicedata.data:
-                    services_list.append(link)
+                for service in servicedata.data:
+                    services_list.append(service)
 
                 if servicedata.links.next is None:
                     break
@@ -319,23 +323,10 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
 
         # TODO: validate the expected fields in the service (type, name, plan, description, service_id at a minimum)
 
-        # only filter if we need to
-        if servicetypes is not None:
-            self.logger.debug(
-                "Filtering services based on provided list: %s", servicetypes
+        self.services = self.filter_services(
+            service_types=servicetypes,
+            drop_types=drop_types,
             )
-            filtered_responsedata: List[Any] = []
-            if self.services is not None:
-                for service in self.services:
-                    if "type" not in service:
-                        raise ValueError(f"No type field in service info: {service}")
-                    if service["type"] in servicetypes:
-                        filtered_responsedata.append(service)
-                    else:
-                        self.logger.debug(
-                            "Skipping as type==%s - %s", service["type"], service
-                        )
-            return filtered_responsedata
 
         return self.services
 
@@ -635,8 +626,14 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
             service_list.append(VOIPDevice.parse_obj(service))
         return service_list
 
-    async def get_voip_service(self, service_id: int) -> VOIPService:
+    async def get_voip_service(self, service_id: int) -> VOIPDetails:
         """gets the details of a VOIP service"""
         url = self.get_url("voip_service", {"service_id": service_id})
         data = await self.request_get_json(url=url)
-        return VOIPService.parse_obj(data)
+        return VOIPDetails.parse_obj(data)
+
+    async def get_fetch_service(self, service_id: int) -> FetchService:
+        """ gets the details of a Fetch service """
+        url = self.get_url("fetch_service", { "service_id" : service_id })
+        data = await self.request_get_json(url=url)
+        return FetchService.parse_obj(data)

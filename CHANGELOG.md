@@ -1,10 +1,19 @@
 # CHANGELOG
 
+## v0.0.14
+
+  - Moved the filtering by servicetypes in `get_services()` to its own function
+  - Added a new service type "Fetchtv"
+  - Added a way to drop types of services in `get_services()` so Home Assistant can ignore `FETCH_TYPES`
+  - Added some handling for FETCHTV types.
+
 ## v0.0.13
 
   - Added service type of `FETCHTV` to `NBN_TYPES`
     - Fixed test for this handler.
     - Updated logging for error when it happens.
+
+  Turns out this was the wrong way to handle it, so this version got yanked.
 
 ## v0.0.12
 

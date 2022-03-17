@@ -212,18 +212,10 @@ class VOIPDevice(BaseModel):
     registered: bool  # is it online?
 
 
-class VOIPService(BaseModel):
-    """individual VOIP service"""
-
-    phoneNumber: str
-    barInternational: bool
-    divertNumber: Optional[str]
-    supportsNumberDiversion: bool
 
 
 class AccountContact(BaseModel):
     """account contact data"""
-
     contact_id: int = Field(..., alias="id")
     first_name: str
     last_name: str
@@ -237,3 +229,84 @@ class AccountContact(BaseModel):
     username: Optional[str]
     preferred_name: Optional[str]
     middle_name: Optional[str]
+
+class Address(BaseModel):
+    """ Address for services """
+    subaddresstype: Optional[str]
+    subaddressnumber: Optional[str]
+    streetnumber: str
+    streetname: str
+    locality: str
+    postcode: str
+    state: str
+
+class BaseService(BaseModel):
+    """ base service definition """
+    service_id: int
+    type: str
+    name: str
+    plan: str
+    description: str
+    next_bill_date: datetime = Field(..., alias="nextBillDate")
+    open_date: datetime = Field(..., alias="openDate")
+    usage_anniversary: datetime = Field(..., alias="usageAnniversary")
+
+    address: Address
+    contract: Optional[str]
+    discounts: List[str]
+
+    class Config:
+        """config"""
+
+        arbitrary_types_allowed = True
+
+
+class FetchSubscription(BaseModel):
+    """ Fetch Subscription item """
+    name: str
+    description: str
+    cost_cents: int = Field(..., alias="costCents")
+    start_date: Optional[datetime] = Field(..., alias="startDate")
+    end_date: Optional[datetime] = Field(..., alias="endDate")
+
+class FetchSubscriptionDict(BaseModel):
+    """ this is just getting silly """
+    # subscriptions: List[FetchSubscription] = Field(..., alias="")
+    premium_channels: List[FetchSubscription] = Field(..., alias="Premium Channels")
+
+
+class FetchService(BaseService):
+    """ Fetch TV Service, comes from get_services()"""
+
+class FetchDetails(BaseModel):
+    """data from  /fetchtv/{serviceid}"""
+    service_id: int = Field(..., alias="id")
+    max_outstanding_cents: int = Field(..., alias="maxOutstandingCents")
+    current_available_spend_cents: int = Field(..., alias="currentAvailableSpendCents")
+    transactions: List[str]
+    subscriptions: FetchSubscriptionDict
+
+
+class VOIPDetails(BaseModel):
+    """individual VOIP service"""
+    phone_number: str = Field(..., alias="phoneNumber")
+    bar_international: bool = Field(..., alias="barInternational")
+    divert_number: Optional[str] = Field(..., alias="divertNumber")
+    supports_number_diversion: bool = Field(..., alias="supportsNumberDiversion")
+
+class VOIPService(BaseService):
+    """ VOIP Service details TV Service """
+    voip_details: VOIPDetails = Field(..., alias="voipDetails")
+
+class NBNDetails(BaseModel):
+    """ sub-details of an NBN service"""
+    product: str
+    poi_name: str = Field(..., alias="poiName")
+    cvc_graph: str = Field(..., alias="cvcGraph")
+
+
+class NBNService(BaseService):
+    """ NBN Service """
+    nbn_details: NBNDetails = Field(..., alias="nbnDetails")
+
+    ip_addresses: List[str] = Field(..., alias="ipAddresses")

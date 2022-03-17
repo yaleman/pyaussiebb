@@ -114,3 +114,32 @@ class BaseClass:
             raise UnrecognisedServiceType(
                 f"Service type {service['type']=} {service['name']=} -  not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new"
             )
+
+    def filter_services(
+        self,
+        service_types: Optional[List[str]],
+        drop_types: Optional[List[str]],
+        ) -> List[Dict[str, Any]]:
+        """ filter services """
+
+        if drop_types is None:
+            drop_types = []
+
+        self.logger.debug(
+                f"Filtering services {self.services=} {service_types=} {drop_types=}"
+            )
+        filtered_responsedata: List[Dict[str, Any]] = []
+        if self.services is not None:
+            for service in self.services:
+                if "type" not in service:
+                    raise ValueError(f"No type field in service info: {service}")
+                if service["type"] in drop_types:
+                    continue
+                if service_types is None or service["type"] in service_types:
+                    filtered_responsedata.append(service)
+                else:
+                    self.logger.debug(
+                        "Skipping as type==%s - %s", service["type"], service
+                    )
+            return filtered_responsedata
+        return []

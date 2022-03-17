@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.0.13
+
+  - Added service type of `FETCHTV` to `NBN_TYPES`
+    - Fixed test for this handler.
+    - Updated logging for error when it happens.
+
 ## v0.0.12
 
   - Added `pydantic` as a dependency, which allows for better type checking.

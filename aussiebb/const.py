@@ -126,6 +126,7 @@ TEST_MOCKDATA = {
 
 
 NBN_TYPES = [
+    "FETCHTV",
     "NBN",
     "Opticomm",
 ]

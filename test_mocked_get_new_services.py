@@ -24,7 +24,21 @@ def test_handling_invalid_service():
             TEST_MOCKDATA["service_voip"],
             invalid_service,
             TEST_MOCKDATA["service_nbn_fttc"],
-        ]
+        ],
+        "links" : {
+            "first" : 1,
+            "last" : 1,
+        },
+        "meta" : {
+            "current_page" : 1,
+            "from" : 1,
+            "last_page" : 1,
+            "per_page" : 1,
+            "to" : 1,
+            "total" : 1,
+            "path" : "s",
+
+        },
     }
 
 

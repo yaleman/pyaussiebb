@@ -269,6 +269,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v0014" class="md-nav__link">
+    v0.0.14
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v0013" class="md-nav__link">
     v0.0.13
   </a>
@@ -401,6 +408,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v0014" class="md-nav__link">
+    v0.0.14
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v0013" class="md-nav__link">
     v0.0.13
   </a>
@@ -501,6 +515,13 @@
 
 
 <h1 id="changelog">CHANGELOG</h1>
+<h2 id="v0014">v0.0.14</h2>
+<ul>
+<li>Moved the filtering by servicetypes in <code>get_services()</code> to its own function</li>
+<li>Added a new service type "Fetchtv"</li>
+<li>Added a way to drop types of services in <code>get_services()</code> so Home Assistant can ignore <code>FETCH_TYPES</code></li>
+<li>Added some handling for FETCHTV types.</li>
+</ul>
 <h2 id="v0013">v0.0.13</h2>
 <ul>
 <li>Added service type of <code>FETCHTV</code> to <code>NBN_TYPES</code><ul>
@@ -509,6 +530,7 @@
 </ul>
 </li>
 </ul>
+<p>Turns out this was the wrong way to handle it, so this version got yanked.</p>
 <h2 id="v0012">v0.0.12</h2>
 <ul>
 <li>Added <code>pydantic</code> as a dependency, which allows for better type checking.</li>

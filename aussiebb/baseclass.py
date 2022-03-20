@@ -8,8 +8,10 @@ from typing import Any, Dict, List, Optional, Union
 from requests.cookies import RequestsCookieJar
 
 from .const import API_ENDPOINTS, BASEURL, PHONE_TYPES, NBN_TYPES
+from .types import ServiceTest
 from .exceptions import (
     AuthenticationException,
+    InvalidTestForService,
     RateLimitException,
     UnrecognisedServiceType,
 )
@@ -143,3 +145,16 @@ class BaseClass:
                     )
             return filtered_responsedata
         return []
+
+    @classmethod
+    def is_valid_test(cls, test_url: str, service_tests: List[ServiceTest]) -> bool:
+        """ pass it the service test url and the list of service tests and it'll give you a bool or raise an InvalidTestForService exception if not """
+
+        test_is_valid = False
+        for test in service_tests:
+            if test.link == test_url:
+                test_is_valid = True
+
+        if not test_is_valid:
+            raise InvalidTestForService("You can't check line state, test not available!")
+        return test_is_valid

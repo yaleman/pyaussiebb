@@ -10,6 +10,8 @@ import pytest
 
 from aussiebb.asyncio import AussieBB
 import aussiebb.const
+from aussiebb.exceptions import InvalidTestForService
+from aussiebb.types import ConfigUser, AussieBBConfigFile
 
 from test_utils import configloader
 
@@ -24,14 +26,15 @@ if len(CONFIG.users) == 0:
     pytest.exit("You need some users in config.json")
 
 @pytest.fixture(name="users")
-def fixture_users(config=CONFIG):
+def fixture_users(config: AussieBBConfigFile=CONFIG) -> List[ConfigUser]:
     """ users fixture """
     if config is None:
         return []
-    return config.users
+    result: List[ConfigUser] = config.users
+    return result
 
 
-async def test_login_cycle(users: List[AussieBB]):
+async def test_login_cycle(users: List[AussieBB]) -> None:
     """ test the login step """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -43,7 +46,7 @@ async def test_login_cycle(users: List[AussieBB]):
             assert not api._has_token_expired() #pylint: disable=protected-access
 
 
-async def test_get_customer_details(users: List[AussieBB]):
+async def test_get_customer_details(users: List[AussieBB]) -> None:
     """ test get_customer_details """
 
     for user in users:
@@ -53,7 +56,7 @@ async def test_get_customer_details(users: List[AussieBB]):
             response = await api.get_customer_details()
             assert response.get('customer_number', False)
 
-async def test_get_services(users: List[AussieBB]):
+async def test_get_services(users: List[AussieBB]) -> None:
     """ test get_services """
 
     for user in users:
@@ -64,7 +67,7 @@ async def test_get_services(users: List[AussieBB]):
             print(json.dumps(services, indent=4, default=str))
             assert services
 
-async def test_line_state(users: List[AussieBB]):
+async def test_line_state(users: List[AussieBB]) -> None:
     """ test test_line_state """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -76,24 +79,28 @@ async def test_line_state(users: List[AussieBB]):
                     service_id = service['service_id']
                     print(f"Got service ID: {service_id}")
                     print(f"Service:\n{service}")
-                    line_state = await api.test_line_state(service_id)
-                    assert line_state.get('id')
-                    break
+                    try:
+                        line_state = await api.test_line_state(service_id)
+                        assert line_state.get('id')
+                        break
+                    except InvalidTestForService as error:
+                        print(error)
 
 
-async def test_get_usage(users: List[AussieBB]):
+
+async def test_get_usage(users: List[AussieBB]) -> None:
     """ test get_usage """
     for user in users:
         async with aiohttp.ClientSession() as session:
             api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
             services = await api.get_services()
-            service_id = services[0].get('service_id')
+            service_id = int(services[0]['service_id'])
 
             usage = await api.get_usage(service_id)
             assert usage.get('daysTotal')
 
 
-async def test_get_service_tests(users: List[AussieBB]):
+async def test_get_service_tests(users: List[AussieBB]) -> None:
     """ test the get_service_tests function and its return type """
 
     for user in users:
@@ -116,7 +123,7 @@ async def test_get_service_tests(users: List[AussieBB]):
             assert isinstance(service_tests, list)
 
 
-async def test_get_service_plans(users: List[AussieBB]):
+async def test_get_service_plans(users: List[AussieBB]) -> None:
     """ tests the plan pulling for services """
 
     for user in users:
@@ -127,14 +134,14 @@ async def test_get_service_plans(users: List[AussieBB]):
             test_services = [ service for service in result if service.get('type') == 'NBN' ]
 
             if test_services:
-                test_plans = await test_api.service_plans(test_services[0].get('service_id'))
+                test_plans = await test_api.service_plans(int(test_services[0]['service_id']))
                 assert test_plans
                 for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
                     assert key in test_plans.keys()
 
 
 
-async def test_get_referral_code(users: List[AussieBB]):
+async def test_get_referral_code(users: List[AussieBB]) -> None:
     """ tests the referral code func """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -142,7 +149,7 @@ async def test_get_referral_code(users: List[AussieBB]):
             refcode = await api.referral_code
             assert isinstance(refcode, int)
 
-async def test_get_account_contacts(users: List[AussieBB]):
+async def test_get_account_contacts(users: List[AussieBB]) -> None:
     """ tests the account_contacts function """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -152,7 +159,7 @@ async def test_get_account_contacts(users: List[AussieBB]):
             assert len(contacts) > 0
 
 
-async def test_get_voip_devices(users: List[AussieBB]):
+async def test_get_voip_devices(users: List[AussieBB]) -> None:
     """ finds voip services and returns the devices """
     for user in users:
         async with aiohttp.ClientSession() as session:
@@ -170,7 +177,7 @@ async def test_get_voip_devices(users: List[AussieBB]):
                 service_devices = await api.get_voip_devices(service_id=int(service['service_id']))
                 print(json.dumps(service_devices, indent=4, default=str))
 
-async def test_get_voip_service(users: List[AussieBB]):
+async def test_get_voip_service(users: List[AussieBB]) -> None:
     """ finds voip services and returns the specific info endpoint """
     for user in users:
         async with aiohttp.ClientSession() as session:

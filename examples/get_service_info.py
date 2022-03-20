@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import sys
+from typing import Optional
 
 import aiohttp
 
@@ -20,7 +21,7 @@ sys.path.append(script_path.parent.parent.as_posix())
 from aussiebb.asyncio import AussieBB
 from aussiebb.types import AussieBBConfigFile
 
-def configloader():
+def configloader() -> Optional[AussieBBConfigFile]:
     """ loads config """
     for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
         filepath = Path(filename).resolve()
@@ -29,11 +30,13 @@ def configloader():
                 return AussieBBConfigFile.parse_file(filepath)
             except json.JSONDecodeError as json_error:
                 sys.exit(f"Failed to parse config file: {json_error}")
-
+    return None
 
 CONFIG = configloader()
+if CONFIG is None:
+    sys.exit("Couldn't load config")
 if len(CONFIG.users) == 0:
-    print("no users in config, bailint")
+    print("no users in config, bailing")
     sys.exit(1)
 
 async def main(mainloop):

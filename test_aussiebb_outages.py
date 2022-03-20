@@ -31,11 +31,11 @@ if len(config.users) == 0:
 
 
 @pytest.fixture(name="users", scope="session")
-def userfactory_sync(config_object=config):
+def userfactory_sync(config_object : AussieBBConfigFile=config) -> List[AussieBB]:
     """ API factory """
     return [ AussieBB(username=user.username, password=user.password) for user in config_object.users ]
 
-def test_login_cycle(users: List[AussieBB], indent: int=4):
+def test_login_cycle(users: List[AussieBB], indent: int=4) -> None:
     """ test the login step """
 
     user: AussieBB = users[0]

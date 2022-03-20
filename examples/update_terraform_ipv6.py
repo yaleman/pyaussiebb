@@ -5,12 +5,13 @@
     looks for a variable called "base_ipv6_network" and updates it.
 """
 
+
 from ipaddress import ip_network, IPv6Network
 import os
 from pathlib import Path
 import re
 import sys
-
+from typing import Optional
 
 filepath = Path(__file__)
 sys.path.append(filepath.parent.parent.as_posix())
@@ -20,7 +21,8 @@ from aussiebb import AussieBB
 
 TF_FILE = "terraform.tfvars"
 
-def get_network(api: AussieBB):
+# pylint: disable=too-many-branches
+def get_network(api: AussieBB) -> Optional[IPv6Network]:
     """ grabs an ipv6 network object"""
 
     api.logger.debug("Logging in")
@@ -32,7 +34,7 @@ def get_network(api: AussieBB):
     found_network = None
 
     if services is None:
-        return
+        return None
     for service in services:
         if service.get('type') != 'NBN':
             continue
@@ -81,7 +83,7 @@ def check_need_to_update_file(api: AussieBB, updated_address: str) -> bool:
             return False
     return False
 
-def update_file(new_address):
+def update_file(new_address: str) -> None:
     """ updates the file with a new address """
     with open(TF_FILE, encoding="utf8") as file_handle:
         file_contents = file_handle.read()

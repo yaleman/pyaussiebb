@@ -4,7 +4,7 @@ import json
 
 from aussiebb import types
 
-def test_fetch_service_parser():
+def test_fetch_service_parser() -> None:
     """ tests parsing an example service"""
 
     fetch_service = json.loads("""
@@ -35,7 +35,7 @@ def test_fetch_service_parser():
     test_parse = types.FetchService.parse_obj(fetch_service)
     assert test_parse.service_id
 
-def test_fetch_service_details():
+def test_fetch_service_details() -> None:
     """ tests details """
     fetch_service = json.loads("""{
     "id": 332780,

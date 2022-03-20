@@ -1,6 +1,5 @@
 """ exceptions for the AussieBB module """
 
-
 class InvalidTestForService(BaseException):
     """user specified an invalid test"""
 

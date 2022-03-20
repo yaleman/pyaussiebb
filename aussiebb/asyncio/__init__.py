@@ -163,8 +163,9 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         self,
         url: str,
         skip_login_check: bool = False,
-        depth: int = 0,
-        **kwargs: Dict[str, Any],
+        depth: int=0,
+        cookies: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None
     ) -> ClientResponse:
         """Performs a GET request and logs in first if needed."""
         if depth > 2:
@@ -175,46 +176,63 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
 
         await self.do_login_check(skip_login_check)
 
-        if "cookies" not in kwargs:
-            kwargs["cookies"] = {"myaussie_cookie": self.myaussie_cookie}
-        response = await self.session.get(url=url, **kwargs)  # type: ignore
-        # async with self.session.get(url=url, **kwargs) as response:
+        if cookies is None:
+            cookies = {"myaussie_cookie": self.myaussie_cookie}
+
+
+        response: ClientResponse = await self.session.get(
+            url=url,
+            cookies=cookies,
+            params=params
+        )
         try:
             await self.handle_response_fail(response)
             await response.read()
         except RateLimitException:
             response = await self.request_get(
-                url=url, skip_login_check=skip_login_check, depth=depth, **kwargs
+                url=url,
+                skip_login_check=skip_login_check,
+                depth=depth,
+                cookies=cookies,
+                params=params
             )
         return response
 
-    async def request_get_json(self, skip_login_check: bool = False, **kwargs) -> Any:
+    async def request_get_list(
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        depth: int=0,
+        cookies: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None
+        ) -> List[Any]:
+        """Performs a GET request and logs in first if needed.
+
+        Returns a list from the JSON response.
+        """
+        response = await self.request_get(url, skip_login_check, depth, cookies, params)
+        result: List[Any] = await response.json()
+        return result
+
+    async def request_get_json(
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        depth: int=0,
+        cookies: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None
+        ) -> Dict[str, Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a dict of the JSON response.
         """
-        depth = kwargs.get("depth", 0)
-        if depth > 2:
-            raise RecursiveDepth(f"depth: {depth}")
-
-        if self.session is None:
-            self.session = aiohttp.ClientSession()
-
-        await self.do_login_check(skip_login_check)
-
-        if "cookies" not in kwargs:
-            kwargs["cookies"] = {"myaussie_cookie": self.myaussie_cookie}
-        async with self.session.get(**kwargs) as response:
-            try:
-                await self.handle_response_fail(response)
-                jsondata = await response.json()
-            except RateLimitException:
-                jsondata = await self.request_get_json(skip_login_check, **kwargs)
-        return jsondata
+        response = await self.request_get(url, skip_login_check, depth, cookies, params)
+        result: Dict[str, Any] = await response.json()
+        return result
 
     async def request_post_json(
         self,
-        url=str,
+        url: str,
         depth: int = 0,
         skip_login_check: bool = False,
         **kwargs: Dict[str, Any],
@@ -254,15 +272,14 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         Returns a dict"""
 
         url = self.get_url("get_customer_details")
-        params = {"v": "2"}
         result: Dict[str, Any] = await self.request_get_json(
             url=url,
-            params=params,
+            params={"v": "2"},
         )
         return result
 
     @property
-    async def referral_code(self):
+    async def referral_code(self) -> int:
         """returns the referral code, which is just the customer number"""
         response = await self.get_customer_details()
         if "customer_number" not in response:
@@ -289,7 +306,7 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         use_cached: bool = False,
         servicetypes: Optional[List[str]] = None,
         drop_types: Optional[List[str]] = None,
-    ):
+    ) -> List[Dict[str, Any]]:
         """Returns a `list` of `dicts` of services associated with the account.
 
         If you want a specific kind of service, or services,
@@ -306,7 +323,7 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
             url = self.get_url("get_services")
             services_list: List[Dict[str, Any]] = []
             while True:
-                params = {"page": page}
+                params = {"page": page }
                 responsedata = await self.request_get_json(url=url, params=params)
                 servicedata = GetServicesResponse.parse_obj(responsedata)
 
@@ -358,7 +375,7 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         )
         return responsedata
 
-    async def billing_invoice(self, invoice_id: int):
+    async def billing_invoice(self, invoice_id: int) -> Dict[str, Any]:
         """Downloads an invoice
 
         This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
@@ -367,13 +384,13 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def account_paymentplans(self):
+    async def account_paymentplans(self) -> Dict[str, Any]:
         """Returns a dict of payment plans for an account"""
         url = self.get_url("account_paymentplans")
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(self, service_id: int, use_cached: bool = True):
+    async def get_usage(self, service_id: int, use_cached: bool = True) -> Dict[str, Any]:
         """
         Returns a dict of usage for a service.
 
@@ -411,10 +428,10 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
             print(f"Getting service tests for {service_id}", file=sys.stderr)
 
         url = self.get_url("get_service_tests", {"service_id": service_id})
-        responsedata: List[ServiceTest] = await self.request_get_json(url=url)
-        return responsedata
+        responsedata: List[Any] = await self.request_get_list(url=url)
+        return [ ServiceTest.parse_obj(test) for test in responsedata ]
 
-    async def get_test_history(self, service_id: int):
+    async def get_test_history(self, service_id: int) -> Dict[str, Any]:
         """Gets the available tests for a given service ID
 
         Returns a list of dicts with tests which have been run
@@ -424,21 +441,23 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def test_line_state(self, service_id: int):
+    async def test_line_state(self, service_id: int) -> Dict[str, Any]:
         """Tests the line state for a given service ID"""
-        # TODO: check if this is valid for the service id
+        tests = await self.get_service_tests(service_id)
         url = self.get_url("test_line_state", {"service_id": service_id})
 
-        if self.debug:
-            print("Testing line state, can take a few seconds...")
+        self.is_valid_test(url, tests)
+
+        # if self.debug:
+            # print("Testing line state, can take a few seconds...")
         response = await self.request_post_json(url=url)
-        if self.debug:
-            print(f"Response: {response}", file=sys.stderr)
+        # if self.debug:
+            # print(f"Response: {response}", file=sys.stderr)
         return response
 
     async def run_test(
         self, service_id: int, test_name: str, test_method: str = "post"
-    ):
+    ) -> Optional[Dict[str, Any]]:
         """Run a test, but it checks it's valid first
 
         There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
@@ -453,25 +472,25 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         test_links = [
             test
             for test in service_tests
-            if test.get("link", "").endswith(f"/{test_name}")
-        ]  # pylint: disable=line-too-long
+            if test.link.endswith(f"/{test_name}")
+        ]
 
         if not test_links:
-            return False
+            return None
         if len(test_links) != 1:
             if self.debug:
                 print(f"Too many tests? {test_links}", file=sys.stderr)
 
-        test_name = test_links[0]["name"]
+        test_name = test_links[0].name
         if self.debug:
             print(f"Running {test_name}", file=sys.stderr)
         if test_method == "get":
-            result = await self.request_get_json(url=test_links[0].get("link"))
+            result = await self.request_get_json(url=test_links[0].link)
         else:
-            result = await self.request_post_json(url=test_links[0].get("link"))
+            result = await self.request_post_json(url=test_links[0].link)
         return result
 
-    async def service_plans(self, service_id: int):
+    async def service_plans(self, service_id: int) -> Dict[str, Any]:
         """Pulls the plan data for a given service.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
@@ -484,7 +503,7 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_outages(self, service_id: int):
+    async def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.
 
         Keys: `['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']`
@@ -513,7 +532,7 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_boltons(self, service_id: int):
+    async def service_boltons(self, service_id: int) -> Dict[str, Any]:
         """Pulls addons associated with the service.
 
         Keys: `['id', 'name', 'description', 'costCents', 'additionalNote', 'active']`
@@ -537,7 +556,7 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_datablocks(self, service_id: int):
+    async def service_datablocks(self, service_id: int) -> Dict[str, Any]:
         """Pulls datablocks associated with the service.
 
         Keys: `['current', 'available']`
@@ -553,11 +572,9 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         """
         url = self.get_url("service_datablocks", {"service_id": service_id})
         responsedata = await self.request_get_json(url=url)
-        if self.debug:
-            print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def telephony_usage(self, service_id: int):
+    async def telephony_usage(self, service_id: int) -> Dict[str, Any]:
         """Pulls the telephony usage associated with the service.
 
         Keys: `['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']`
@@ -570,11 +587,9 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         """
         url = self.get_url("telephony_usage", {"service_id": service_id})
         responsedata = await self.request_get_json(url=url)
-        if self.debug:
-            print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def support_tickets(self):
+    async def support_tickets(self) -> Dict[str, Any]:
         """Pulls the support tickets associated with the account, returns a list of dicts.
 
         Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
@@ -582,11 +597,9 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         """
         url = self.get_url("support_tickets")
         responsedata = await self.request_get_json(url=url)
-        if self.debug:
-            print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def get_appointment(self, ticketid: int):
+    async def get_appointment(self, ticketid: int) -> Dict[str, Any]:
         """Pulls the support tickets associated with the account, returns a list of dicts.
 
         Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`

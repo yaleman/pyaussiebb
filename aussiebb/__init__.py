@@ -13,7 +13,7 @@ import requests.sessions
 
 from .baseclass import BaseClass
 from .const import BASEURL, DefaultHeaders, default_headers, PHONE_TYPES
-from .exceptions import RecursiveDepth
+from .exceptions import InvalidTestForService, RecursiveDepth
 from .types import (
     FetchService,
     ServiceTest,
@@ -96,8 +96,8 @@ class AussieBB(BaseClass):
         self,
         url: str,
         skip_login_check: bool = False,
-        cookies: Optional[Any] = None,
-        **kwargs,
+        cookies: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ):
         """Performs a GET request and logs in first if needed.
 
@@ -106,21 +106,23 @@ class AussieBB(BaseClass):
         if cookies is None:
             cookies = {"myaussie_cookie": self.myaussie_cookie}
 
-        response = self.session.get(url=url, cookies=cookies, **kwargs)
+        response = self.session.get(url=url, cookies=cookies, params=params)
         response.raise_for_status()
         return response
 
     def request_get_list(
-        self, skip_login_check: bool = False, **kwargs: Any
+        self,
+        url: str,
+        skip_login_check: bool = False,
+        cookies: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ) -> List[Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a list from the response.
         """
-        if "cookies" not in kwargs:
-            kwargs["cookies"] = {"myaussie_cookie": self.myaussie_cookie}
         self.do_login_check(skip_login_check)
-        response = self.session.get(**kwargs)
+        response = self.session.get(url=url, cookies=cookies, params=params)
         response.raise_for_status()
         result: List[Any] = response.json()
         return result
@@ -129,22 +131,22 @@ class AussieBB(BaseClass):
         self,
         url: str,
         skip_login_check: bool = False,
-        **kwargs: Dict[str, Any],
-    ):
+        cookies: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a dict of the JSON response.
         """
-        if "cookies" not in kwargs:
-            kwargs["cookies"] = {"myaussie_cookie": self.myaussie_cookie}
         self.do_login_check(skip_login_check)
-        response = self.session.get(url, **kwargs)  # type: ignore
+        response = self.session.get(url=url, cookies=cookies, params=params)
         response.raise_for_status()
-        return response.json()
+        result: Dict[str, Any] = response.json()
+        return result
 
     def request_post(
         self, url: str, skip_login_check: bool = False, **kwargs: Dict[str, Any]
-    ):
+    ) -> requests.Response:
         """Performs a POST request and logs in first if needed."""
         self.do_login_check(skip_login_check)
         if "cookies" not in kwargs:
@@ -164,14 +166,14 @@ class AussieBB(BaseClass):
         Returns a dict"""
         url = self.get_url("get_customer_details")
         querystring = {"v": "2"}
-        responsedata: Dict[str, Any] = self.request_get_json(
+        responsedata = self.request_get_json(
             url=url,
             params=querystring,
         )
         return responsedata
 
     @property
-    def referral_code(self):
+    def referral_code(self) -> int:
         """returns the referral code, which is just the customer number"""
         response = self.get_customer_details()
         if "customer_number" not in response:
@@ -259,7 +261,9 @@ class AussieBB(BaseClass):
         ```
         """
         url = self.get_url("account_transactions")
-        result: Dict[str, AccountTransaction] = self.request_get_json(url=url)
+        responsedata = self.request_get_json(url=url)
+
+        result: Dict[str, AccountTransaction] = responsedata
         return result
 
     def billing_invoice(self, invoice_id: int) -> Dict[str, Any]:
@@ -268,10 +272,11 @@ class AussieBB(BaseClass):
         This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
         url = self.get_url("billing_invoice", {"invoice_id": invoice_id})
-        result: Dict[str, Any] = self.request_get_json(url=url)
+        result = self.request_get_json(url=url)
+
         return result
 
-    def account_paymentplans(self):
+    def account_paymentplans(self) -> Dict[str, Any]:
         """Returns a dict of payment plans for an account"""
         url = self.get_url("account_paymentplans")
         return self.request_get_json(url=url)
@@ -294,7 +299,9 @@ class AussieBB(BaseClass):
                     if service["type"] in PHONE_TYPES:
                         return self.telephony_usage(service_id)
             url = self.get_url("get_usage", {"service_id": service_id})
-            return self.request_get_json(url=url)
+            result = self.request_get_json(url=url)
+
+            return result
         return {}
 
     def get_service_tests(self, service_id: int) -> List[ServiceTest]:
@@ -314,10 +321,10 @@ class AussieBB(BaseClass):
         This has a habit of throwing 400 errors if you query a VOIP service...
         """
         url = self.get_url("get_service_tests", {"service_id": service_id})
-        results: List[ServiceTest] = self.request_get_json(url=url)
+        results: List[ServiceTest] = [ ServiceTest.parse_obj(test) for test in self.request_get_list(url=url) ]
         return results
 
-    def get_test_history(self, service_id: int):
+    def get_test_history(self, service_id: int) -> Dict[str, Any]:
         """Gets the available tests for a given service ID
 
         Returns a list of dicts with tests which have been run
@@ -325,15 +332,19 @@ class AussieBB(BaseClass):
         url = self.get_url("get_test_history", {"service_id": service_id})
         return self.request_get_json(url=url)
 
-    def test_line_state(self, service_id: int):
+    def test_line_state(self, service_id: int) -> Dict[str, Any]:
         """Tests the line state for a given service ID"""
-        # TODO: check if this is valid for the service id
+        tests = self.get_service_tests(service_id)
         url = self.get_url("test_line_state", {"service_id": service_id})
+
+        self.is_valid_test(url, tests)
+
         self.logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
-        return response.json()
+        result: Dict[str,Any] = response.json()
+        return result
 
-    def run_test(self, service_id: int, test_name: str, test_method: str = "post"):
+    def run_test(self, service_id: int, test_name: str, test_method: str = "post") -> Optional[Dict[str, Any]]:
         """Run a test, but it checks it's valid first
 
         There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
@@ -347,21 +358,22 @@ class AussieBB(BaseClass):
         test_links = [
             test
             for test in self.get_service_tests(service_id)
-            if test.get("link", "").endswith(f"/{test_name}")
+            if test.link.endswith(f"/{test_name}")
         ]  # pylint: disable=line-too-long
 
         if not test_links:
-            return False
+            return None
         if len(test_links) != 1:
             self.logger.debug("Too many tests? %s", test_links)
 
-        test_name = test_links[0]["name"]
+        test_name = test_links[0].name
         self.logger.debug("Running %s", test_name)
         if test_method == "get":
-            return self.request_get_json(url=test_links[0]["link"])
-        return self.request_post(url=test_links[0]["link"]).json()
+            return self.request_get_json(url=test_links[0].link)
+        result: Dict[str,Any] = self.request_post(url=test_links[0].link).json()
+        return result
 
-    def service_plans(self, service_id: int):
+    def service_plans(self, service_id: int) -> Dict[str, Any]:
         """Pulls the plan data for a given service.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
@@ -381,7 +393,7 @@ class AussieBB(BaseClass):
         result = AussieBBOutage.parse_obj(self.request_get_json(url=url))
         return result.dict()
 
-    def service_boltons(self, service_id: int):
+    def service_boltons(self, service_id: int) -> Dict[str, Any]:
         """Pulls addons associated with the service.
 
         Keys: `['id', 'name', 'description', 'costCents', 'additionalNote', 'active']`
@@ -402,7 +414,7 @@ class AussieBB(BaseClass):
         url = self.get_url("service_boltons", {"service_id": service_id})
         return self.request_get_json(url=url)
 
-    def service_datablocks(self, service_id: int):
+    def service_datablocks(self, service_id: int) -> Dict[str, Any]:
         """Pulls datablocks associated with the service.
 
         Keys: `['current', 'available']`
@@ -419,7 +431,7 @@ class AussieBB(BaseClass):
         url = self.get_url("service_datablocks", {"service_id": service_id})
         return self.request_get_json(url=url)
 
-    def telephony_usage(self, service_id: int):
+    def telephony_usage(self, service_id: int) -> Dict[str, Any]:
         """Pulls the telephony usage associated with the service.
 
         Keys: `['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']`
@@ -433,7 +445,7 @@ class AussieBB(BaseClass):
         url = self.get_url("telephony_usage", {"service_id": service_id})
         return self.request_get_json(url=url)
 
-    def support_tickets(self):
+    def support_tickets(self) -> Dict[str, Any]:
         """Pulls the support tickets associated with the account, returns a list of dicts.
 
         Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
@@ -442,7 +454,7 @@ class AussieBB(BaseClass):
         url = self.get_url("support_tickets")
         return self.request_get_json(url=url)
 
-    def get_appointment(self, ticketid: int):
+    def get_appointment(self, ticketid: int) -> Dict[str, Any]:
         """Pulls the support tickets associated with the account, returns a list of dicts.
 
         Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
@@ -459,18 +471,22 @@ class AussieBB(BaseClass):
         response = self.request_get_json(url=url)
         return [AccountContact.parse_obj(contact) for contact in response]
 
-    def get_orders(self):
+    # TODO: type get_orders
+    def get_orders(self) -> Dict[str, Any]:
         """pulls the outstanding orders for an account"""
         url = self.get_url("get_orders")
-        result = OrderResponse(**self.request_get_json(url=url))
+        responsedata = self.request_get_json(url=url)
+
+        result = OrderResponse(**responsedata)
         return result.dict()
 
     def get_order(self, order_id: int) -> OrderDetailResponse:
         """gets a specific order"""
         url = self.get_url("get_order", {"order_id": order_id})
+        responsedata = self.request_get_json(url=url)
         result = cast(
             OrderDetailResponse,
-            OrderDetailResponseModel(**self.request_get_json(url=url)).dict(),
+            OrderDetailResponseModel.parse_obj(responsedata).dict(),
         )
         return result
 

@@ -11,8 +11,8 @@ import aussiebb
 
 from aussiebb.const import TEST_MOCKDATA, BASEURL
 
-@requests_testing.activate
-def test_handling_invalid_service():
+@requests_testing.activate # type: ignore
+def test_handling_invalid_service() -> None:
     """ test  API endpoint, with mocking """
 
     invalid_service = deepcopy(TEST_MOCKDATA["service_voip"])

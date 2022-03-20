@@ -17,9 +17,8 @@ class AccountTransaction(TypedDict):
     runningBalanceCents: int
 
 
-class ServiceTest(TypedDict):
+class ServiceTest(BaseModel):
     """A service test object"""
-
     name: str
     description: str
     link: str

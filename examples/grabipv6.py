@@ -4,10 +4,10 @@
 
 from ipaddress import ip_network,  IPv4Network, IPv6Network
 import json
-
 import os
 from pathlib import Path
 import sys
+from typing import Optional
 
 script_path = Path(__file__)
 sys.path.append(script_path.parent.parent.as_posix())
@@ -18,7 +18,7 @@ from aussiebb.asyncio import AussieBB
 from aussiebb.types import AussieBBConfigFile
 
 
-def configloader():
+def configloader() -> Optional[AussieBBConfigFile]:
     """ loads config """
     for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
         filepath = Path(filename).resolve()
@@ -27,6 +27,7 @@ def configloader():
                 return AussieBBConfigFile.parse_file(filepath)
             except json.JSONDecodeError as json_error:
                 sys.exit(f"Failed to parse config file: {json_error}")
+    return None
 def main():
     """ Example of getting ipv6 services """
     user = configloader().users[0]

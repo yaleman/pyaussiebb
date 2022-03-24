@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.0.15
+
+  - Moved the `pydantic` dependency from dev to main, which shouldn't ever have been in dev...
+
 ## v0.0.14
 
   - Moved the filtering by servicetypes in `get_services()` to its own function

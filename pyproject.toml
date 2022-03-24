@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaussiebb"
-version = "0.0.14"
+version = "0.0.15"
 description = "Aussie Broadband API module"
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
@@ -37,6 +37,7 @@ packages = [
 python = "^3.9"
 requests = "^2.27.1"
 aiohttp = "^3.8.1"
+pydantic = "^1.9.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
@@ -48,7 +49,6 @@ mkdocstrings = "^0.17.0"
 mkdocs-material = "^8.1.9"
 mkdocs = "^1.2.3"
 requests-testing = "^0.2.0"
-pydantic = "^1.9.0"
 pylint-pydantic = "^0.1.4"
 pytest-asyncio = "^0.17.2"
 pytest-aiohttp = "^1.0.3"

@@ -22,4 +22,4 @@ jobs:
           python --version
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
-          poetry run mypy $(basename $(pwd)) test*.py
+          poetry run mypy aussiebb test*.py

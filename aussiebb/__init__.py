@@ -69,7 +69,7 @@ class AussieBB(BaseClass):
             "username": self.username,
             "password": self.password,
         }
-        headers = default_headers()
+        headers: Dict[str, Any] = dict(default_headers())
 
         response = self.session.post(
             url,
@@ -152,9 +152,14 @@ class AussieBB(BaseClass):
         if "cookies" not in kwargs:
             kwargs["cookies"] = {"myaussie_cookie": self.myaussie_cookie}
 
+        if "headers" in kwargs:
+            headers: Dict[str, Any] = kwargs["headers"]
+        else:
+            headers = dict(default_headers())
+
         response = self.session.post(
             url=url,
-            headers=kwargs.get("headers", default_headers()),
+            headers=headers,
             **kwargs,  # type: ignore
         )
         response.raise_for_status()

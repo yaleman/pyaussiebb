@@ -316,11 +316,11 @@ mkdocs = ">=1.1,<2.0"
 
 [[package]]
 name = "mkdocs-material"
-version = "8.2.12"
+version = "8.2.14"
 description = "Documentation that simply works"
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 jinja2 = ">=2.11.1"
@@ -777,7 +777,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "bedbf25aa3b8e31880d6eb14ce815b5254528bace0a6c5dab0fd854ea46068d4"
+content-hash = "155cc25c31be2d925de450ded248488ec05b782bd9c01cefe91a315dd36c4fb2"
 
 [metadata.files]
 aiohttp = [
@@ -1139,8 +1139,8 @@ mkdocs-autorefs = [
     {file = "mkdocs_autorefs-0.3.1-py3-none-any.whl", hash = "sha256:f0fd7c115eaafda7fb16bf5ff5d70eda55d7c0599eac64f8b25eacf864312a85"},
 ]
 mkdocs-material = [
-    {file = "mkdocs-material-8.2.12.tar.gz", hash = "sha256:a569868c7c17bd1c87efa4dea7cb0cd20c4eac52ed5589750cec9dfcd3e3c7d5"},
-    {file = "mkdocs_material-8.2.12-py2.py3-none-any.whl", hash = "sha256:7489f1ccce97a806be6bba659e21f7d404c2f85a7ff72abbac6d47d0836f5952"},
+    {file = "mkdocs-material-8.2.14.tar.gz", hash = "sha256:413c349ef531ffe9f2eab6c8a71203fb0a7ebdc301ab9a2529ddd90c173673de"},
+    {file = "mkdocs_material-8.2.14-py2.py3-none-any.whl", hash = "sha256:072cbba38f95b1989118b76ad6e3b61f56c4a6215622c960adf2f2c65a613dba"},
 ]
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},

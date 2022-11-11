@@ -50,7 +50,7 @@ mkdocs-material = "^8.5.8"
 mkdocs = "^1.4.2"
 requests-testing = "^0.2.0"
 pylint-pydantic = "^0.1.4"
-pytest-asyncio = "^0.20.1"
+pytest-asyncio = "^0.20.2"
 pytest-aiohttp = "^1.0.4"
 mkdocstrings-python = "^0.7.1"
 

@@ -1,4 +1,5 @@
 .vscode/*
+poetry.lock
 
 **/__pycache__/*
 *.egg-info/

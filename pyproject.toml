@@ -55,6 +55,9 @@ mkdocstrings-python = "^0.8.0"
 [tool.mypy]
 plugins = "pydantic.mypy"
 
+[tool.ruff]
+line-length = 200
+
 [build-system]
 requires = [
     "poetry-core>=1.0.0",

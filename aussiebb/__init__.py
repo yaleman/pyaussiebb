@@ -1,19 +1,15 @@
 """ A class for interacting with Aussie Broadband APIs """
 
 # import json
-from email.policy import default
-from http.cookiejar import CookieJar
-from http.cookies import SimpleCookie
-from re import M
 from time import time
-from typing import Any, Dict, List, Optional, cast, Union
+from typing import Any, Dict, List, Optional, cast
 
 import requests
 import requests.sessions
 
 from .baseclass import BaseClass
-from .const import BASEURL, DefaultHeaders, default_headers, PHONE_TYPES
-from .exceptions import InvalidTestForService, RecursiveDepth
+from .const import BASEURL, default_headers, PHONE_TYPES
+from .exceptions import RecursiveDepth
 from .types import (
     FetchService,
     ServiceTest,

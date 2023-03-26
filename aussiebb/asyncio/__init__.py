@@ -6,8 +6,7 @@ import asyncio
 import json
 from time import time
 import sys
-from typing import Any, Dict, List, Optional, Union
-from unittest import skip
+from typing import Any, Dict, List, Optional
 
 try:
     import aiohttp
@@ -25,7 +24,6 @@ from ..types import (
     AccountContact,
     AccountTransaction,
     FetchService,
-    OrderDetailResponse,
     OrderDetailResponseModel,
     GetServicesResponse,
     VOIPDevice,

@@ -3,15 +3,17 @@
 import json
 import os
 from pathlib import Path
+import sys
 
 import pytest
 
 # from aussiebb import AussieBB
 from aussiebb.types import AussieBBConfigFile
+CONFIG_FILES = [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]
 
 def configloader() -> AussieBBConfigFile:
     """ loads config """
-    for filename in [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]:
+    for filename in CONFIG_FILES:
         filepath = Path(filename).resolve()
         if filepath.exists():
             try:
@@ -19,6 +21,7 @@ def configloader() -> AussieBBConfigFile:
                 return configfile
             except json.JSONDecodeError as json_error:
                 pytest.exit(f"Failed to parse config file: {json_error}")
-    return AussieBBConfigFile()
+    print(f"No config file found... tried looking in {','.join(CONFIG_FILES)}")
+    sys.exit(1)
 
     # TODO: add a validator that checks that either a user or a list of them is supplied

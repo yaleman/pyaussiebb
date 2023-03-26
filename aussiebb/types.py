@@ -86,7 +86,28 @@ class AussieBBConfigFile(BaseModel):
 #         {
 #         "reference": 66522,
 #         "title": "Network Maintenance",
-#         "summary": "Dear Customer,\r\n\r\nPlease be aware of upcoming maintenance on the Aussie Broadband network. Your services may experience an outage during the following window:\r\n\r\nSTART DATE: Monday 14th February 2022 03:00 Hrs AEST\r\n\r\nEND DATE: Monday 14th February 2022 04:00 Hrs AEST\r\n\r\nBREAK/DURATION: 1 Hour\r\n\r\nNBN/Opticomm Services Affected:\r\n\r\nCaboolture (Link 2) \r\nNambour (Link 3) \r\nBundaberg (Link 2) \r\nPetrie (Link 2) \r\nCairns (Link 2) \r\nAcacia Ridge Depot (Link 3) \r\nWoolloongabba TC2 \r\nSouthport (Link 2) \r\nToowoomba \r\nCairns \r\nEight Mile \r\nNerang (Link 2) \r\nAcacia Ridge Depot (Link 2) \r\nCamp Hill (Link 3) \r\nSlacks Creek (Link 3) \r\nSlacks Creek (Link 2) \r\nToowoomba (Link 2) \r\nNambour (Link 2) \r\nCamp Hill (Link 2) \r\nRockhampton (Link 2) \r\nWoolloongabba (Link 2) \r\nMackay (Link 2) \r\nGoodna (Link 2) \r\nBundamba (Link 2) \r\nAspley (Link 2) \r\nIpswich (Link 2) \r\nNerang (Link 3) \r\nTownsville (Link 3) \r\nOpticomm QLD\r\n\r\n\r\n\r\n\r\n\r\nThis work is scheduled maintenance impacting Carrier Grade NAT (CG-NAT) customers, and we apologise for any inconvenience this may cause. If you have any concerns, please contact our Technical Support team on 1300 880 905.\r\n\r\nCheers\r\nAussie Broadband Limited\r\n                        ",
+#         "summary": "Dear Customer,\r\n\r\nPlease be aware of upcoming
+# maintenance on the Aussie Broadband network. Your services may experience
+# an outage during the following window:\r\n\r\nSTART DATE: Monday 14th February
+# 2022 03:00 Hrs AEST\r\n\r\nEND DATE: Monday 14th February 2022 04:00 Hrs AEST\r\n
+# \r\nBREAK/DURATION: 1 Hour\r\n\r\nNBN/Opticomm Services Affected:\r\n
+# \r\nCaboolture (Link 2) \r\nNambour (Link 3) \r\n
+# Bundaberg (Link 2) \r\nPetrie (Link 2) \r\n
+# Cairns (Link 2) \r\nAcacia Ridge Depot (Link 3) \r\n
+# Woolloongabba TC2 \r\nSouthport (Link 2) \r\n
+# Toowoomba \r\n
+# Cairns \r\nEight Mile \r\nNerang (Link 2) \r\n
+# Acacia Ridge Depot (Link 2) \r\nCamp Hill (Link 3) \r\n
+# Slacks Creek (Link 3) \r\nSlacks Creek (Link 2) \r\n
+# Toowoomba (Link 2) \r\nNambour (Link 2) \r\n
+# Camp Hill (Link 2) \r\nRockhampton (Link 2) \r\n
+# Woolloongabba (Link 2) \r\nMackay (Link 2) \r\n
+# Goodna (Link 2) \r\nBundamba (Link 2) \r\nAspley (Link 2) \r\nIpswich (Link 2) \r\n
+# Nerang (Link 3) \r\nTownsville (Link 3) \r\nOpticomm QLD\r\n\r\n\r\n\r\n\r\n\r\n
+# This work is scheduled maintenance impacting Carrier Grade NAT (CG-NAT) customers,
+# and we apologise for any inconvenience this may cause. If you have any concerns,
+# please contact our Technical Support team on 1300 880 905.\r\n\r\nCheers\r\n
+# Aussie Broadband Limited\r\n                        ",
 #         "start_time": "2022-02-13T17:00:00Z",
 #         "end_time": "2022-02-13T18:00:00Z",
 #         "restored_at": null,
@@ -98,7 +119,20 @@ class AussieBBConfigFile(BaseModel):
 #             {
 #             "reference": 66522,
 #             "title": "Network Maintenance",
-#             "summary": "Dear Customer,\r\n\r\nPlease be aware of upcoming maintenance on the Aussie Broadband network. Your services may experience an outage during the following window:\r\n\r\nSTART DATE: Monday 14th February 2022 03:00 Hrs AEST\r\n\r\nEND DATE: Monday 14th February 2022 04:00 Hrs AEST\r\n\r\nBREAK/DURATION: 1 Hour\r\n\r\nNBN/Opticomm Services Affected:\r\n\r\nCaboolture (Link 2) \r\nNambour (Link 3) \r\nBundaberg (Link 2) \r\nPetrie (Link 2) \r\nCairns (Link 2) \r\nAcacia Ridge Depot (Link 3) \r\nWoolloongabba TC2 \r\nSouthport (Link 2) \r\nToowoomba \r\nCairns \r\nEight Mile \r\nNerang (Link 2) \r\nAcacia Ridge Depot (Link 2) \r\nCamp Hill (Link 3) \r\nSlacks Creek (Link 3) \r\nSlacks Creek (Link 2) \r\nToowoomba (Link 2) \r\nNambour (Link 2) \r\nCamp Hill (Link 2) \r\nRockhampton (Link 2) \r\nWoolloongabba (Link 2) \r\nMackay (Link 2) \r\nGoodna (Link 2) \r\nBundamba (Link 2) \r\nAspley (Link 2) \r\nIpswich (Link 2) \r\nNerang (Link 3) \r\nTownsville (Link 3) \r\nOpticomm QLD\r\n\r\n\r\n\r\n\r\n\r\nThis work is scheduled maintenance impacting Carrier Grade NAT (CG-NAT) customers, and we apologise for any inconvenience this may cause. If you have any concerns, please contact our Technical Support team on 1300 880 905.\r\n\r\nCheers\r\nAussie Broadband Limited\r\n                        ",
+#             "summary": "Dear Customer,\r\n\r\nPlease be aware of upcoming maintenance on the Aussie Broadband network. Your services may experience an outage during the following window:\r\n\r\n
+# START DATE: Monday 14th February 2022 03:00 Hrs AEST\r\n\r\n
+# END DATE: Monday 14th February 2022 04:00 Hrs AEST\r\n\r\n
+# BREAK/DURATION: 1 Hour\r\n\r\nNBN/Opticomm Services Affected:\r\n
+# \r\nCaboolture (Link 2) \r\nNambour (Link 3) \r\nBundaberg (Link 2) \r\nPetrie (Link 2) \r\n
+# Cairns (Link 2) \r\nAcacia Ridge Depot (Link 3) \r\nWoolloongabba TC2 \r\nSouthport (Link 2) \r\nToowoomba \r\nCairns \r\nEight Mile \r\nNerang (Link 2) \r\nAcacia Ridge Depot (Link 2) \r\n
+# Camp Hill (Link 3) \r\n
+# Slacks Creek (Link 3) \r\nSlacks Creek (Link 2) \r\nToowoomba (Link 2) \r\nNambour (Link 2) \r\nCamp Hill (Link 2) \r\nRockhampton (Link 2) \r\nWoolloongabba (Link 2) \r\n
+# Mackay (Link 2) \r\nGoodna (Link 2) \r\nBundamba (Link 2) \r\nAspley (Link 2) \r\nIpswich (Link 2) \r\n
+# Nerang (Link 3) \r\nTownsville (Link 3) \r\nOpticomm QLD\r\n\r\n\r\n\r\n\r\n\r\n
+# This work is scheduled maintenance impacting Carrier Grade NAT (CG-NAT) customers,
+# and we apologise for any inconvenience this may cause. If you have any concerns, please contact our Technical Support team on 1300 880 905.\r\n\r\n
+# Cheers\r\n
+# Aussie Broadband Limited\r\n                        ",
 #             "start_time": "2022-02-13T17:00:00Z",
 #             "end_time": "2022-02-13T18:00:00Z",
 #             "restored_at": null,

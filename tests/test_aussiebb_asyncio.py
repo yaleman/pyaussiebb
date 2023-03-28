@@ -2,18 +2,18 @@
 """ test some things """
 
 import json
-import sys
 from typing import List
 
 import aiohttp
 import pytest
+
+from test_utils import configloader
 
 from aussiebb.asyncio import AussieBB
 import aussiebb.const
 from aussiebb.exceptions import InvalidTestForService
 from aussiebb.types import ConfigUser
 
-from test_utils import configloader
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio

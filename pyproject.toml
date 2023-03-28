@@ -66,3 +66,9 @@ requires = [
     "poetry-core>=1.0.0",
 ]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "network: Tests that require network access and a working backend server",
+]

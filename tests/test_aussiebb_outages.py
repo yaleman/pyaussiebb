@@ -35,6 +35,7 @@ def userfactory_sync(config_object : AussieBBConfigFile=config) -> List[AussieBB
     """ API factory """
     return [ AussieBB(username=user.username, password=user.password) for user in config_object.users ]
 
+@pytest.mark.network
 def test_login_cycle(users: List[AussieBB], indent: int=4) -> None:
     """ test the login step """
 
@@ -47,7 +48,3 @@ def test_login_cycle(users: List[AussieBB], indent: int=4) -> None:
         outages = user.service_outages(service["service_id"])
         print(json.dumps(outages, indent=indent, default=str, ensure_ascii=False))
         AussieBBOutage.parse_obj(outages)
-
-
-if __name__ == "__main__":
-    test_login_cycle([ AussieBB(username=user.username, password=user.password) for user in config.users ], indent=0)

@@ -35,6 +35,7 @@ def userfactory_sync(config_object : AussieBBConfigFile = config) -> List[Aussie
     """ API factory """
     return [ AussieBB(username=user.username, password=user.password) for user in config_object.users ]
 
+@pytest.mark.network
 def test_get_orders(users: List[AussieBB], indent: int=4) -> None:
     """ test the login step """
 
@@ -48,6 +49,3 @@ def test_get_orders(users: List[AussieBB], indent: int=4) -> None:
         order_detail = user.get_order(order["id"])
         print(json.dumps(order_detail, indent=indent, default=str, ensure_ascii=False))
         assert "id" in order_detail
-
-if __name__ == "__main__":
-    test_get_orders([ AussieBB(username=user.username, password=user.password) for user in config.users ], indent=0)

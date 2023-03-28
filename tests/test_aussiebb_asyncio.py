@@ -25,6 +25,7 @@ if CONFIG is None:
 if len(CONFIG.users) == 0:
     pytest.exit("You need some users in config.json")
 
+@pytest.mark.network
 @pytest.fixture(name="users")
 def fixture_users(config: AussieBBConfigFile=CONFIG) -> List[ConfigUser]:
     """ users fixture """
@@ -34,6 +35,7 @@ def fixture_users(config: AussieBBConfigFile=CONFIG) -> List[ConfigUser]:
     return result
 
 
+@pytest.mark.network
 async def test_login_cycle(users: List[AussieBB]) -> None:
     """ test the login step """
     for user in users:
@@ -46,6 +48,7 @@ async def test_login_cycle(users: List[AussieBB]) -> None:
             assert not api._has_token_expired() #pylint: disable=protected-access
 
 
+@pytest.mark.network
 async def test_get_customer_details(users: List[AussieBB]) -> None:
     """ test get_customer_details """
 
@@ -56,6 +59,7 @@ async def test_get_customer_details(users: List[AussieBB]) -> None:
             response = await api.get_customer_details()
             assert response.get('customer_number', False)
 
+@pytest.mark.network
 async def test_get_services(users: List[AussieBB]) -> None:
     """ test get_services """
 
@@ -67,6 +71,7 @@ async def test_get_services(users: List[AussieBB]) -> None:
             print(json.dumps(services, indent=4, default=str))
             assert services
 
+@pytest.mark.network
 async def test_line_state(users: List[AussieBB]) -> None:
     """ test test_line_state """
     for user in users:
@@ -86,8 +91,7 @@ async def test_line_state(users: List[AussieBB]) -> None:
                     except InvalidTestForService as error:
                         print(error)
 
-
-
+@pytest.mark.network
 async def test_get_usage(users: List[AussieBB]) -> None:
     """ test get_usage """
     for user in users:
@@ -100,6 +104,7 @@ async def test_get_usage(users: List[AussieBB]) -> None:
             assert usage.get('daysTotal')
 
 
+@pytest.mark.network
 async def test_get_service_tests(users: List[AussieBB]) -> None:
     """ test the get_service_tests function and its return type """
 
@@ -122,25 +127,7 @@ async def test_get_service_tests(users: List[AussieBB]) -> None:
             print(service_tests)
             assert isinstance(service_tests, list)
 
-
-# async def test_get_service_plans(users: List[AussieBB]) -> None:
-#     """ tests the plan pulling for services """
-
-#     for user in users:
-#         async with aiohttp.ClientSession() as session:
-#             test_api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
-#             result = await test_api.get_services()
-
-#             test_services = [ service for service in result if service.get('type') == 'NBN' ]
-
-#             if test_services:
-#                 test_plans = await test_api.service_plans(int(test_services[0]['service_id']))
-#                 assert test_plans
-#                 for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
-#                     assert key in test_plans.keys()
-
-
-
+@pytest.mark.network
 async def test_get_referral_code(users: List[AussieBB]) -> None:
     """ tests the referral code func """
     for user in users:
@@ -149,6 +136,7 @@ async def test_get_referral_code(users: List[AussieBB]) -> None:
             refcode = await api.referral_code
             assert isinstance(refcode, int)
 
+@pytest.mark.network
 async def test_get_account_contacts(users: List[AussieBB]) -> None:
     """ tests the account_contacts function """
     for user in users:
@@ -158,7 +146,7 @@ async def test_get_account_contacts(users: List[AussieBB]) -> None:
             print(contacts)
             assert len(contacts) > 0
 
-
+@pytest.mark.network
 async def test_get_voip_devices(users: List[AussieBB]) -> None:
     """ finds voip services and returns the devices """
     for user in users:
@@ -177,6 +165,7 @@ async def test_get_voip_devices(users: List[AussieBB]) -> None:
                 service_devices = await api.get_voip_devices(service_id=int(service['service_id']))
                 print(json.dumps(service_devices, indent=4, default=str))
 
+@pytest.mark.network
 async def test_get_voip_service(users: List[AussieBB]) -> None:
     """ finds voip services and returns the specific info endpoint """
     for user in users:

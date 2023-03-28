@@ -9,7 +9,7 @@ import requests.sessions
 
 from .baseclass import BaseClass
 from .const import BASEURL, default_headers, PHONE_TYPES
-from .exceptions import RecursiveDepth
+from .exceptions import RecursiveDepth, DeprecatedCall
 from .types import (
     FetchService,
     ServiceTest,
@@ -375,13 +375,17 @@ class AussieBB(BaseClass):
         return result
 
     def service_plans(self, service_id: int) -> Dict[str, Any]:
-        """Pulls the plan data for a given service.
+        """
+        *** DEPRECATED - This endpoint requires MFA now, which the library doesn't support! ***
+
+        Pulls the plan data for a given service.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
 
         """
-        url = self.get_url("service_plans", {"service_id": service_id})
-        return self.request_get_json(url=url)
+        raise DeprecatedCall("This endpoint requires MFA now, which the library doesn't support!")
+        #url = self.get_url("service_plans", {"service_id": service_id})
+        #return self.request_get_json(url=url)
 
     def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.

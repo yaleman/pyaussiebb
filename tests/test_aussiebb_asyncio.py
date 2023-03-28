@@ -123,21 +123,21 @@ async def test_get_service_tests(users: List[AussieBB]) -> None:
             assert isinstance(service_tests, list)
 
 
-async def test_get_service_plans(users: List[AussieBB]) -> None:
-    """ tests the plan pulling for services """
+# async def test_get_service_plans(users: List[AussieBB]) -> None:
+#     """ tests the plan pulling for services """
 
-    for user in users:
-        async with aiohttp.ClientSession() as session:
-            test_api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
-            result = await test_api.get_services()
+#     for user in users:
+#         async with aiohttp.ClientSession() as session:
+#             test_api = AussieBB(username=user.username, password=user.password, debug=True, session=session)
+#             result = await test_api.get_services()
 
-            test_services = [ service for service in result if service.get('type') == 'NBN' ]
+#             test_services = [ service for service in result if service.get('type') == 'NBN' ]
 
-            if test_services:
-                test_plans = await test_api.service_plans(int(test_services[0]['service_id']))
-                assert test_plans
-                for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
-                    assert key in test_plans.keys()
+#             if test_services:
+#                 test_plans = await test_api.service_plans(int(test_services[0]['service_id']))
+#                 assert test_plans
+#                 for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
+#                     assert key in test_plans.keys()
 
 
 

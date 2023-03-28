@@ -17,7 +17,7 @@ except ImportError as error_message:
 
 from ..baseclass import BaseClass
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
-from ..exceptions import AuthenticationException, RateLimitException, RecursiveDepth
+from ..exceptions import AuthenticationException, DeprecatedCall, RateLimitException, RecursiveDepth
 
 from ..types import (
     ServiceTest,
@@ -489,17 +489,21 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         return result
 
     async def service_plans(self, service_id: int) -> Dict[str, Any]:
-        """Pulls the plan data for a given service.
+        """
+        *** DEPRECATED - This endpoint requires MFA now, which the library doesn't support! ***
+
+        Pulls the plan data for a given service.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
 
         """
+        raise DeprecatedCall("This endpoint requires MFA now, which the library doesn't support!")
 
-        url = self.get_url("service_plans", {"service_id": service_id})
-        responsedata = await self.request_get_json(url=url)
-        if self.debug:
-            print(responsedata, file=sys.stderr)
-        return responsedata
+        # url = self.get_url("service_plans", {"service_id": service_id})
+        # responsedata = await self.request_get_json(url=url)
+        # if self.debug:
+        #     print(responsedata, file=sys.stderr)
+        # return responsedata
 
     async def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.

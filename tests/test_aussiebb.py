@@ -17,13 +17,13 @@ import json
 from typing import List
 
 import pytest
+from test_utils import configloader
 
 from aussiebb import AussieBB
 import aussiebb.const
 from aussiebb.exceptions import  InvalidTestForService
 from aussiebb.types import GetServicesResponse
 
-from test_utils import configloader
 
 CONFIG = configloader()
 if CONFIG is None or len(CONFIG.users) == 0:
@@ -91,20 +91,20 @@ def test_get_usage(users: List[AussieBB]) -> None:
         service_id = int(services[0].get('service_id',"-1"))
         assert test_api.get_usage(service_id).get('daysTotal')
 
-def test_get_service_plans(users: List[AussieBB]) -> None:
-    """ tests the plan pulling for services """
-    for test_api in users:
-        services = test_api.get_services()
-        if services is None:
-            pytest.skip("No services returned")
-        test_services = [ service for service in services if service["type"] in aussiebb.const.NBN_TYPES ]
-        if test_services:
-            service_id = int(test_services[0]["service_id"])
-            test_plans = test_api.service_plans(service_id)
-            print(test_plans)
-            assert test_plans
-            for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
-                assert key in test_plans.keys()
+# def test_get_service_plans(users: List[AussieBB]) -> None:
+#     """ tests the plan pulling for services """
+#     for test_api in users:
+#         services = test_api.get_services()
+#         if services is None:
+#             pytest.skip("No services returned")
+#         test_services = [ service for service in services if service["type"] in aussiebb.const.NBN_TYPES ]
+#         if test_services:
+#             service_id = int(test_services[0]["service_id"])
+#             test_plans = test_api.service_plans(service_id)
+#             print(test_plans)
+#             assert test_plans
+#             for key in ['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']:
+#                 assert key in test_plans.keys()
 
 def test_get_service_tests(users: List[AussieBB]) -> None:
     """ tests... getting the tests for services. """

@@ -1,3 +1,4 @@
+---
 name: Run mypy
 
 "on":
@@ -22,4 +23,4 @@ jobs:
           python --version
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
-          poetry run mypy aussiebb test*.py
+          poetry run mypy aussiebb tests

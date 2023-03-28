@@ -13,39 +13,25 @@ It needs at least one user in the "users" field. eg:
 """
 
 import json
-from typing import List
-import sys
 
 import pytest
-
-from aussiebb import AussieBB
-from aussiebb.types import AussieBBConfigFile
-
 from test_utils import configloader
 
-config: AussieBBConfigFile = configloader()
+from aussiebb import AussieBB
 
-
-if len(config.users) == 0:
-    sys.exit("You need some users in config.json")
-
-
-@pytest.fixture(name="users", scope="session")
-def userfactory_sync(config_object : AussieBBConfigFile = config) -> List[AussieBB]:
-    """ API factory """
-    return [ AussieBB(username=user.username, password=user.password) for user in config_object.users ]
 
 @pytest.mark.network
-def test_get_orders(users: List[AussieBB], indent: int=4) -> None:
+def test_get_orders() -> None:
     """ test the login step """
 
-    user: AussieBB = users[1]
+    config = configloader()
+    user = AussieBB(config.users[0].username, config.users[0].password)
 
     orders = user.get_orders()
-    print(json.dumps(orders, indent=indent, default=str, ensure_ascii=False))
+    print(json.dumps(orders, indent=4, default=str, ensure_ascii=False))
     for order in orders["data"]:
         assert "id" in order
         print(f"Dumping order detail for {order['id']}")
         order_detail = user.get_order(order["id"])
-        print(json.dumps(order_detail, indent=indent, default=str, ensure_ascii=False))
+        print(json.dumps(order_detail, indent=4, default=str, ensure_ascii=False))
         assert "id" in order_detail

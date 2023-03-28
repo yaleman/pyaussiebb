@@ -18,6 +18,8 @@ def configloader() -> AussieBBConfigFile:
         if filepath.exists():
             try:
                 configfile = AussieBBConfigFile.parse_file(filepath)
+                if len(configfile.users) == 0:
+                    pytest.exit("You need some users in config.json")
                 return configfile
             except json.JSONDecodeError as json_error:
                 pytest.exit(f"Failed to parse config file: {json_error}")

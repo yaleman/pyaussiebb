@@ -76,7 +76,6 @@ class AussieBBConfigFile(BaseModel):
 
     class Config:
         """metadata"""
-
         arbitrary_types_allowed = True
 
 

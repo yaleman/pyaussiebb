@@ -11,24 +11,19 @@ import pytest
 from aussiebb.asyncio import AussieBB
 import aussiebb.const
 from aussiebb.exceptions import InvalidTestForService
-from aussiebb.types import ConfigUser, AussieBBConfigFile
+from aussiebb.types import ConfigUser
 
 from test_utils import configloader
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
-CONFIG = configloader()
-if CONFIG is None:
-    pytest.exit("No config found!")
-    sys.exit(1)
-if len(CONFIG.users) == 0:
-    pytest.exit("You need some users in config.json")
 
 @pytest.mark.network
 @pytest.fixture(name="users")
-def fixture_users(config: AussieBBConfigFile=CONFIG) -> List[ConfigUser]:
+def fixture_users() -> List[ConfigUser]:
     """ users fixture """
+    config = configloader()
     if config is None:
         return []
     result: List[ConfigUser] = config.users

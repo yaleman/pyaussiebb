@@ -13,38 +13,23 @@ It needs at least one user in the "users" field. eg:
 """
 
 import json
-from typing import List
-import sys
 
 import pytest
-
-from aussiebb import AussieBB
-from aussiebb.types import AussieBBConfigFile, AussieBBOutage
-
 from test_utils import configloader
 
-config: AussieBBConfigFile = configloader()
-
-
-if len(config.users) == 0:
-    sys.exit("You need some users in config.json")
-
-
-@pytest.fixture(name="users", scope="session")
-def userfactory_sync(config_object : AussieBBConfigFile=config) -> List[AussieBB]:
-    """ API factory """
-    return [ AussieBB(username=user.username, password=user.password) for user in config_object.users ]
+from aussiebb import AussieBB
+from aussiebb.types import AussieBBOutage
 
 @pytest.mark.network
-def test_login_cycle(users: List[AussieBB], indent: int=4) -> None:
+def test_login_cycle() -> None:
     """ test the login step """
 
-    user: AussieBB = users[0]
+    user: AussieBB = [ AussieBB(username=user.username, password=user.password) for user in configloader().users ][0]
 
     services = user.get_services()
     if services is None:
         pytest.skip("No services found")
     for service in services:
         outages = user.service_outages(service["service_id"])
-        print(json.dumps(outages, indent=indent, default=str, ensure_ascii=False))
+        print(json.dumps(outages, indent=4, default=str, ensure_ascii=False))
         AussieBBOutage.parse_obj(outages)

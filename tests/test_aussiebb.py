@@ -24,15 +24,11 @@ import aussiebb.const
 from aussiebb.exceptions import  InvalidTestForService
 from aussiebb.types import GetServicesResponse
 
-
-CONFIG = configloader()
-if CONFIG is None or len(CONFIG.users) == 0:
-    pytest.exit("You need some users in config.json")
-
+@pytest.mark.network
 @pytest.fixture(name="users", scope="session")
 def userfactory() -> List[AussieBB]:
     """ API factory """
-    return [ AussieBB(username=user.username, password=user.password) for user in CONFIG.users ]
+    return [ AussieBB(username=user.username, password=user.password) for user in configloader().users ]
 
 @pytest.mark.network
 def test_login_cycle(users: List[AussieBB]) -> None:

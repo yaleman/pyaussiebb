@@ -1,5 +1,5 @@
 ---
-name: Run mypy
+name: mypy checks
 
 "on":
   push:

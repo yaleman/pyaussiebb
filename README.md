@@ -2,7 +2,9 @@
 
 This is a very simple module for interacting with the Aussie Broadband APIs.
 
-![Python Checks](https://github.com/yaleman/aussiebb/actions/workflows/python_linting.yml/badge.svg)
+![ruff](https://github.com/yaleman/aussiebb/actions/workflows/pylint.yml/badge.svg)
+![mypy](https://github.com/yaleman/aussiebb/actions/workflows/mypy.yml/badge.svg)
+![pytest](https://github.com/yaleman/aussiebb/actions/workflows/pytest.yml/badge.svg)
 ![Shellcheck](https://github.com/yaleman/aussiebb/actions/workflows/shellcheck.yml/badge.svg)
 
 # Usage

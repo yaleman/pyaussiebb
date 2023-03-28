@@ -1,52 +1,57 @@
 # CHANGELOG
 
+## v0.0.16
+
+- Deprecated `service_plans` as it requires MFA or another auth method.
+- `types.APIResponseMeta` now has optional `from` and `to` fields because the Aussie API was replying with them.
+
 ## v0.0.15
 
-  - Moved the `pydantic` dependency from dev to main, which shouldn't ever have been in dev...
+- Moved the `pydantic` dependency from dev to main, which shouldn't ever have been in dev...
 
 ## v0.0.14
 
-  - Moved the filtering by servicetypes in `get_services()` to its own function
-  - Added a new service type "Fetchtv"
-  - Added a way to drop types of services in `get_services()` so Home Assistant can ignore `FETCH_TYPES`
-  - Added some handling for FETCHTV types.
+- Moved the filtering by servicetypes in `get_services()` to its own function
+- Added a new service type "Fetchtv"
+- Added a way to drop types of services in `get_services()` so Home Assistant can ignore `FETCH_TYPES`
+- Added some handling for FETCHTV types.
 
 ## v0.0.13
 
-  - Added service type of `FETCHTV` to `NBN_TYPES`
-    - Fixed test for this handler.
-    - Updated logging for error when it happens.
+- Added service type of `FETCHTV` to `NBN_TYPES`
+  - Fixed test for this handler.
+  - Updated logging for error when it happens.
 
   Turns out this was the wrong way to handle it, so this version got yanked.
 
 ## v0.0.12
 
-  - Added `pydantic` as a dependency, which allows for better type checking.
-  - Rewrote a bunch of the tests because the bike shed needed to be green and driven by JSON.
-  - Added first run of handling for folks with more than 10 services - paginated calls
-  - Some things will return nicer pydantic-ish objects, typing is starting to be enforced on output
-    - `account_contacts` is one, for example
-  - Added service type of `Opticomm` to `NBN_TYPES`
+- Added `pydantic` as a dependency, which allows for better type checking.
+- Rewrote a bunch of the tests because the bike shed needed to be green and driven by JSON.
+- Added first run of handling for folks with more than 10 services - paginated calls
+- Some things will return nicer pydantic-ish objects, typing is starting to be enforced on output
+  - `account_contacts` is one, for example
+- Added service type of `Opticomm` to `NBN_TYPES`
 
 ## v0.0.11
 
-  - Added `aussiebb.exceptions.UnrecognisedServiceType` and some quick validation when you run `get_usage` so it doesn't break.
-  - Added some more testing around this.
-  - Fixed it so you can pass a session object to the non-asyncio AussieBB
-  - Added "use_cached" to get_services calls
-  - Added some mock data in `aussiebb.const.TEST_MOCKDATA`
+- Added `aussiebb.exceptions.UnrecognisedServiceType` and some quick validation when you run `get_usage` so it doesn't break.
+- Added some more testing around this.
+- Fixed it so you can pass a session object to the non-asyncio AussieBB
+- Added "use_cached" to get_services calls
+- Added some mock data in `aussiebb.const.TEST_MOCKDATA`
 
 ## v0.0.10
 
 ### Major change: Minimum supported Python is now 3.9
 
-  - re-defined the API Classes as children of a base class (aussiebb.baseclass.BaseClass).
-  - added significantly better typing to inputs/responses.
-  - removed all the usage of `inspect`.
-  - moved from setup.py to [Poetry](https://python-poetry.org) for build/packaging.
-  - removed loguru dependency, class init now takes a logger as an option or uses python default logging if not. Also removed _debug_print from async version.
-  - added NBN_TYPES and PHONE_TYPES to aussiebb.const, to allow one to check if the service matches a known identifier for "phone" (mobile/VOIP) or "NBN" (internet) types - this matters when parsing the resulting service info.
-  - added test and fixed result of the asyncio get_service_tests function
+- re-defined the API Classes as children of a base class (aussiebb.baseclass.BaseClass).
+- added significantly better typing to inputs/responses.
+- removed all the usage of `inspect`.
+- moved from setup.py to [Poetry](https://python-poetry.org) for build/packaging.
+- removed loguru dependency, class init now takes a logger as an option or uses python default logging if not. Also removed _debug_print from async version.
+- added NBN_TYPES and PHONE_TYPES to aussiebb.const, to allow one to check if the service matches a known identifier for "phone" (mobile/VOIP) or "NBN" (internet) types - this matters when parsing the resulting service info.
+- added test and fixed result of the asyncio get_service_tests function
 
 ## v0.0.8
 

@@ -39,6 +39,7 @@ def test_get_orders(users: List[AussieBB], indent: int=4) -> None:
     """ test the login step """
 
     user: AussieBB = users[1]
+
     orders = user.get_orders()
     print(json.dumps(orders, indent=indent, default=str, ensure_ascii=False))
     for order in orders["data"]:

@@ -37,11 +37,11 @@ APIResponseMeta = TypedDict(
     "APIResponseMeta",
     {
         "current_page": int,
-        "from": int,
+        "from": Optional[int],
         "last_page": int,
         "path": str,
         "per_page": int,
-        "to": int,
+        "to": Optional[int],
         "total": int,
     },
 )

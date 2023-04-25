@@ -72,3 +72,6 @@ asyncio_mode = "auto"
 markers = [
     "network: Tests that require network access and a working backend server",
 ]
+
+[tool.pylint.MASTER]
+max-line-length = 200

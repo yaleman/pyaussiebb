@@ -360,7 +360,7 @@ class AussieBB(BaseClass):
             test
             for test in self.get_service_tests(service_id)
             if test.link.endswith(f"/{test_name}")
-        ]  # pylint: disable=line-too-long
+        ]
 
         if not test_links:
             return None
@@ -444,7 +444,11 @@ class AussieBB(BaseClass):
         Example data:
 
         ```
-        {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
+        {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},
+        "international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},
+        "internet":{"kbytes":0,"cost":0},
+        "voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},
+        "daysTotal":31,"daysRemaining":2,"historical":[]}
         ```
         """
         url = self.get_url("telephony_usage", {"service_id": service_id})

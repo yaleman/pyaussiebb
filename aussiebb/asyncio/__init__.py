@@ -31,10 +31,9 @@ from ..types import (
 )
 
 
-class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
+class AussieBB(BaseClass):
     """aiohttp class for interacting with Aussie Broadband APIs"""
 
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         username: str,
@@ -105,12 +104,12 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         @param wait_on_rate_limit - bool - if hitting a rate limit, async wait on the time limit
         ```
         """
-        ratelimit_remaining = int(response.headers.get("x-ratelimit-remaining", -1))
+        ratelimit_remaining = int(response.headers.get("X-RateLimit-Remaining", -1))
         self.logger.debug(
-            "Rate limit header: %s", response.headers.get("x-ratelimit-remaining", -1)
+            "Rate limit header: %s", response.headers.get("X-RateLimit-Remaining", -1)
         )
         if ratelimit_remaining < 5 and wait_on_rate_limit:
-            print("Rate limit below 5, sleeping for 1 second.", file=sys.stderr)
+            self.logger.info("Rate limit below 5, sleeping for 1 second.")
             await asyncio.sleep(1)
 
         if response.status == 422:
@@ -147,6 +146,10 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
                 )
                 await asyncio.sleep(delay)
             raise RateLimitException(jsondata)
+        if response.status == 500:
+            self.logger.error("AussieBB API returned 500, dumping headers.")
+            self.logger.error(response.headers)
+            self.logger.error("body: %s", await response.content.read())
         response.raise_for_status()
 
     async def do_login_check(self, skip_login_check: bool) -> None:
@@ -177,11 +180,16 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         if cookies is None:
             cookies = {"myaussie_cookie": self.myaussie_cookie}
 
-
+        # telling it where we're coming from
+        headers = {
+            "referer" : "https://my.aussiebroadband.com.au/",
+            "x-two-factor-auth-capable-client": "false", # this might need to be a thing...
+        }
         response: ClientResponse = await self.session.get(
             url=url,
             cookies=cookies,
-            params=params
+            params=params,
+            headers=headers
         )
         try:
             await self.handle_response_fail(response)
@@ -373,13 +381,28 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         )
         return responsedata
 
-    async def billing_invoice(self, invoice_id: int) -> Dict[str, Any]:
+    async def billing_receipt(self, receipt_id: int) -> ClientResponse:
+        """Downloads a receipt
+
+        This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
+        """
+        return await self.billing_download("receipt", receipt_id)
+
+    async def billing_invoice(self, invoice_id: int) -> ClientResponse:
         """Downloads an invoice
 
         This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
-        url = self.get_url("billing_invoice", {"invoice_id": invoice_id})
-        responsedata = await self.request_get_json(url=url)
+        return await self.billing_download("invoice", invoice_id)
+
+    async def billing_download(self, download_type: str, item_id: int) -> ClientResponse:
+        """Downloads a billing file
+
+        This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
+        """
+        url = f"{self.BASEURL.get('api')}/billing/{download_type}s/{item_id}"
+
+        responsedata = await self.request_get(url=url)
         return responsedata
 
     async def account_paymentplans(self) -> Dict[str, Any]:
@@ -584,7 +607,10 @@ class AussieBB(BaseClass):  # pylint: disable=too-many-public-methods
         Example data:
 
         ```
-        {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},"international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},"internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},"other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
+        {"national":{"calls":0,"cost":0},"mobile":{"calls":0,"cost":0},
+        "international":{"calls":0,"cost":0},"sms":{"calls":0,"cost":0},
+        "internet":{"kbytes":0,"cost":0},"voicemail":{"calls":0,"cost":0},
+        "other":{"calls":0,"cost":0},"daysTotal":31,"daysRemaining":2,"historical":[]}
         ```
         """
         url = self.get_url("telephony_usage", {"service_id": service_id})

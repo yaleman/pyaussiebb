@@ -8,7 +8,7 @@ name: ruff linting
   pull_request:
 
 jobs:
-  pylint:
+  linting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

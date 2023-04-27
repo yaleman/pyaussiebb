@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.0.17
+
+Adding download invoice functionality and handlers in `asyncio` module.
+
 ## v0.0.16
 
 - Deprecated `service_plans` as it requires MFA or another auth method.

@@ -12,6 +12,7 @@ from .const import BASEURL, default_headers, PHONE_TYPES
 from .exceptions import RecursiveDepth, DeprecatedCall
 from .types import (
     FetchService,
+    MFAMethod,
     ServiceTest,
     AccountContact,
     AccountTransaction,
@@ -523,3 +524,13 @@ class AussieBB(BaseClass):
         """gets the details of a Fetch service"""
         url = self.get_url("fetch_service", {"service_id": service_id})
         return FetchService.parse_obj(self.request_get_json(url=url))
+
+    async def mfa_send(self, method: MFAMethod) -> None:
+        """sends an MFA code to the user"""
+        url = self.get_url("mfa_send")
+        self.request_post(url=url, data=method.dict())
+
+    async def mfa_verify(self, token: str) -> None:
+        """got the token from send_mfa? send it back to validate it"""
+        url = self.get_url("mfa_verify")
+        self.request_post(url=url, data={"token": token})

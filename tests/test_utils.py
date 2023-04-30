@@ -9,10 +9,12 @@ import pytest
 
 # from aussiebb import AussieBB
 from aussiebb.types import AussieBBConfigFile
-CONFIG_FILES = [ os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json" ]
+
+CONFIG_FILES = [os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json"]
+
 
 def configloader() -> AussieBBConfigFile:
-    """ loads config """
+    """loads config"""
     for filename in CONFIG_FILES:
         filepath = Path(filename).resolve()
         if filepath.exists():

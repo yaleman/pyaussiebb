@@ -17,9 +17,14 @@ except ImportError as error_message:
 
 from ..baseclass import BaseClass
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
-from ..exceptions import AuthenticationException, DeprecatedCall, RateLimitException, RecursiveDepth
+from ..exceptions import (
+    AuthenticationException,
+    RateLimitException,
+    RecursiveDepth,
+)
 
 from ..types import (
+    MFAMethod,
     ServiceTest,
     AccountContact,
     AccountTransaction,
@@ -164,9 +169,9 @@ class AussieBB(BaseClass):
         self,
         url: str,
         skip_login_check: bool = False,
-        depth: int=0,
+        depth: int = 0,
         cookies: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None
+        params: Optional[Dict[str, Any]] = None,
     ) -> ClientResponse:
         """Performs a GET request and logs in first if needed."""
         if depth > 2:
@@ -182,14 +187,11 @@ class AussieBB(BaseClass):
 
         # telling it where we're coming from
         headers = {
-            "referer" : "https://my.aussiebroadband.com.au/",
-            "x-two-factor-auth-capable-client": "false", # this might need to be a thing...
+            "referer": "https://my.aussiebroadband.com.au/",
+            "x-two-factor-auth-capable-client": "false",  # this might need to be a thing...
         }
         response: ClientResponse = await self.session.get(
-            url=url,
-            cookies=cookies,
-            params=params,
-            headers=headers
+            url=url, cookies=cookies, params=params, headers=headers
         )
         try:
             await self.handle_response_fail(response)
@@ -200,7 +202,7 @@ class AussieBB(BaseClass):
                 skip_login_check=skip_login_check,
                 depth=depth,
                 cookies=cookies,
-                params=params
+                params=params,
             )
         return response
 
@@ -208,10 +210,10 @@ class AussieBB(BaseClass):
         self,
         url: str,
         skip_login_check: bool = False,
-        depth: int=0,
+        depth: int = 0,
         cookies: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None
-        ) -> List[Any]:
+        params: Optional[Dict[str, Any]] = None,
+    ) -> List[Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a list from the JSON response.
@@ -224,10 +226,10 @@ class AussieBB(BaseClass):
         self,
         url: str,
         skip_login_check: bool = False,
-        depth: int=0,
+        depth: int = 0,
         cookies: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None
-        ) -> Dict[str, Any]:
+        params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a dict of the JSON response.
@@ -258,7 +260,7 @@ class AussieBB(BaseClass):
         cookies = kwargs.get("cookies", {"myaussie_cookie": self.myaussie_cookie})
         headers = kwargs.get("headers", default_headers())
         async with self.session.post(
-            url=url, cookies=cookies, headers=headers
+            url=url, cookies=cookies, headers=headers, json=kwargs.get("data")
         ) as response:
             try:
                 await self.handle_response_fail(response)
@@ -329,7 +331,7 @@ class AussieBB(BaseClass):
             url = self.get_url("get_services")
             services_list: List[Dict[str, Any]] = []
             while True:
-                params = {"page": page }
+                params = {"page": page}
                 responsedata = await self.request_get_json(url=url, params=params)
                 servicedata = GetServicesResponse.parse_obj(responsedata)
 
@@ -349,7 +351,7 @@ class AussieBB(BaseClass):
         self.services = self.filter_services(
             service_types=servicetypes,
             drop_types=drop_types,
-            )
+        )
 
         return self.services
 
@@ -395,7 +397,9 @@ class AussieBB(BaseClass):
         """
         return await self.billing_download("invoice", invoice_id)
 
-    async def billing_download(self, download_type: str, item_id: int) -> ClientResponse:
+    async def billing_download(
+        self, download_type: str, item_id: int
+    ) -> ClientResponse:
         """Downloads a billing file
 
         This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
@@ -411,7 +415,9 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(self, service_id: int, use_cached: bool = True) -> Dict[str, Any]:
+    async def get_usage(
+        self, service_id: int, use_cached: bool = True
+    ) -> Dict[str, Any]:
         """
         Returns a dict of usage for a service.
 
@@ -450,7 +456,7 @@ class AussieBB(BaseClass):
 
         url = self.get_url("get_service_tests", {"service_id": service_id})
         responsedata: List[Any] = await self.request_get_list(url=url)
-        return [ ServiceTest.parse_obj(test) for test in responsedata ]
+        return [ServiceTest.parse_obj(test) for test in responsedata]
 
     async def get_test_history(self, service_id: int) -> Dict[str, Any]:
         """Gets the available tests for a given service ID
@@ -470,10 +476,10 @@ class AussieBB(BaseClass):
         self.is_valid_test(url, tests)
 
         # if self.debug:
-            # print("Testing line state, can take a few seconds...")
+        # print("Testing line state, can take a few seconds...")
         response = await self.request_post_json(url=url)
         # if self.debug:
-            # print(f"Response: {response}", file=sys.stderr)
+        # print(f"Response: {response}", file=sys.stderr)
         return response
 
     async def run_test(
@@ -491,9 +497,7 @@ class AussieBB(BaseClass):
 
         service_tests = await self.get_service_tests(service_id)
         test_links = [
-            test
-            for test in service_tests
-            if test.link.endswith(f"/{test_name}")
+            test for test in service_tests if test.link.endswith(f"/{test_name}")
         ]
 
         if not test_links:
@@ -513,20 +517,17 @@ class AussieBB(BaseClass):
 
     async def service_plans(self, service_id: int) -> Dict[str, Any]:
         """
-        *** DEPRECATED - This endpoint requires MFA now, which the library doesn't support! ***
-
-        Pulls the plan data for a given service.
+        Pulls the plan data for a given service. You MUST MFA-verify first.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
 
         """
-        raise DeprecatedCall("This endpoint requires MFA now, which the library doesn't support!")
 
-        # url = self.get_url("service_plans", {"service_id": service_id})
-        # responsedata = await self.request_get_json(url=url)
-        # if self.debug:
-        #     print(responsedata, file=sys.stderr)
-        # return responsedata
+        url = self.get_url("service_plans", {"service_id": service_id})
+        responsedata = await self.request_get_json(url=url)
+        if self.debug:
+            print(responsedata, file=sys.stderr)
+        return responsedata
 
     async def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.
@@ -674,7 +675,18 @@ class AussieBB(BaseClass):
         return VOIPDetails.parse_obj(data)
 
     async def get_fetch_service(self, service_id: int) -> FetchService:
-        """ gets the details of a Fetch service """
-        url = self.get_url("fetch_service", { "service_id" : service_id })
+        """gets the details of a Fetch service"""
+        url = self.get_url("fetch_service", {"service_id": service_id})
         data = await self.request_get_json(url=url)
         return FetchService.parse_obj(data)
+
+    async def mfa_send(self, method: MFAMethod) -> None:
+        """sends an MFA code to the user"""
+        url = self.get_url("mfa_send")
+        print(method.dict())
+        await self.request_post_json(url=url, data=method.dict())
+
+    async def mfa_verify(self, token: str) -> None:
+        """got the token from send_mfa? send it back to validate it"""
+        url = self.get_url("mfa_verify")
+        await self.request_post_json(url=url, data={"token": token})

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.0.18
+
+Added MFA support, example works with SMS, un-deprecated `service_plans`.
+
 ## v0.0.17
 
 Adding download invoice functionality and handlers in `asyncio` module.
@@ -59,31 +63,31 @@ Adding download invoice functionality and handlers in `asyncio` module.
 
 ## v0.0.8
 
-  - renamed serviceid to service_id to match the api
-  - added request_get_json to the sync class
-  - added telephony_usage
-  - added get_appointment which gets service appointments
-  - updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service
-  - abstracted how URLS are generated so I don't have to keep adding them twice
-  - added a filter on get_services which allows you to filter by type
+- renamed serviceid to service_id to match the api
+- added request_get_json to the sync class
+- added telephony_usage
+- added get_appointment which gets service appointments
+- updated get_usage so it checks the service list and will return telephony data if it's a PhoneMobile service
+- abstracted how URLS are generated so I don't have to keep adding them twice
+- added a filter on get_services which allows you to filter by type
 
-## 0.0.7 
+## 0.0.7
 
-  - Added the following new functions: `account_transactions`, `billing_invoice`, `service_outages`, `service_boltons`, `service_datablocks`, `support_tickets`, `account contacts`. Renamed `get_service_plans` to `service_plans`
+- Added the following new functions: `account_transactions`, `billing_invoice`, `service_outages`, `service_boltons`, `service_datablocks`, `support_tickets`, `account contacts`. Renamed `get_service_plans` to `service_plans`
 
-## v0.0.6 
+## v0.0.6
 
-  - Fixed rate limiting
+- Fixed rate limiting
 
 ## v0.0.5
 
-  - Fixing rate limiting
-  - Didn't actually fix it...
+- Fixing rate limiting
+- Didn't actually fix it...
 
-## 0.0.4 
+## 0.0.4
 
-  - Added `asyncio` submodule, split constants and exceptions out into their own files/modules.
+- Added `asyncio` submodule, split constants and exceptions out into their own files/modules.
 
-## 0.0.3 
+## 0.0.3
 
-  - Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.
+- Added `get_service_plans` so the gigabit-desperate crowd can check for their new hotness.

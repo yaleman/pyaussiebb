@@ -1,5 +1,6 @@
 """ exceptions for the AussieBB module """
 
+
 class InvalidTestForService(BaseException):
     """user specified an invalid test"""
 
@@ -7,8 +8,9 @@ class InvalidTestForService(BaseException):
 class AuthenticationException(BaseException):
     """authentication error for AussieBB"""
 
+
 class DeprecatedCall(BaseException):
-    """ Can't use this anymore """
+    """Can't use this anymore"""
 
 
 class RateLimitException(BaseException):

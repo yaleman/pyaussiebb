@@ -10,16 +10,16 @@ script_path = Path(__file__)
 sys.path.append(script_path.parent.parent.as_posix())
 
 # pylint: disable=import-error,wrong-import-position
-from aussiebb import AussieBB
-import aussiebb.exceptions
+from aussiebb import AussieBB  # noqa E402
+import aussiebb.exceptions  # noqa E402
 
 
-client = AussieBB( "12345", "12345" )
+client = AussieBB("12345", "12345")
 
 services = [
-    {"type" : "VOIP", "service_id" : 223457},
-    {"type" : "broken", "service_id" : 12345},
-    {"type" : "NBN", "service_id" : 22345}
+    {"type": "VOIP", "service_id": 223457},
+    {"type": "broken", "service_id": 12345},
+    {"type": "NBN", "service_id": 22345},
 ]
 
 print(dir(client))

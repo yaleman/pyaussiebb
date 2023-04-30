@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional, TypedDict
 
-from pydantic import BaseModel, SecretStr, Field
+from pydantic import BaseModel, SecretStr, Field, validator
 
 
 class AccountTransaction(TypedDict):
@@ -19,6 +19,7 @@ class AccountTransaction(TypedDict):
 
 class ServiceTest(BaseModel):
     """A service test object"""
+
     name: str
     description: str
     link: str
@@ -76,6 +77,7 @@ class AussieBBConfigFile(BaseModel):
 
     class Config:
         """metadata"""
+
         arbitrary_types_allowed = True
 
 
@@ -244,10 +246,9 @@ class VOIPDevice(BaseModel):
     registered: bool  # is it online?
 
 
-
-
 class AccountContact(BaseModel):
     """account contact data"""
+
     contact_id: int = Field(..., alias="id")
     first_name: str
     last_name: str
@@ -262,8 +263,10 @@ class AccountContact(BaseModel):
     preferred_name: Optional[str]
     middle_name: Optional[str]
 
+
 class Address(BaseModel):
-    """ Address for services """
+    """Address for services"""
+
     subaddresstype: Optional[str]
     subaddressnumber: Optional[str]
     streetnumber: str
@@ -272,8 +275,10 @@ class Address(BaseModel):
     postcode: str
     state: str
 
+
 class BaseService(BaseModel):
-    """ base service definition """
+    """base service definition"""
+
     service_id: int
     type: str
     name: str
@@ -294,24 +299,29 @@ class BaseService(BaseModel):
 
 
 class FetchSubscription(BaseModel):
-    """ Fetch Subscription item """
+    """Fetch Subscription item"""
+
     name: str
     description: str
     cost_cents: int = Field(..., alias="costCents")
     start_date: Optional[datetime] = Field(..., alias="startDate")
     end_date: Optional[datetime] = Field(..., alias="endDate")
 
+
 class FetchSubscriptionDict(BaseModel):
-    """ this is just getting silly """
+    """this is just getting silly"""
+
     # subscriptions: List[FetchSubscription] = Field(..., alias="")
     premium_channels: List[FetchSubscription] = Field(..., alias="Premium Channels")
 
 
 class FetchService(BaseService):
-    """ Fetch TV Service, comes from get_services()"""
+    """Fetch TV Service, comes from get_services()"""
+
 
 class FetchDetails(BaseModel):
     """data from  /fetchtv/{serviceid}"""
+
     service_id: int = Field(..., alias="id")
     max_outstanding_cents: int = Field(..., alias="maxOutstandingCents")
     current_available_spend_cents: int = Field(..., alias="currentAvailableSpendCents")
@@ -321,24 +331,43 @@ class FetchDetails(BaseModel):
 
 class VOIPDetails(BaseModel):
     """individual VOIP service"""
+
     phone_number: str = Field(..., alias="phoneNumber")
     bar_international: bool = Field(..., alias="barInternational")
     divert_number: Optional[str] = Field(..., alias="divertNumber")
     supports_number_diversion: bool = Field(..., alias="supportsNumberDiversion")
 
+
 class VOIPService(BaseService):
-    """ VOIP Service details TV Service """
+    """VOIP Service details TV Service"""
+
     voip_details: VOIPDetails = Field(..., alias="voipDetails")
 
+
 class NBNDetails(BaseModel):
-    """ sub-details of an NBN service"""
+    """sub-details of an NBN service"""
+
     product: str
     poi_name: str = Field(..., alias="poiName")
     cvc_graph: str = Field(..., alias="cvcGraph")
 
 
 class NBNService(BaseService):
-    """ NBN Service """
+    """NBN Service"""
+
     nbn_details: NBNDetails = Field(..., alias="nbnDetails")
 
     ip_addresses: List[str] = Field(..., alias="ipAddresses")
+
+
+class MFAMethod(BaseModel):
+    """simple model for sending MFA Method"""
+
+    method: str
+
+    @validator("method")
+    def check_method(cls, value: str) -> str:
+        """validates that the MFA method is either sms or email"""
+        if value not in ["sms", "email"]:
+            raise ValueError("must be sms or email")
+        return value

@@ -21,5 +21,6 @@ plugins:
 nav:
   - "Home": README.md
   - "API Documentation": aussiebb.md
+  - Multifactor : mfa.md
   - Changelog: CHANGELOG.md
   - Releasing: release.md

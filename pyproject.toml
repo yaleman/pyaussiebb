@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaussiebb"
-version = "0.0.17"
+version = "0.0.18"
 description = "Aussie Broadband API module"
 authors = [
     "James Hodgkinson <james@terminaloutcomes.com>",
@@ -75,3 +75,5 @@ markers = [
 
 [tool.pylint.MASTER]
 max-line-length = 200
+extension-pkg-whitelist = "pydantic"
+load-plugins = "pylint_pydantic"

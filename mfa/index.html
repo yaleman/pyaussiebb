@@ -8,18 +8,24 @@
       
       
       
+        <link rel="canonical" href="https://yaleman.github.io/aussiebb/mfa/">
       
       
-      <link rel="icon" href="/aussiebb/assets/images/favicon.png">
+        <link rel="prev" href="../aussiebb/">
+      
+      
+        <link rel="next" href="../CHANGELOG/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.8">
     
     
       
-        <title>aussiebb</title>
+        <title>Multifactor - aussiebb</title>
       
     
     
-      <link rel="stylesheet" href="/aussiebb/assets/stylesheets/main.ded33207.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
       
       
 
@@ -35,9 +41,9 @@
       
     
     
-      <link rel="stylesheet" href="/aussiebb/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("/aussiebb/",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -58,6 +64,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#multi-factor-authentication" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -70,7 +81,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/aussiebb/." title="aussiebb" class="md-header__button md-logo" aria-label="aussiebb" data-md-component="logo">
+    <a href=".." title="aussiebb" class="md-header__button md-logo" aria-label="aussiebb" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -89,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Multifactor
             
           </span>
         </div>
@@ -168,7 +179,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/aussiebb/." title="aussiebb" class="md-nav__button md-logo" aria-label="aussiebb" data-md-component="logo">
+    <a href=".." title="aussiebb" class="md-nav__button md-logo" aria-label="aussiebb" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -199,7 +210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/aussiebb/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         Home
       </a>
     </li>
@@ -214,7 +225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/aussiebb/aussiebb/" class="md-nav__link">
+      <a href="../aussiebb/" class="md-nav__link">
         API Documentation
       </a>
     </li>
@@ -227,11 +238,59 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="/aussiebb/mfa/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Multifactor
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Multifactor
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requesting-an-mfa-token" class="md-nav__link">
+    Requesting an MFA token
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-the-token" class="md-nav__link">
+    Submitting the Token
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -244,7 +303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/aussiebb/CHANGELOG/" class="md-nav__link">
+      <a href="../CHANGELOG/" class="md-nav__link">
         Changelog
       </a>
     </li>
@@ -259,7 +318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/aussiebb/release/" class="md-nav__link">
+      <a href="../release/" class="md-nav__link">
         Releasing
       </a>
     </li>
@@ -283,6 +342,30 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requesting-an-mfa-token" class="md-nav__link">
+    Requesting an MFA token
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-the-token" class="md-nav__link">
+    Submitting the Token
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -294,8 +377,33 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+  
+  
+
+
+<h1 id="multi-factor-authentication">Multi-Factor Authentication</h1>
+<p>This is a work in progress.</p>
+<h2 id="requesting-an-mfa-token">Requesting an MFA token</h2>
+<p>URL: <code>https://myaussie-api.aussiebroadband.com.au/2fa/send</code></p>
+<p>POST body: <code>{"method":"sms"}</code> OR <code>{"method":"email"}</code></p>
+<p>Headers:</p>
+<pre><code class="language-json">{ &quot;x-two-factor-auth-capable-client&quot;: &quot;true&quot; }
+</code></pre>
+<h2 id="submitting-the-token">Submitting the Token</h2>
+<p>URL: <code>https://myaussie-api.aussiebroadband.com.au/2fa/verify</code></p>
+<p>POST body: <code>{"token":"&lt;value&gt;"}</code></p>
+<p>Headers:</p>
+<pre><code class="language-json">{ &quot;x-two-factor-auth-capable-client&quot;: &quot;true&quot; }
+</code></pre>
+<p>As far as I can tell this just updates the session/cookies so you're "approved" for MFA things after that.</p>
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -327,10 +435,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "/aussiebb/", "features": [], "search": "/aussiebb/assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="/aussiebb/assets/javascripts/bundle.51198bba.min.js"></script>
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
       
     
   </body>

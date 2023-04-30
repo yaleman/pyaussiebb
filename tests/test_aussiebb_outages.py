@@ -20,11 +20,15 @@ from test_utils import configloader
 from aussiebb import AussieBB
 from aussiebb.types import AussieBBOutage
 
+
 @pytest.mark.network
 def test_login_cycle() -> None:
-    """ test the login step """
+    """test the login step"""
 
-    user: AussieBB = [ AussieBB(username=user.username, password=user.password) for user in configloader().users ][0]
+    user: AussieBB = [
+        AussieBB(username=user.username, password=user.password)
+        for user in configloader().users
+    ][0]
 
     services = user.get_services()
     if services is None:

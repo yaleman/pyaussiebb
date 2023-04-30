@@ -22,7 +22,7 @@ from aussiebb import AussieBB
 
 @pytest.mark.network
 def test_get_orders() -> None:
-    """ test the login step """
+    """test the login step"""
 
     config = configloader()
     user = AussieBB(config.users[0].username, config.users[0].password)

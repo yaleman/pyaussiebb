@@ -19,7 +19,6 @@ from ..baseclass import BaseClass
 from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
 from ..exceptions import (
     AuthenticationException,
-    DeprecatedCall,
     RateLimitException,
     RecursiveDepth,
 )
@@ -261,7 +260,7 @@ class AussieBB(BaseClass):
         cookies = kwargs.get("cookies", {"myaussie_cookie": self.myaussie_cookie})
         headers = kwargs.get("headers", default_headers())
         async with self.session.post(
-            url=url, cookies=cookies, headers=headers
+            url=url, cookies=cookies, headers=headers, json=kwargs.get("data")
         ) as response:
             try:
                 await self.handle_response_fail(response)
@@ -518,22 +517,17 @@ class AussieBB(BaseClass):
 
     async def service_plans(self, service_id: int) -> Dict[str, Any]:
         """
-        *** DEPRECATED - This endpoint requires MFA now, which the library doesn't support! ***
-
-        Pulls the plan data for a given service.
+        Pulls the plan data for a given service. You MUST MFA-verify first.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
 
         """
-        raise DeprecatedCall(
-            "This endpoint requires MFA now, which the library doesn't support!"
-        )
 
-        # url = self.get_url("service_plans", {"service_id": service_id})
-        # responsedata = await self.request_get_json(url=url)
-        # if self.debug:
-        #     print(responsedata, file=sys.stderr)
-        # return responsedata
+        url = self.get_url("service_plans", {"service_id": service_id})
+        responsedata = await self.request_get_json(url=url)
+        if self.debug:
+            print(responsedata, file=sys.stderr)
+        return responsedata
 
     async def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.
@@ -689,6 +683,7 @@ class AussieBB(BaseClass):
     async def mfa_send(self, method: MFAMethod) -> None:
         """sends an MFA code to the user"""
         url = self.get_url("mfa_send")
+        print(method.dict())
         await self.request_post_json(url=url, data=method.dict())
 
     async def mfa_verify(self, token: str) -> None:

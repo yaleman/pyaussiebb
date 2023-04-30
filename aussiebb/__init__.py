@@ -9,7 +9,7 @@ import requests.sessions
 
 from .baseclass import BaseClass
 from .const import BASEURL, default_headers, PHONE_TYPES
-from .exceptions import RecursiveDepth, DeprecatedCall
+from .exceptions import RecursiveDepth
 from .types import (
     FetchService,
     MFAMethod,
@@ -382,18 +382,13 @@ class AussieBB(BaseClass):
 
     def service_plans(self, service_id: int) -> Dict[str, Any]:
         """
-        *** DEPRECATED - This endpoint requires MFA now, which the library doesn't support! ***
-
-        Pulls the plan data for a given service.
+        Pulls the plan data for a given service. You MUST MFA-verify first.
 
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
 
         """
-        raise DeprecatedCall(
-            "This endpoint requires MFA now, which the library doesn't support!"
-        )
-        # url = self.get_url("service_plans", {"service_id": service_id})
-        # return self.request_get_json(url=url)
+        url = self.get_url("service_plans", {"service_id": service_id})
+        return self.request_get_json(url=url)
 
     def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.
@@ -528,6 +523,7 @@ class AussieBB(BaseClass):
     async def mfa_send(self, method: MFAMethod) -> None:
         """sends an MFA code to the user"""
         url = self.get_url("mfa_send")
+        print(method.dict())
         self.request_post(url=url, data=method.dict())
 
     async def mfa_verify(self, token: str) -> None:

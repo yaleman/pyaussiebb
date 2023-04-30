@@ -4,11 +4,13 @@ import json
 import pytest
 from aussiebb import types
 
+
 @pytest.mark.network
 def test_fetch_service_parser() -> None:
-    """ tests parsing an example service"""
+    """tests parsing an example service"""
 
-    fetch_service = json.loads("""
+    fetch_service = json.loads(
+        """
      {
       "service_id": 332780,
       "type": "FETCHTV",
@@ -30,16 +32,18 @@ def test_fetch_service_parser() -> None:
       },
       "contract": null,
       "discounts": []
-    }""")
-
+    }"""
+    )
 
     test_parse = types.FetchService.parse_obj(fetch_service)
     assert test_parse.service_id
 
+
 @pytest.mark.network
 def test_fetch_service_details() -> None:
-    """ tests details """
-    fetch_service = json.loads("""{
+    """tests details"""
+    fetch_service = json.loads(
+        """{
     "id": 332780,
     "maxOutstandingCents": 10000,
     "currentAvailableSpendCents": 0,
@@ -71,6 +75,7 @@ def test_fetch_service_details() -> None:
         }
         ]
     }
-    }""")
+    }"""
+    )
 
     assert types.FetchDetails.parse_obj(fetch_service)

@@ -37,13 +37,13 @@ def configloader() -> Optional[AussieBBConfigFile]:
 async def main(mainloop: asyncio.AbstractEventLoop) -> None:
     """cli"""
 
-    CONFIG = configloader()
-    if CONFIG is None:
+    config = configloader()
+    if config is None:
         sys.exit("Couldn't load config")
-    if len(CONFIG.users) == 0:
+    if len(config.users) == 0:
         print("no users in config, bailing")
         sys.exit(1)
-    user = CONFIG.users[0]
+    user = config.users[0]
     async with aiohttp.ClientSession(loop=mainloop) as session:
         client = AussieBB(user.username, user.password, session=session)
         await client.login()

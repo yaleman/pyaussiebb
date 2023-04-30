@@ -75,3 +75,5 @@ markers = [
 
 [tool.pylint.MASTER]
 max-line-length = 200
+extension-pkg-whitelist = "pydantic"
+load-plugins = "pylint_pydantic"

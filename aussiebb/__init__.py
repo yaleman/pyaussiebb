@@ -24,6 +24,7 @@ from .types import (
     VOIPDetails,
 )
 
+
 class AussieBB(BaseClass):
     """A class for interacting with Aussie Broadband APIs"""
 
@@ -201,7 +202,7 @@ class AussieBB(BaseClass):
         page: int = 1,
         use_cached: bool = False,
         servicetypes: Optional[List[str]] = None,
-        drop_types: Optional[List[str]] = None
+        drop_types: Optional[List[str]] = None,
     ) -> Optional[List[Dict[str, Any]]]:
         """Returns a `list` of `dicts` of services associated with the account.
 
@@ -235,7 +236,7 @@ class AussieBB(BaseClass):
         self.services = self.filter_services(
             service_types=servicetypes,
             drop_types=drop_types,
-            )
+        )
 
         return self.services
 
@@ -322,7 +323,9 @@ class AussieBB(BaseClass):
         This has a habit of throwing 400 errors if you query a VOIP service...
         """
         url = self.get_url("get_service_tests", {"service_id": service_id})
-        results: List[ServiceTest] = [ ServiceTest.parse_obj(test) for test in self.request_get_list(url=url) ]
+        results: List[ServiceTest] = [
+            ServiceTest.parse_obj(test) for test in self.request_get_list(url=url)
+        ]
         return results
 
     def get_test_history(self, service_id: int) -> Dict[str, Any]:
@@ -342,10 +345,12 @@ class AussieBB(BaseClass):
 
         self.logger.debug("Testing line state, can take a few seconds...")
         response = self.request_post(url=url)
-        result: Dict[str,Any] = response.json()
+        result: Dict[str, Any] = response.json()
         return result
 
-    def run_test(self, service_id: int, test_name: str, test_method: str = "post") -> Optional[Dict[str, Any]]:
+    def run_test(
+        self, service_id: int, test_name: str, test_method: str = "post"
+    ) -> Optional[Dict[str, Any]]:
         """Run a test, but it checks it's valid first
 
         There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
@@ -371,7 +376,7 @@ class AussieBB(BaseClass):
         self.logger.debug("Running %s", test_name)
         if test_method == "get":
             return self.request_get_json(url=test_links[0].link)
-        result: Dict[str,Any] = self.request_post(url=test_links[0].link).json()
+        result: Dict[str, Any] = self.request_post(url=test_links[0].link).json()
         return result
 
     def service_plans(self, service_id: int) -> Dict[str, Any]:
@@ -383,9 +388,11 @@ class AussieBB(BaseClass):
         Keys: `['current', 'pending', 'available', 'filters', 'typicalEveningSpeeds']`
 
         """
-        raise DeprecatedCall("This endpoint requires MFA now, which the library doesn't support!")
-        #url = self.get_url("service_plans", {"service_id": service_id})
-        #return self.request_get_json(url=url)
+        raise DeprecatedCall(
+            "This endpoint requires MFA now, which the library doesn't support!"
+        )
+        # url = self.get_url("service_plans", {"service_id": service_id})
+        # return self.request_get_json(url=url)
 
     def service_outages(self, service_id: int) -> Dict[str, Any]:
         """Pulls outages associated with a service.
@@ -513,6 +520,6 @@ class AussieBB(BaseClass):
         return VOIPDetails.parse_obj(self.request_get_json(url=url))
 
     def get_fetch_service(self, service_id: int) -> FetchService:
-        """ gets the details of a Fetch service """
-        url = self.get_url("fetch_service", { "service_id" : service_id })
+        """gets the details of a Fetch service"""
+        url = self.get_url("fetch_service", {"service_id": service_id})
         return FetchService.parse_obj(self.request_get_json(url=url))

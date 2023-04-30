@@ -18,6 +18,7 @@ DefaultHeaders = TypedDict(
         "Content-Type": str,
         "Origin": str,
         "Referer": str,
+        "x-two-factor-auth-capable-client": str,
     },
 )
 
@@ -30,6 +31,7 @@ def default_headers() -> DefaultHeaders:
         "Origin": "https://my.aussiebroadband.com.au",
         "Referer": "https://my.aussiebroadband.com.au/",
         "Cache-Control": "no-cache",
+        "x-two-factor-auth-capable-client": "true",
     }
 
 
@@ -57,6 +59,8 @@ API_ENDPOINTS = {
     "test_line_state": "/tests/{service_id}/linestate",
     "voip_devices": "/voip/{service_id}/devices",
     "voip_service": "/voip/{service_id}",
+    "mfa_send": "/2fa/send",
+    "mfa_verify": "/2fa/verify",
 }
 
 

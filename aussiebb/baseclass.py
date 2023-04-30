@@ -31,7 +31,6 @@ class BaseClass:
         services_cache_time: int = 28800,
         logger: logging.Logger = logging.getLogger(),
     ):
-
         if not (username and password):
             raise AuthenticationException(
                 "You need to supply both username and password"
@@ -79,7 +78,8 @@ class BaseClass:
     ) -> bool:
         """Handles the login response.
 
-        We expire the session a little early just to be safe, and if we don't get an expiry, we just bail."""
+        We expire the session a little early just to be safe, and if we don't get an expiry, we just bail.
+        """
 
         # just reset it in case
         self.token_expires = -1
@@ -121,15 +121,15 @@ class BaseClass:
         self,
         service_types: Optional[List[str]],
         drop_types: Optional[List[str]],
-        ) -> List[Dict[str, Any]]:
-        """ filter services """
+    ) -> List[Dict[str, Any]]:
+        """filter services"""
 
         if drop_types is None:
             drop_types = []
 
         self.logger.debug(
-                f"Filtering services {self.services=} {service_types=} {drop_types=}"
-            )
+            f"Filtering services {self.services=} {service_types=} {drop_types=}"
+        )
         filtered_responsedata: List[Dict[str, Any]] = []
         if self.services is not None:
             for service in self.services:
@@ -148,7 +148,7 @@ class BaseClass:
 
     @classmethod
     def is_valid_test(cls, test_url: str, service_tests: List[ServiceTest]) -> bool:
-        """ pass it the service test url and the list of service tests and it'll give you a bool or raise an InvalidTestForService exception if not """
+        """pass it the service test url and the list of service tests and it'll give you a bool or raise an InvalidTestForService exception if not"""
 
         test_is_valid = False
         for test in service_tests:
@@ -156,5 +156,7 @@ class BaseClass:
                 test_is_valid = True
 
         if not test_is_valid:
-            raise InvalidTestForService("You can't check line state, test not available!")
+            raise InvalidTestForService(
+                "You can't check line state, test not available!"
+            )
         return test_is_valid

@@ -1,0 +1,22 @@
+---
+name: Dependabot auto-merge and approve
+"on":
+  pull_request:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          alert-lookup: true
+          compat-lookup: true
+      - uses: actions/checkout@v3

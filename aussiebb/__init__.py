@@ -15,7 +15,6 @@ from .types import (
     MFAMethod,
     ServiceTest,
     AccountContact,
-    AccountTransaction,
     AussieBBOutage,
     OrderResponse,
     OrderDetailResponse,
@@ -241,7 +240,7 @@ class AussieBB(BaseClass):
 
         return self.services
 
-    def account_transactions(self) -> Dict[str, AccountTransaction]:
+    def account_transactions(self) -> Dict[str, List[Dict[str, Any]]]:
         """Pulls the data for transactions on your account.
 
         Returns a dict where the key is the month and year of the transaction.
@@ -266,7 +265,8 @@ class AussieBB(BaseClass):
         url = self.get_url("account_transactions")
         responsedata = self.request_get_json(url=url)
 
-        result: Dict[str, AccountTransaction] = responsedata
+        result: Dict[str, List[Dict[str, Any]]] = responsedata
+        # TODO: parse the results into AccountTransaction objects
         return result
 
     def billing_invoice(self, invoice_id: int) -> Dict[str, Any]:

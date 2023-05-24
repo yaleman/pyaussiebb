@@ -188,7 +188,8 @@ class AussieBB(BaseClass):
         # telling it where we're coming from
         headers = {
             "referer": "https://my.aussiebroadband.com.au/",
-            "x-two-factor-auth-capable-client": "false",  # this might need to be a thing...
+            "x-two-factor-auth-capable-client": "true",  # this might need to be a thing...
+            "pragma": "no-cache",
         }
         response: ClientResponse = await self.session.get(
             url=url, cookies=cookies, params=params, headers=headers

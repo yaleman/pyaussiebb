@@ -6,9 +6,8 @@ from typing import Any, Dict, List, Optional, TypedDict
 from pydantic import BaseModel, SecretStr, Field, validator
 
 
-class AccountTransaction(TypedDict):
+class AccountTransaction(BaseModel):
     """Transaction data typing, returns from account_transactions"""
-
     id: int
     type: str
     time: str

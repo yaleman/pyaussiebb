@@ -19,6 +19,7 @@ DefaultHeaders = TypedDict(
         "Origin": str,
         "Referer": str,
         "x-two-factor-auth-capable-client": str,
+        "User-Agent" : str,
     },
 )
 
@@ -32,6 +33,7 @@ def default_headers() -> DefaultHeaders:
         "Referer": "https://my.aussiebroadband.com.au/",
         "Cache-Control": "no-cache",
         "x-two-factor-auth-capable-client": "true",
+        "User-Agent" : "pyaussiebb/0.0.18",
     }
 
 

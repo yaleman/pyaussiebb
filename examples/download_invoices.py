@@ -61,10 +61,11 @@ async def handle_transaction(aussiebb: AussieBB, transaction: AccountTransaction
             total_content += len(content)
             file_handle.write(content)
             content = await invoice.content.read(1024)
-    # download_path.write_bytes(await invoice.content.read())
-    # print(f"Status: {invoice.status}")
-    # print(f"Headers: {invoice.headers}")
-    print(f"{download_path} Done! Wrote {total_content} bytes.")
+    if total_content == 0:
+        download_path.unlink()
+        print(f"Failed to download {download_path} - 0 byte content!")
+    else:
+        print(f"{download_path} Done! Wrote {total_content} bytes.")
     sys.exit(1)
 
 async def main() -> None:

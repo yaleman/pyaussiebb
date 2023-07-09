@@ -170,6 +170,7 @@ class AussieBB(BaseClass):
         url: str,
         skip_login_check: bool = False,
         depth: int = 0,
+        additional_headers: Optional[Dict[str, Any]] = None,
         cookies: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
     ) -> ClientResponse:
@@ -178,11 +179,13 @@ class AussieBB(BaseClass):
             raise RecursiveDepth(f"depth: {depth}")
 
         if self.session is None:
+            #print("Started new session!")
             self.session = aiohttp.ClientSession()
 
         await self.do_login_check(skip_login_check)
 
         if cookies is None:
+            #print(f"Adding cookies thing: {self.myaussie_cookie}")
             cookies = {"myaussie_cookie": self.myaussie_cookie}
 
         # telling it where we're coming from
@@ -191,6 +194,9 @@ class AussieBB(BaseClass):
             "x-two-factor-auth-capable-client": "true",  # this might need to be a thing...
             "pragma": "no-cache",
         }
+        if isinstance(additional_headers, Dict):
+            for key, value in additional_headers.items():
+                headers[key] = value
         response: ClientResponse = await self.session.get(
             url=url, cookies=cookies, params=params, headers=headers
         )
@@ -406,8 +412,10 @@ class AussieBB(BaseClass):
         This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
         """
         url = f"{self.BASEURL.get('api')}/billing/{download_type}s/{item_id}"
-
-        responsedata = await self.request_get(url=url)
+        additional_headers = {
+            'Accept': 'application/pdf, text/plain, application/json',
+        }
+        responsedata = await self.request_get(url=url,additional_headers=additional_headers)
         return responsedata
 
     async def account_paymentplans(self) -> Dict[str, Any]:

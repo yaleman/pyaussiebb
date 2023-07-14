@@ -35,7 +35,7 @@ Issues = "https://github.com/yaleman/pyaussiebb/issues/"
 python = "^3.9"
 requests = "^2.27.1"
 aiohttp = "^3.8.1"
-pydantic = "^1.9.0"
+pydantic = ">=1.9,<3.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.15.5"

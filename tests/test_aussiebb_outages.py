@@ -22,7 +22,7 @@ from aussiebb.types import AussieBBOutage
 
 
 @pytest.mark.network
-def test_login_cycle() -> None:
+def test_get_service_outages() -> None:
     """test the login step"""
 
     user: AussieBB = [
@@ -36,4 +36,4 @@ def test_login_cycle() -> None:
     for service in services:
         outages = user.service_outages(service["service_id"])
         print(json.dumps(outages, indent=4, default=str, ensure_ascii=False))
-        AussieBBOutage.parse_obj(outages)
+        AussieBBOutage.model_validate(outages)

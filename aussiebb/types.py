@@ -1,9 +1,16 @@
 """ types """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, SecretStr, Field, validator
+import sys
+
+from pydantic import field_validator, BaseModel, ConfigDict, SecretStr, Field
+
+if sys.version_info.major == 3 and sys.version_info.minor < 12:
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict  # pylint: disable=ungrouped-imports
 
 
 class AccountTransaction(TypedDict):
@@ -30,8 +37,8 @@ class APIResponseLinks(BaseModel):
 
     first: str
     last: str
-    prev: Optional[str]
-    next: Optional[str]
+    prev: Optional[str] = None
+    next: Optional[str] = None
 
 
 APIResponseMeta = TypedDict(
@@ -55,10 +62,7 @@ class GetServicesResponse(BaseModel):
     links: APIResponseLinks
     meta: APIResponseMeta
 
-    class Config:
-        """metadata"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class ConfigUser(BaseModel):
@@ -72,13 +76,10 @@ class AussieBBConfigFile(BaseModel):
     """config file definition"""
 
     users: List[ConfigUser]
-    username: Optional[str]
-    password: Optional[SecretStr]
+    username: Optional[str] = None
+    password: Optional[SecretStr] = None
 
-    class Config:
-        """metadata"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 # Example extended data for an Aussie Outage
@@ -160,8 +161,8 @@ class OutageRecord(BaseModel):
     summary: str
     start_time: datetime
     end_time: datetime
-    restored_at: Optional[datetime]
-    last_updated: Optional[datetime]
+    restored_at: Optional[datetime] = None
+    last_updated: Optional[datetime] = None
 
 
 class ScheduledOutageRecord:
@@ -176,18 +177,13 @@ class AussieBBOutage(BaseModel):
     """outage class"""
 
     networkEvents: List[OutageRecord]
-    aussieOutages: Dict[str, List[OutageRecord]]
+    aussieOutages: List[OutageRecord]
     currentNbnOutages: List[Any]  # TODO: define currentNbnOutages
-    scheduledNbnOutages: List[ScheduledOutageRecord]  # TODO: define scheduledNbnOutages
-    resolvedScheduledNbnOutages: List[
-        ScheduledOutageRecord
-    ]  # TODO: define resolvedScheduledNbnOutages
+    scheduledNbnOutages: List[ScheduledOutageRecord]
+    resolvedScheduledNbnOutages: List[ScheduledOutageRecord]
     resolvedNbnOutages: List[Any]  # TODO: define resolvedNbnOutages
 
-    class Config:
-        """config"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class OrderData(TypedDict):
@@ -232,10 +228,7 @@ class OrderResponse(BaseModel):
     links: APIResponseLinks
     meta: APIResponseMeta
 
-    class Config:
-        """config"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class VOIPDevice(BaseModel):
@@ -254,21 +247,21 @@ class AccountContact(BaseModel):
     last_name: str
     email: List[str]
     dob: str
-    home_phone: Optional[str]
-    work_phone: Optional[str]
-    mobile_phone: Optional[str]
-    work_mobile: Optional[str]
+    home_phone: Optional[str] = None
+    work_phone: Optional[str] = None
+    mobile_phone: Optional[str] = None
+    work_mobile: Optional[str] = None
     primary_contact: bool
-    username: Optional[str]
-    preferred_name: Optional[str]
-    middle_name: Optional[str]
+    username: Optional[str] = None
+    preferred_name: Optional[str] = None
+    middle_name: Optional[str] = None
 
 
 class Address(BaseModel):
     """Address for services"""
 
-    subaddresstype: Optional[str]
-    subaddressnumber: Optional[str]
+    subaddresstype: Optional[str] = None
+    subaddressnumber: Optional[str] = None
     streetnumber: str
     streetname: str
     locality: str
@@ -289,13 +282,10 @@ class BaseService(BaseModel):
     usage_anniversary: datetime = Field(..., alias="usageAnniversary")
 
     address: Address
-    contract: Optional[str]
+    contract: Optional[str] = None
     discounts: List[str]
 
-    class Config:
-        """config"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class FetchSubscription(BaseModel):
@@ -365,7 +355,8 @@ class MFAMethod(BaseModel):
 
     method: str
 
-    @validator("method")
+    @field_validator("method")
+    @classmethod
     def check_method(cls, value: str) -> str:
         """validates that the MFA method is either sms or email"""
         if value not in ["sms", "email"]:

@@ -333,7 +333,7 @@ class AussieBB(BaseClass):
             while True:
                 params = {"page": page}
                 responsedata = await self.request_get_json(url=url, params=params)
-                servicedata = GetServicesResponse.parse_obj(responsedata)
+                servicedata = GetServicesResponse.model_validate(responsedata)
 
                 for service in servicedata.data:
                     services_list.append(service)
@@ -456,7 +456,7 @@ class AussieBB(BaseClass):
 
         url = self.get_url("get_service_tests", {"service_id": service_id})
         responsedata: List[Any] = await self.request_get_list(url=url)
-        return [ServiceTest.parse_obj(test) for test in responsedata]
+        return [ServiceTest.model_validate(test) for test in responsedata]
 
     async def get_test_history(self, service_id: int) -> Dict[str, Any]:
         """Gets the available tests for a given service ID
@@ -643,7 +643,7 @@ class AussieBB(BaseClass):
         """
         url = self.get_url("account_contacts")
         response = await self.request_get_json(url=url)
-        return [AccountContact.parse_obj(contact) for contact in response]
+        return [AccountContact.model_validate(contact) for contact in response]
 
     async def get_orders(self) -> Dict[str, Any]:
         """pulls the outstanding orders for an account"""
@@ -665,20 +665,20 @@ class AussieBB(BaseClass):
         service_list: List[VOIPDevice] = []
         data = await self.request_get_json(url=url)
         for service in data:
-            service_list.append(VOIPDevice.parse_obj(service))
+            service_list.append(VOIPDevice.model_validate(service))
         return service_list
 
     async def get_voip_service(self, service_id: int) -> VOIPDetails:
         """gets the details of a VOIP service"""
         url = self.get_url("voip_service", {"service_id": service_id})
         data = await self.request_get_json(url=url)
-        return VOIPDetails.parse_obj(data)
+        return VOIPDetails.model_validate(data)
 
     async def get_fetch_service(self, service_id: int) -> FetchService:
         """gets the details of a Fetch service"""
         url = self.get_url("fetch_service", {"service_id": service_id})
         data = await self.request_get_json(url=url)
-        return FetchService.parse_obj(data)
+        return FetchService.model_validate(data)
 
     async def mfa_send(self, method: MFAMethod) -> None:
         """sends an MFA code to the user"""

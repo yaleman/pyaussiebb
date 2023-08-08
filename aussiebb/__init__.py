@@ -1,6 +1,7 @@
 """ A class for interacting with Aussie Broadband APIs """
 
 # import json
+import sys
 from time import time
 from typing import Any, Dict, List, Optional, cast
 
@@ -221,7 +222,7 @@ class AussieBB(BaseClass):
             while True:
                 params = {"page": page}
                 responsedata = self.request_get_json(url=url, params=params)
-                servicedata = GetServicesResponse.parse_obj(responsedata)
+                servicedata = GetServicesResponse.model_validate(responsedata)
 
                 for service in servicedata.data:
                     services_list.append(service)
@@ -325,7 +326,7 @@ class AussieBB(BaseClass):
         """
         url = self.get_url("get_service_tests", {"service_id": service_id})
         results: List[ServiceTest] = [
-            ServiceTest.parse_obj(test) for test in self.request_get_list(url=url)
+            ServiceTest.model_validate(test) for test in self.request_get_list(url=url)
         ]
         return results
 
@@ -398,8 +399,9 @@ class AussieBB(BaseClass):
         ```
         """
         url = self.get_url("service_outages", {"service_id": service_id})
-        result = AussieBBOutage.parse_obj(self.request_get_json(url=url))
-        return result.dict()
+        data = self.request_get_json(url=url)
+        result = AussieBBOutage.model_validate(data)
+        return result.model_dump()
 
     def service_boltons(self, service_id: int) -> Dict[str, Any]:
         """Pulls addons associated with the service.
@@ -481,7 +483,7 @@ class AussieBB(BaseClass):
         """
         url = self.get_url("account_contacts")
         response = self.request_get_json(url=url)
-        return [AccountContact.parse_obj(contact) for contact in response]
+        return [AccountContact.model_validate(contact) for contact in response]
 
     # TODO: type get_orders
     def get_orders(self) -> Dict[str, Any]:
@@ -490,7 +492,7 @@ class AussieBB(BaseClass):
         responsedata = self.request_get_json(url=url)
 
         result = OrderResponse(**responsedata)
-        return result.dict()
+        return result.model_dump()
 
     def get_order(self, order_id: int) -> OrderDetailResponse:
         """gets a specific order"""
@@ -498,7 +500,7 @@ class AussieBB(BaseClass):
         responsedata = self.request_get_json(url=url)
         result = cast(
             OrderDetailResponse,
-            OrderDetailResponseModel.parse_obj(responsedata).dict(),
+            OrderDetailResponseModel.model_validate(responsedata).model_dump(),
         )
         return result
 
@@ -507,24 +509,24 @@ class AussieBB(BaseClass):
         url = self.get_url("voip_devices", {"service_id": service_id})
         service_list: List[VOIPDevice] = []
         for service in self.request_get_json(url=url):
-            service_list.append(VOIPDevice.parse_obj(service))
+            service_list.append(VOIPDevice.model_validate(service))
         return service_list
 
     def get_voip_service(self, service_id: int) -> VOIPDetails:
         """gets the details of a VOIP service"""
         url = self.get_url("voip_service", {"service_id": service_id})
-        return VOIPDetails.parse_obj(self.request_get_json(url=url))
+        return VOIPDetails.model_validate(self.request_get_json(url=url))
 
     def get_fetch_service(self, service_id: int) -> FetchService:
         """gets the details of a Fetch service"""
         url = self.get_url("fetch_service", {"service_id": service_id})
-        return FetchService.parse_obj(self.request_get_json(url=url))
+        return FetchService.model_validate(self.request_get_json(url=url))
 
     async def mfa_send(self, method: MFAMethod) -> None:
         """sends an MFA code to the user"""
         url = self.get_url("mfa_send")
-        print(method.dict())
-        self.request_post(url=url, data=method.dict())
+        print(method.model_dump(), file=sys.stderr)
+        self.request_post(url=url, data=method.model_dump())
 
     async def mfa_verify(self, token: str) -> None:
         """got the token from send_mfa? send it back to validate it"""

@@ -1,8 +1,14 @@
 # CHANGELOG
 
+## v0.1.0
+
+Update to Pydantic 2.x and a load of changes to support that.
+
 ## v0.0.19
 
-Updating aiohttp dependency for CVE-2023-37276
+Updating aiohttp dependency for CVE-2023-37276.
+
+... don't use this, the Pydantic update broke things.
 
 ## v0.0.18
 

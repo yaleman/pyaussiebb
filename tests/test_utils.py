@@ -19,7 +19,9 @@ def configloader() -> AussieBBConfigFile:
         filepath = Path(filename).resolve()
         if filepath.exists():
             try:
-                configfile = AussieBBConfigFile.parse_file(filepath)
+                with Path(filename).open(encoding="utf-8") as file_handle:
+                    filedata = json.load(file_handle)
+                configfile = AussieBBConfigFile.model_validate(filedata)
                 if len(configfile.users) == 0:
                     pytest.exit("You need some users in config.json")
                 return configfile

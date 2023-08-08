@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 from datetime import datetime
+import json
 from pathlib import Path
 import sys
 
@@ -21,9 +22,13 @@ async def main() -> None:
     configfile = None
     for filepath in config_files:
         if Path(filepath).expanduser().exists():
-            configfile = AussieBBConfigFile.parse_file(
-                Path(filepath).expanduser().resolve()
-            )
+            try:
+                with Path(filepath).open(encoding="utf-8") as file_handle:
+                    file_data = json.load(file_handle)
+            except json.JSONDecodeError as error:
+                print(f"Failed to load {Path(filepath)}: {error}", file=sys.stderr)
+                sys.exit(1)
+            configfile = AussieBBConfigFile.model_validate(file_data)
             break
     if configfile is None:
         print("Couldn't find any config files, quitting!")

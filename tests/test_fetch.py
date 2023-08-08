@@ -35,7 +35,7 @@ def test_fetch_service_parser() -> None:
     }"""
     )
 
-    test_parse = types.FetchService.parse_obj(fetch_service)
+    test_parse = types.FetchService.model_validate(fetch_service)
     assert test_parse.service_id
 
 
@@ -78,4 +78,4 @@ def test_fetch_service_details() -> None:
     }"""
     )
 
-    assert types.FetchDetails.parse_obj(fetch_service)
+    assert types.FetchDetails.model_validate(fetch_service)

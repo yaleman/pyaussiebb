@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.0.19
+
+Updating aiohttp dependency for CVE-2023-37276
+
 ## v0.0.18
 
 Added MFA support, example works with SMS, un-deprecated `service_plans`.

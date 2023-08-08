@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaussiebb"
-version = "0.0.18"
+version = "0.0.19"
 description = "Aussie Broadband API module"
 authors = [
     "James Hodgkinson <james@terminaloutcomes.com>",
@@ -34,7 +34,7 @@ Issues = "https://github.com/yaleman/pyaussiebb/issues/"
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.27.1"
-aiohttp = "^3.8.1"
+aiohttp = "^3.8.5"
 pydantic = ">=1.9,<3.0"
 
 [tool.poetry.dev-dependencies]

@@ -4,6 +4,7 @@ from http.cookies import SimpleCookie, Morsel
 import logging
 from time import time
 from typing import Any, Dict, List, Optional, Union
+from pydantic import SecretStr
 
 from requests.cookies import RequestsCookieJar
 
@@ -26,7 +27,7 @@ class BaseClass:
     def __init__(
         self,
         username: str,
-        password: str,
+        password: SecretStr,
         debug: bool = False,
         services_cache_time: int = 28800,
         logger: logging.Logger = logging.getLogger(),

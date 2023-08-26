@@ -69,7 +69,7 @@ class ConfigUser(BaseModel):
     """just a username and password field"""
 
     username: str
-    password: str
+    password: SecretStr
 
 
 class AussieBBConfigFile(BaseModel):
@@ -235,7 +235,7 @@ class VOIPDevice(BaseModel):
     """an individual service device"""
 
     username: str
-    password: str
+    password: SecretStr
     registered: bool  # is it online?
 
 

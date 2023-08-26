@@ -1,4 +1,5 @@
 """ pyaussiebb tests """
+from pydantic import SecretStr
 import pytest
 
 from aussiebb.baseclass import BaseClass
@@ -10,7 +11,7 @@ def test_validate_service_type() -> None:
 
     test = BaseClass(
         username="foo",
-        password="bar",
+        password=SecretStr("bar"),
         debug=True,
     )
 

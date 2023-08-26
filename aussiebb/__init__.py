@@ -4,6 +4,7 @@
 import sys
 from time import time
 from typing import Any, Dict, List, Optional, cast
+from pydantic import SecretStr
 
 import requests
 import requests.sessions
@@ -33,7 +34,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: str,
+        password: SecretStr,
         debug: bool = False,
         services_cache_time: int = 28800,
         session: Optional[requests.sessions.Session] = None,
@@ -66,7 +67,7 @@ class AussieBB(BaseClass):
 
         payload = {
             "username": self.username,
-            "password": self.password,
+            "password": self.password.get_secret_value(),
         }
         headers: Dict[str, Any] = dict(default_headers())
 

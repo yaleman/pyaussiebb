@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.2
+
+Bumped the minimum pydantic version to 2.0 - v0.1.1 had >v1.9 as a requirement and it looks like that might have allowed folks without poetry.lock files to catch old-pydantic.
+
+Also using SecretStr for passwords now to avoid having them turn up in logs.
+
 ## v0.1.1
 
 Stopped throwing errors on service type "Hardware" per [home-assistant/core#95665](https://github.com/home-assistant/core/issues/95665).

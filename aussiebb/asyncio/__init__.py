@@ -8,6 +8,8 @@ from time import time
 import sys
 from typing import Any, Dict, List, Optional
 
+from pydantic import SecretStr
+
 try:
     import aiohttp
     from aiohttp.client import ClientResponse
@@ -42,7 +44,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: str,
+        password: SecretStr,
         session: Optional[aiohttp.client.ClientSession] = None,
         debug: bool = False,
         services_cache_time: int = 28800,
@@ -78,7 +80,7 @@ class AussieBB(BaseClass):
 
         payload = {
             "username": self.username,
-            "password": self.password,
+            "password": self.password.get_secret_value(),
         }
         headers = default_headers()
 

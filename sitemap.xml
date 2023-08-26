@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://yaleman.github.io/aussiebb/</loc>
-         <lastmod>2023-08-08</lastmod>
+         <lastmod>2023-08-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yaleman.github.io/aussiebb/CHANGELOG/</loc>
-         <lastmod>2023-08-08</lastmod>
+         <lastmod>2023-08-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yaleman.github.io/aussiebb/aussiebb/</loc>
-         <lastmod>2023-08-08</lastmod>
+         <lastmod>2023-08-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yaleman.github.io/aussiebb/mfa/</loc>
-         <lastmod>2023-08-08</lastmod>
+         <lastmod>2023-08-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yaleman.github.io/aussiebb/release/</loc>
-         <lastmod>2023-08-08</lastmod>
+         <lastmod>2023-08-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

@@ -7,9 +7,9 @@ This is a very simple module for interacting with the Aussie Broadband APIs.
 ![pytest](https://github.com/yaleman/aussiebb/actions/workflows/pytest.yml/badge.svg)
 ![Shellcheck](https://github.com/yaleman/aussiebb/actions/workflows/shellcheck.yml/badge.svg)
 
-# Usage
+## Usage
 
-```
+```shell
 pip install --user pyaussiebb
 python
 >>> from aussiebb import AussieBB
@@ -20,16 +20,15 @@ python
 
 For more, check out the docs.
 
-# AsyncIO version
+## AsyncIO version
 
 You can replace `from aussiebb import AussieBB` with `from aussiebb.asyncio import AussieBB` and you'll get an `aiohttp`-powered version. The only difference in this case is that you have to explicitly call `login()` for reasons.
 
 If you hit the rate limit it'll raise a `RateLimit` exception. I haven't put that functionality into the blocking version yet, since ... that tends not to hit it. 🤣
 
-# Development
+## Development
 
-
-## Example service tests I've seen
+### Example service tests I've seen
 
 All the "endpoints" below should be tacked onto `aussiebb.const.BASEURL['api']`.
 
@@ -37,7 +36,7 @@ All the "endpoints" below should be tacked onto `aussiebb.const.BASEURL['api']`.
 
 These can be run by using `AussieBB.run_test()` with the string after the last forward-slash as the "test" - ie, `connection` or `linestate`.
 
-### HFC 
+#### HFC
 
 These are entirely untested so far.
 
@@ -48,7 +47,7 @@ These are entirely untested so far.
 | `/tests/{service_id}/loopback` | Probably POST | Loopback Test | This will test the connectivity between the point NBN’s network transitions to ours and to the closest point to your property. Usually either the Network Termination Device or Node. |
 | `/tests/{service_id}/ntdstatus` | Probably POST | NTD Status | An NTD Status will show you the operational state of the Network Termination Device (NTD). The test will also show if the NTD is detecting the wired connection from your router. |
 
-### FTTC
+#### FTTC
 
 | Endpoint | Method | Name | Description |
 | --- | --- | --- | --- |
@@ -61,7 +60,7 @@ These are entirely untested so far.
 | `/tests/{service_id}/ncdportreset` | Probably POST |NCD Port Reset | Reset the gateway port on your NCD (Network Connection Device). |
 | `/tests/{service_id}/ncdreset` | Probably POST |NCD Reset | This will remotely restart your Network Termination Device. |
 
-## FTTN
+#### FTTN
 
 | Endpoint | Method | Name | Description |
 |  --- | --- | --- | --- |
@@ -72,7 +71,7 @@ These are entirely untested so far.
 | `/tests/{service_id}/portreset` | Probably POST | Port Reset | This will reset the connection from the Node and also clear errors that may be causing issues with gaining sync. |
 | `/tests/{service_id}/stabilityprofile` | Probably POST | Stability Profile | This will apply changes to your FTTN service including allowing increased noise to occur before making the connection unstable. This will cause your speeds to degrade as a result, but in turn making the service more stable. For NBN to investigate a fault this profile needs to be applied and a minimum of 5 dropouts recorded over a 24hr period on NBN's systems before a dropout fault can be raised |
 
-## FTTP
+#### FTTP
 
 These are as-yet untested.
 
@@ -84,6 +83,6 @@ These are as-yet untested.
 | `/tests/{service_id}/portreset` | Probably POST | Port Reset | This will reset the connection from the Node and also clear errors that may be causing issues with gaining sync. |
 | `/tests/{service_id}/unidstatus` | Probably POST | UNI-D Status | UNI-D Status will show if the UNI-D port you are currently using has a router connected to it. This will also provide the Link speed your router and UNI-D port are connected at Eg, 100mbit or 1gbit. You will also see the MAC address of the currently connected router. |
 
-# Changelog
+## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md)

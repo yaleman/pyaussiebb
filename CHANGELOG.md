@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.1
+
+Stopped throwing errors on service type "Hardware" per [home-assistant/core#95665](https://github.com/home-assistant/core/issues/95665).
+
 ## v0.1.0
 
 Update to Pydantic 2.x and a load of changes to support that.

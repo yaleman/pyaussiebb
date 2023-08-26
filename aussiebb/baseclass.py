@@ -112,7 +112,7 @@ class BaseClass:
         """Check the service types against known types"""
         if "type" not in service:
             raise ValueError("Field 'type' not found in service data")
-        if service["type"] not in NBN_TYPES + PHONE_TYPES:
+        if service["type"] not in NBN_TYPES + PHONE_TYPES + ["Hardware"]:
             raise UnrecognisedServiceType(
                 f"Service type {service['type']=} {service['name']=} -  not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new"
             )

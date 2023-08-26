@@ -27,6 +27,6 @@ print(dir(client))
 for service in services:
     try:
         client.validate_service_type(service)
-        print(f"Ok {service['service_id']} - {service['type']}")
+        print(f"Ok service_id={service['service_id']} - service_type={service['type']}")
     except aussiebb.exceptions.UnrecognisedServiceType:
         pass

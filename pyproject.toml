@@ -1,21 +1,14 @@
 [tool.poetry]
 name = "pyaussiebb"
-version = "0.1.0"
+version = "0.1.1"
 description = "Aussie Broadband API module"
-authors = [
-    "James Hodgkinson <james@terminaloutcomes.com>",
-]
+authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/yaleman/pyaussiebb"
 repository = "https://github.com/yaleman/pyaussiebb"
 documentation = "https://yaleman.github.io/pyaussiebb/"
-keywords = [
-    "api",
-    "aussie",
-    "broadband",
-    "internet",
-]
+keywords = ["api", "aussie", "broadband", "internet"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -24,9 +17,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-packages = [
-    { include = "aussiebb" },
-]
+packages = [{ include = "aussiebb" }]
 
 [tool.poetry.urls]
 Issues = "https://github.com/yaleman/pyaussiebb/issues/"
@@ -62,9 +53,7 @@ plugins = "pydantic.mypy"
 line-length = 200
 
 [build-system]
-requires = [
-    "poetry-core>=1.0.0",
-]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]

@@ -22,7 +22,6 @@ from .types import (
     OrderResponse,
     OrderDetailResponse,
     OrderDetailResponseModel,
-    GetServicesResponse,
     VOIPDevice,
     VOIPDetails,
 )
@@ -223,16 +222,12 @@ class AussieBB(BaseClass):
             while True:
                 params = {"page": page}
                 responsedata = self.request_get_json(url=url, params=params)
-                servicedata = GetServicesResponse.model_validate(responsedata)
-
-                for service in servicedata.data:
-                    services_list.append(service)
-
-                if servicedata.links.next is None:
+                next_url, page, services_list = self.handle_services_response(
+                    responsedata, services_list
+                )
+                if next_url is None:
                     break
-                url = servicedata.links.next
-                page = servicedata.meta["current_page"]
-
+                url = next_url
             self.services = services_list
             self.services_last_update = int(time())
 
@@ -305,7 +300,6 @@ class AussieBB(BaseClass):
                         return self.telephony_usage(service_id)
             url = self.get_url("get_usage", {"service_id": service_id})
             result = self.request_get_json(url=url)
-
             return result
         return {}
 

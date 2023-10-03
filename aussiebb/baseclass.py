@@ -3,13 +3,21 @@
 from http.cookies import SimpleCookie, Morsel
 import logging
 from time import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import SecretStr
 
 from requests.cookies import RequestsCookieJar
 
-from .const import API_ENDPOINTS, BASEURL, PHONE_TYPES, NBN_TYPES
-from .types import ServiceTest
+from .const import (
+    API_ENDPOINTS,
+    BASEURL,
+    HARDWARE_TYPES,
+    PHONE_TYPES,
+    NBN_TYPES,
+    FETCH_TYPES,
+    USAGE_ENABLED_SERVICE_TYPES,
+)
+from .types import GetServicesResponse, ServiceTest
 from .exceptions import (
     AuthenticationException,
     InvalidTestForService,
@@ -113,15 +121,16 @@ class BaseClass:
         """Check the service types against known types"""
         if "type" not in service:
             raise ValueError("Field 'type' not found in service data")
-        if service["type"] not in NBN_TYPES + PHONE_TYPES + ["Hardware"]:
+        if service["type"] not in USAGE_ENABLED_SERVICE_TYPES + HARDWARE_TYPES:
             raise UnrecognisedServiceType(
                 f"Service type {service['type']=} {service['name']=} -  not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new"
             )
 
     def filter_services(
         self,
-        service_types: Optional[List[str]],
-        drop_types: Optional[List[str]],
+        service_types: Optional[List[str]] = None,
+        drop_types: Optional[List[str]] = None,
+        drop_unknown_types: bool = False,
     ) -> List[Dict[str, Any]]:
         """filter services"""
 
@@ -144,6 +153,13 @@ class BaseClass:
                     self.logger.debug(
                         "Skipping as type==%s - %s", service["type"], service
                     )
+            # skip things we don't know about
+            if drop_unknown_types:
+                filtered_responsedata = [
+                    service
+                    for service in filtered_responsedata
+                    if service["type"] in FETCH_TYPES + NBN_TYPES + PHONE_TYPES
+                ]
             return filtered_responsedata
         return []
 
@@ -161,3 +177,21 @@ class BaseClass:
                 "You can't check line state, test not available!"
             )
         return test_is_valid
+
+    @classmethod
+    def handle_services_response(
+        cls,
+        responsedata: Dict[str, Any],
+        services_list: List[Dict[str, Any]],
+    ) -> Tuple[Optional[str], int, List[Dict[str, Any]]]:
+        """handle the response, parse the JSON and update the services list"""
+        servicedata = GetServicesResponse.model_validate(responsedata)
+
+        for service in servicedata.data:
+            services_list.append(service)
+
+        return (
+            servicedata.links.next,  # url
+            servicedata.meta["current_page"],  # page
+            services_list,
+        )

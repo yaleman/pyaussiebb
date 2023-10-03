@@ -23,3 +23,7 @@ class RecursiveDepth(BaseException):
 
 class UnrecognisedServiceType(BaseException):
     """You've got a service type we haven't seen before"""
+
+
+class NoMoreData(BaseException):
+    """There's no more data to pull"""

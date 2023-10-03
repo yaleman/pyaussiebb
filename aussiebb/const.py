@@ -148,3 +148,8 @@ PHONE_TYPES = [
     "VOIP",
     "PhoneMobile",
 ]
+
+# you should be able to get usage for these types
+USAGE_ENABLED_SERVICE_TYPES = NBN_TYPES + PHONE_TYPES
+
+HARDWARE_TYPES = ["Hardware"]

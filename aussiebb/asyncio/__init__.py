@@ -32,7 +32,6 @@ from ..types import (
     AccountTransaction,
     FetchService,
     OrderDetailResponseModel,
-    GetServicesResponse,
     VOIPDevice,
     VOIPDetails,
 )
@@ -316,6 +315,7 @@ class AussieBB(BaseClass):
         use_cached: bool = False,
         servicetypes: Optional[List[str]] = None,
         drop_types: Optional[List[str]] = None,
+        drop_unknown_types: bool = False,
     ) -> List[Dict[str, Any]]:
         """Returns a `list` of `dicts` of services associated with the account.
 
@@ -324,7 +324,7 @@ class AussieBB(BaseClass):
 
         If you want to use cached data, call it with `use_cached=True`
 
-        If you want to drop service types, then pass a list of strings to drop_types
+        If you want to drop service types, then pass a list of strings to drop_types, or if you want to drop things we don't recognize, pass `drop_unknown_types=True`
         """
         if use_cached:
             self.logger.debug("Using cached data for get_services.")
@@ -335,15 +335,13 @@ class AussieBB(BaseClass):
             while True:
                 params = {"page": page}
                 responsedata = await self.request_get_json(url=url, params=params)
-                servicedata = GetServicesResponse.model_validate(responsedata)
 
-                for service in servicedata.data:
-                    services_list.append(service)
-
-                if servicedata.links.next is None:
+                next_url, page, services_list = self.handle_services_response(
+                    responsedata, services_list
+                )
+                if next_url is None:
                     break
-                url = servicedata.links.next
-                page = servicedata.meta["current_page"]
+                url = next_url
 
             self.services = services_list
             self.services_last_update = int(time())
@@ -353,6 +351,7 @@ class AussieBB(BaseClass):
         self.services = self.filter_services(
             service_types=servicetypes,
             drop_types=drop_types,
+            drop_unknown_types=drop_unknown_types,
         )
 
         return self.services

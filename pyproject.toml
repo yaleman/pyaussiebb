@@ -44,7 +44,7 @@ pytest-aiohttp = "^1.0.4"
 mkdocstrings-python = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = ">=0.0.259,<0.4.2"
+ruff = ">=0.0.259,<0.4.3"
 
 [tool.mypy]
 plugins = "pydantic.mypy"

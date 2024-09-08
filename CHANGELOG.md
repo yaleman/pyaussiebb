@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v0.0.3
+
+The get_services function now has a "drop_unknown_types" flag which means you won't get a list of things we don't know about, hopefully that'll help some folks when AussieBB adds random things.
+
+It also uses a central "handle response" thing so I can remove some duplicate code.
+
+Added some more consts.
+
 ## v0.1.2
 
 Bumped the minimum pydantic version to 2.0 - v0.1.1 had >v1.9 as a requirement and it looks like that might have allowed folks without poetry.lock files to catch old-pydantic.

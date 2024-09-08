@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaussiebb"
-version = "0.1.2"
+version = "0.1.4"
 description = "Aussie Broadband API module"
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 license = "MIT"

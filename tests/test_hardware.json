@@ -1,0 +1,213 @@
+{
+    "data": [
+        {
+            "service_id": 3333333,
+            "type": "VOIP",
+            "name": "VOIP",
+            "plan": "Business Everyday ($10)",
+            "description": "VOIP: 1234 Daisy ST, FAIRY LAND - 03 1234 1234",
+            "voipDetails": {
+                "phoneNumber": "0312345678",
+                "barInternational": true,
+                "divertNumber": null,
+                "supportsNumberDiversion": true,
+                "diversionActive": true,
+                "diversionError": null
+            },
+            "nextBillDate": "2023-09-23T14:00:00Z",
+            "openDate": "2023-06-04T14:00:00Z",
+            "usageAnniversary": 24,
+            "address": null,
+            "contract": null,
+            "discounts": []
+        },
+        {
+            "service_id": 2222222,
+            "type": "NBN",
+            "name": "NBN",
+            "plan": "Business NBN 50Mbps\/20Mbps Unlimited ($79.00)",
+            "description": "NBN: LOT 4  WUBBO ST, FAIRY LAND NSW - AVC000696912345",
+            "nbnDetails": {
+                "product": "FTTN",
+                "poiName": "Wubbo",
+                "cvcGraph": "https:\/\/cvcs.aussiebroadband.com.au\/wubbolink3.png",
+                "speedPotential": {
+                    "downloadMbps": 52,
+                    "uploadMbps": 21,
+                    "lastTested": "2023-06-08T22:25:10Z"
+                }
+            },
+            "nextBillDate": "2023-09-23T14:00:00Z",
+            "openDate": "2023-06-07T14:00:00Z",
+            "usageAnniversary": 24,
+            "ipAddresses": [
+                "123.124.234.218",
+                "2403:5811:ffff:ffff::\/64",
+                "2403:5811:fffe::\/48"
+            ],
+            "address": {
+                "subaddresstype": null,
+                "subaddressnumber": null,
+                "streetnumber": null,
+                "streetname": "WUBBO",
+                "streettype": "ST",
+                "locality": "FAIRY LAND",
+                "postcode": "2369",
+                "state": "NSW"
+            },
+            "contract": null,
+            "discounts": []
+        },
+        {
+            "service_id": 2363089,
+            "type": "VOIP",
+            "name": "VOIP",
+            "plan": "Hosted PABX Standard",
+            "description": "Hosted PABX (per seat): UN 1, 69 Cheesethorn ST, Wubbo - 0358695858",
+            "voipDetails": {
+                "phoneNumber": "0358695858",
+                "barInternational": true,
+                "divertNumber": null,
+                "supportsNumberDiversion": false,
+                "diversionActive": true,
+                "diversionError": null
+            },
+            "nextBillDate": "2023-09-23T14:00:00Z",
+            "openDate": "2023-07-20T14:00:00Z",
+            "usageAnniversary": 24,
+            "address": null,
+            "contract": null,
+            "discounts": [
+                {
+                    "amount": 100,
+                    "discountType": "percentage_monthly",
+                    "description": "Hosted PABX First 3 Months Free",
+                    "startDate": "2023-07-03",
+                    "finishDate": "2023-10-02"
+                }
+            ]
+        },
+        {
+            "service_id": 2348667,
+            "type": "NBN",
+            "name": "NBN",
+            "plan": "Business NBN 100Mbps\/40Mbps Unlimited ($109.00)",
+            "description": "NBN: UN 1, 69 CHEESETHORN ST, Wubbo NSW - AVC000173333444",
+            "nbnDetails": {
+                "product": "FTTN",
+                "poiName": "Wubbo",
+                "cvcGraph": "https:\/\/cvcs.aussiebroadband.com.au\/Wubbolink3.png",
+                "speedPotential": {
+                    "downloadMbps": 137,
+                    "uploadMbps": 49,
+                    "lastTested": "2023-06-25T04:24:20Z"
+                }
+            },
+            "nextBillDate": "2023-09-23T14:00:00Z",
+            "openDate": "2023-06-22T14:00:00Z",
+            "usageAnniversary": 24,
+            "ipAddresses": [
+                "234.234.234.234",
+                "2403:5811:7fff:ffff::\/64",
+                "2403:5811:4fff::\/48"
+            ],
+            "address": {
+                "subaddresstype": "UN",
+                "subaddressnumber": "1",
+                "streetnumber": "69",
+                "streetname": "CHEESETHORN",
+                "streettype": "ST",
+                "locality": "Wubbo",
+                "postcode": "2830",
+                "state": "NSW"
+            },
+            "contract": null,
+            "discounts": []
+        },
+        {
+            "service_id": 12345678,
+            "type": "NBN",
+            "name": "NBN",
+            "plan": "Business NBN 100Mbps\/40Mbps Unlimited ($109.00)",
+            "description": "NBN: 18 GUNBORING ST, Wubbo NSW - AVC000173339304",
+            "nbnDetails": {
+                "product": "Fibre",
+                "poiName": "Wubbo",
+                "cvcGraph": "https:\/\/cvcs.aussiebroadband.com.au\/Wubbolink3.png"
+            },
+            "nextBillDate": "2023-09-23T14:00:00Z",
+            "openDate": "2023-05-23T14:00:00Z",
+            "usageAnniversary": 24,
+            "ipAddresses": [
+                "111.116.137.111",
+                "2403:5811:7fff:ffff::\/64",
+                "2403:5811:7ffe::\/48"
+            ],
+            "address": {
+                "subaddresstype": null,
+                "subaddressnumber": null,
+                "streetnumber": "18",
+                "streetname": "GUNBORING",
+                "streettype": "ST",
+                "locality": "Wubbo",
+                "postcode": "2830",
+                "state": "NSW"
+            },
+            "contract": null,
+            "discounts": [
+                {
+                    "amount": 20,
+                    "discountType": "absolute",
+                    "description": "$20 off for 6 months (11\/May\/2023 -> 10\/Nov\/2023)",
+                    "startDate": "2023-05-11",
+                    "finishDate": "2023-11-10"
+                }
+            ]
+        },
+        {
+            "service_id": 1234798,
+            "type": "Hardware",
+            "name": "Hardware",
+            "plan": "Hardware Outright",
+            "description": "Hardware - NF20MESH (Outright Purchase)",
+            "nextBillDate": "2023-09-23T14:00:00Z",
+            "openDate": "2023-06-07T14:00:00Z",
+            "usageAnniversary": 24,
+            "address": null,
+            "contract": null,
+            "discounts": []
+        }
+    ],
+    "links": {
+        "first": "https:\/\/myaussie-api.aussiebroadband.com.au\/services?page=1",
+        "last": "https:\/\/myaussie-api.aussiebroadband.com.au\/services?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "https:\/\/myaussie-api.aussiebroadband.com.au\/services?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "path": "https:\/\/myaussie-api.aussiebroadband.com.au\/services",
+        "per_page": 10,
+        "to": 6,
+        "total": 6
+    }
+}

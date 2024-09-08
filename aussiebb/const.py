@@ -1,6 +1,7 @@
-""" constants and utilities """
+"""constants and utilities"""
 
 import sys
+from typing import Dict
 
 if sys.version_info.major == 3 and sys.version_info.minor < 12:
     from typing_extensions import TypedDict
@@ -28,7 +29,7 @@ DefaultHeaders = TypedDict(
 )
 
 
-def default_headers() -> DefaultHeaders:
+def default_headers() -> Dict[str, str]:
     """returns a default set of headers"""
     return {
         "Accept": "application/json",
@@ -148,3 +149,8 @@ PHONE_TYPES = [
     "VOIP",
     "PhoneMobile",
 ]
+
+# you should be able to get usage for these types
+USAGE_ENABLED_SERVICE_TYPES = NBN_TYPES + PHONE_TYPES
+
+HARDWARE_TYPES = ["Hardware"]

@@ -1,5 +1,4 @@
-""" aiohttp support for AussieBB """
-
+"""aiohttp support for AussieBB"""
 
 import asyncio
 
@@ -85,7 +84,7 @@ class AussieBB(BaseClass):
 
         async with self.session.post(
             url=url,
-            headers=headers,
+            headers=dict(headers),
             json=payload,
         ) as response:
             try:
@@ -111,9 +110,7 @@ class AussieBB(BaseClass):
         ```
         """
         ratelimit_remaining = int(response.headers.get("X-RateLimit-Remaining", -1))
-        self.logger.debug(
-            "Rate limit header: %s", response.headers.get("X-RateLimit-Remaining", -1)
-        )
+        self.logger.debug("Rate limit header: %s", response.headers.get("X-RateLimit-Remaining", -1))
         if ratelimit_remaining < 5 and wait_on_rate_limit:
             self.logger.info("Rate limit below 5, sleeping for 1 second.")
             await asyncio.sleep(1)
@@ -127,11 +124,7 @@ class AussieBB(BaseClass):
             delay = DEFAULT_BACKOFF_DELAY
             if "Please try again in " in str(jsondata.get("errors")):
                 fallback_value = [f"default {DEFAULT_BACKOFF_DELAY} seconds"]
-                delay = (
-                    jsondata.get("errors", {})
-                    .get("username", fallback_value)[0]
-                    .split()[-2]
-                )
+                delay = jsondata.get("errors", {}).get("username", fallback_value)[0].split()[-2]
                 # give it some extra time to cool off
                 delay = int(delay) + 5
 
@@ -139,9 +132,7 @@ class AussieBB(BaseClass):
                     self.logger.debug("Found required rate limit delay: %s", delay)
                     delay = int(delay)
                 else:
-                    self.logger.debug(
-                        "Couldn't parse rate limit delay, using default: %s", delay
-                    )
+                    self.logger.debug("Couldn't parse rate limit delay, using default: %s", delay)
             else:
                 delay = DEFAULT_BACKOFF_DELAY
                 self.logger.debug("Couldn't parse delay, using default: %s", delay)
@@ -191,9 +182,7 @@ class AussieBB(BaseClass):
             "referer": "https://my.aussiebroadband.com.au/",
             "x-two-factor-auth-capable-client": "false",  # this might need to be a thing...
         }
-        response: ClientResponse = await self.session.get(
-            url=url, cookies=cookies, params=params, headers=headers
-        )
+        response: ClientResponse = await self.session.get(url=url, cookies=cookies, params=params, headers=headers)
         try:
             await self.handle_response_fail(response)
             await response.read()
@@ -259,10 +248,8 @@ class AussieBB(BaseClass):
         await self.do_login_check(skip_login_check)
 
         cookies = kwargs.get("cookies", {"myaussie_cookie": self.myaussie_cookie})
-        headers = kwargs.get("headers", default_headers())
-        async with self.session.post(
-            url=url, cookies=cookies, headers=headers, json=kwargs.get("data")
-        ) as response:
+        headers: Dict[str, str] = kwargs.get("headers", dict(default_headers()))
+        async with self.session.post(url=url, cookies=cookies, headers=headers, json=kwargs.get("data")) as response:
             try:
                 await self.handle_response_fail(response)
                 jsondata: Dict[str, Any] = await response.json()
@@ -336,9 +323,7 @@ class AussieBB(BaseClass):
                 params = {"page": page}
                 responsedata = await self.request_get_json(url=url, params=params)
 
-                next_url, page, services_list = self.handle_services_response(
-                    responsedata, services_list
-                )
+                next_url, page, services_list = self.handle_services_response(responsedata, services_list)
                 if next_url is None:
                     break
                 url = next_url
@@ -379,9 +364,7 @@ class AussieBB(BaseClass):
         ```
         """
         url = self.get_url("account_transactions")
-        responsedata: Dict[str, AccountTransaction] = await self.request_get_json(
-            url=url
-        )
+        responsedata: Dict[str, AccountTransaction] = await self.request_get_json(url=url)
         return responsedata
 
     async def billing_receipt(self, receipt_id: int) -> ClientResponse:
@@ -398,9 +381,7 @@ class AussieBB(BaseClass):
         """
         return await self.billing_download("invoice", invoice_id)
 
-    async def billing_download(
-        self, download_type: str, item_id: int
-    ) -> ClientResponse:
+    async def billing_download(self, download_type: str, item_id: int) -> ClientResponse:
         """Downloads a billing file
 
         This returns the bare response object, parsing the result is an exercise for the consumer. It's a PDF file.
@@ -416,9 +397,7 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(
-        self, service_id: int, use_cached: bool = True
-    ) -> Dict[str, Any]:
+    async def get_usage(self, service_id: int, use_cached: bool = True) -> Dict[str, Any]:
         """
         Returns a dict of usage for a service.
 
@@ -483,9 +462,7 @@ class AussieBB(BaseClass):
         # print(f"Response: {response}", file=sys.stderr)
         return response
 
-    async def run_test(
-        self, service_id: int, test_name: str, test_method: str = "post"
-    ) -> Optional[Dict[str, Any]]:
+    async def run_test(self, service_id: int, test_name: str, test_method: str = "post") -> Optional[Dict[str, Any]]:
         """Run a test, but it checks it's valid first
 
         There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
@@ -497,9 +474,7 @@ class AussieBB(BaseClass):
         """
 
         service_tests = await self.get_service_tests(service_id)
-        test_links = [
-            test for test in service_tests if test.link.endswith(f"/{test_name}")
-        ]
+        test_links = [test for test in service_tests if test.link.endswith(f"/{test_name}")]
 
         if not test_links:
             return None

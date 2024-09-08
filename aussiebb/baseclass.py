@@ -1,4 +1,4 @@
-""" base class def """
+"""base class def"""
 
 from http.cookies import SimpleCookie, Morsel
 import logging
@@ -41,11 +41,9 @@ class BaseClass:
         logger: logging.Logger = logging.getLogger(),
     ):
         if not (username and password):
-            raise AuthenticationException(
-                "You need to supply both username and password"
-            )
+            raise AuthenticationException("You need to supply both username and password")
 
-        self.myaussie_cookie: Optional[Union[Morsel[Any], SimpleCookie[Any]]] = None
+        self.myaussie_cookie: Optional[Union[Morsel[Any], SimpleCookie]] = None
         self.token_expires = -1
 
         self.services_cache_time = services_cache_time  # defaults to 8 hours
@@ -63,9 +61,7 @@ class BaseClass:
     def get_url(self, function_name: str, data: Optional[Dict[str, Any]] = None) -> str:
         """gets the URL based on the data/function"""
         if function_name not in self.API_ENDPOINTS:
-            raise ValueError(
-                f"Function name {function_name} not found, cannot find URL"
-            )
+            raise ValueError(f"Function name {function_name} not found, cannot find URL")
         if data:
             api_endpoint = self.API_ENDPOINTS[function_name].format(**data)
         else:
@@ -83,7 +79,7 @@ class BaseClass:
         self,
         status_code: int,
         jsondata: Dict[str, Any],
-        cookies: Union[RequestsCookieJar, SimpleCookie[Any]],
+        cookies: Union[RequestsCookieJar, SimpleCookie],
     ) -> bool:
         """Handles the login response.
 
@@ -105,14 +101,11 @@ class BaseClass:
         if "expiresIn" not in jsondata:
             return False
 
-        if (
-            "myaussie_cookie" not in cookies
-            or str(cookies["myaussie_cookie"]).strip() == ""
-        ):
+        if "myaussie_cookie" not in cookies or str(cookies["myaussie_cookie"]).strip() == "":
             return False
 
         self.token_expires = time() + jsondata.get("expiresIn", 0) - 50
-        self.myaussie_cookie = cookies["myaussie_cookie"]
+        self.myaussie_cookie = cookies["myaussie_cookie"]  # type: ignore
         self.logger.debug("Login Cookie: %s", self.myaussie_cookie)
         return True
 
@@ -122,9 +115,7 @@ class BaseClass:
         if "type" not in service:
             raise ValueError("Field 'type' not found in service data")
         if service["type"] not in USAGE_ENABLED_SERVICE_TYPES + HARDWARE_TYPES:
-            raise UnrecognisedServiceType(
-                f"Service type {service['type']=} {service['name']=} -  not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new"
-            )
+            raise UnrecognisedServiceType(f"Service type {service['type']=} {service['name']=} -  not recognised - please raise an issue about this - https://github.com/yaleman/aussiebb/issues/new")
 
     def filter_services(
         self,
@@ -137,9 +128,7 @@ class BaseClass:
         if drop_types is None:
             drop_types = []
 
-        self.logger.debug(
-            f"Filtering services {self.services=} {service_types=} {drop_types=}"
-        )
+        self.logger.debug(f"Filtering services {self.services=} {service_types=} {drop_types=}")
         filtered_responsedata: List[Dict[str, Any]] = []
         if self.services is not None:
             for service in self.services:
@@ -150,16 +139,10 @@ class BaseClass:
                 if service_types is None or service["type"] in service_types:
                     filtered_responsedata.append(service)
                 else:
-                    self.logger.debug(
-                        "Skipping as type==%s - %s", service["type"], service
-                    )
+                    self.logger.debug("Skipping as type==%s - %s", service["type"], service)
             # skip things we don't know about
             if drop_unknown_types:
-                filtered_responsedata = [
-                    service
-                    for service in filtered_responsedata
-                    if service["type"] in FETCH_TYPES + NBN_TYPES + PHONE_TYPES
-                ]
+                filtered_responsedata = [service for service in filtered_responsedata if service["type"] in FETCH_TYPES + NBN_TYPES + PHONE_TYPES]
             return filtered_responsedata
         return []
 
@@ -173,9 +156,7 @@ class BaseClass:
                 test_is_valid = True
 
         if not test_is_valid:
-            raise InvalidTestForService(
-                "You can't check line state, test not available!"
-            )
+            raise InvalidTestForService("You can't check line state, test not available!")
         return test_is_valid
 
     @classmethod

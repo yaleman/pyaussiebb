@@ -22,4 +22,4 @@ jobs:
         run: |
             python -m pip install --quiet --no-cache-dir --upgrade poetry
             poetry install
-            poetry run ruff aussiebb tests
+            poetry run ruff check aussiebb tests

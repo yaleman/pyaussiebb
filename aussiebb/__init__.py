@@ -33,7 +33,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: SecretStr,
+        password: str | SecretStr,
         debug: bool = False,
         services_cache_time: int = 28800,
         session: Optional[requests.sessions.Session] = None,
@@ -51,6 +51,7 @@ class AussieBB(BaseClass):
         ```
         """
         super().__init__(username, password, debug, services_cache_time)
+
         if session is None:
             self.session = requests.Session()
         else:

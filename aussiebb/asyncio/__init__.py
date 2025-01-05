@@ -42,7 +42,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: SecretStr,
+        password: SecretStr | str,
         session: Optional[aiohttp.client.ClientSession] = None,
         debug: bool = False,
         services_cache_time: int = 28800,

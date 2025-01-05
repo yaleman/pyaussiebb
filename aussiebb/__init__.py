@@ -51,7 +51,6 @@ class AussieBB(BaseClass):
         ```
         """
         super().__init__(username, password, debug, services_cache_time)
-
         if session is None:
             self.session = requests.Session()
         else:

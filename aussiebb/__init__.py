@@ -33,7 +33,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: str | SecretStr,
+        password: SecretStr | str,
         debug: bool = False,
         services_cache_time: int = 28800,
         session: Optional[requests.sessions.Session] = None,

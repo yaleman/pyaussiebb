@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## v0.0.3
+## v0.1.5
+
+Allowed the password argument to take a string.
+
+## v0.1.3
 
 The get_services function now has a "drop_unknown_types" flag which means you won't get a list of things we don't know about, hopefully that'll help some folks when AussieBB adds random things.
 

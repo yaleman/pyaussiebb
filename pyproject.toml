@@ -28,23 +28,18 @@ requests = "^2.27.1"
 aiohttp = "^3.8.5"
 pydantic = ">=2.0,<3.0"
 
-[tool.poetry.dev-dependencies]
-pylint = "^3.0.1"
-mypy = "^1.0"
-black = "^24.1.0"
-pytest = "^8.0.0"
-types-requests = "^2.28.11"
-mkdocstrings = "^0.27.0"
-mkdocs-material = "^9.0.2"
-mkdocs = "^1.4.2"
-requests-testing = "^0.2.0"
-pylint-pydantic = "^0.3.0"
-pytest-asyncio = "^0.25.0"
-pytest-aiohttp = "^1.0.4"
-mkdocstrings-python = "^1.0.0"
-
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.5.1,<0.8.6"
+mypy = "^1.14.1"
+pytest = "^8.3.4"
+types-requests = "^2.32.0.20241016"
+mkdocstrings = "^0.27.0"
+mkdocs-material = "^9.5.49"
+mkdocs = "^1.6.1"
+requests-testing = "^0.2.0"
+pytest-asyncio = "^0.25.1"
+pytest-aiohttp = "^1.0.5"
+mkdocstrings-python = "^1.13.0"
 
 [tool.mypy]
 plugins = "pydantic.mypy"

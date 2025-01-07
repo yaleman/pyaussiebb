@@ -35,7 +35,7 @@ class BaseClass:
     def __init__(
         self,
         username: str,
-        password: SecretStr,
+        password: SecretStr | str,
         debug: bool = False,
         services_cache_time: int = 28800,
         logger: logging.Logger = logging.getLogger(),
@@ -50,7 +50,10 @@ class BaseClass:
         self.services_last_update = -1
         self.services: List[Dict[str, Any]] = []
         self.username = username
-        self.password = password
+        if isinstance(password, SecretStr):
+            self.password = password
+        else:
+            self.password = SecretStr(password)
         self.logger = logger
         self.debug = debug
 

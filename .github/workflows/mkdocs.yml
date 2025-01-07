@@ -5,11 +5,13 @@ name: MKDocs Deployment to GitHub Pages
   push:
     branches:
       - main  # Set a branch to deploy
-
 jobs:
   mkdocs:
     name: Deploy docs
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout main
         uses: actions/checkout@v4

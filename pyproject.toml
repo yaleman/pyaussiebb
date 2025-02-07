@@ -29,7 +29,7 @@ aiohttp = "^3.8.5"
 pydantic = ">=2.0,<3.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = ">=0.5.1,<0.9.5"
+ruff = ">=0.5.1,<0.9.6"
 mypy = "^1.14.1"
 pytest = "^8.3.4"
 types-requests = "^2.32.0.20241016"

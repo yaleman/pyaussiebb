@@ -20,6 +20,5 @@ jobs:
           python-version: '3.10'
       - name: Running pytest
         run: |
-          python --version
           python -m pip install --quiet --no-cache-dir --upgrade uv
-          uv run python -m pytest -- -m 'not network' -vs
+          uv run pytest -m 'not network' -vs

@@ -1,45 +1,46 @@
-[tool.poetry]
+[project]
 name = "pyaussiebb"
-version = "0.1.5"
+version = "0.1.6"
 description = "Aussie Broadband API module"
-authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
-license = "MIT"
+authors = [{ name = "James Hodgkinson", email = "james@terminaloutcomes.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = ["requests>=2.27.1", "aiohttp>=3.11.18", "pydantic>=2.11.4"]
 readme = "README.md"
-homepage = "https://github.com/yaleman/pyaussiebb"
-repository = "https://github.com/yaleman/pyaussiebb"
-documentation = "https://yaleman.github.io/pyaussiebb/"
 keywords = ["api", "aussie", "broadband", "internet"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-packages = [{ include = "aussiebb" }]
 
-[tool.poetry.urls]
-Issues = "https://github.com/yaleman/pyaussiebb/issues/"
+[project.urls]
+issues = "https://github.com/yaleman/pyaussiebb/issues/"
+homepage = "https://github.com/yaleman/pyaussiebb"
+repository = "https://github.com/yaleman/pyaussiebb"
+documentation = "https://yaleman.github.io/pyaussiebb/"
 
-[tool.poetry.dependencies]
-python = "^3.9"
-requests = "^2.27.1"
-aiohttp = "^3.8.5"
-pydantic = ">=2.0,<3.0"
+[dependency-groups]
+dev = [
+    "ruff>=0.11.10",
+    "mypy==1.15.0",
+    "pytest>=8.3.5",
+    "types-requests==2.32.0.20250515",
+    "mkdocstrings>=0.27",
+    "mkdocs-material==9.6.14",
+    "mkdocs>=1.6.1",
+    "requests-testing>=0.2.0",
+    "pytest-asyncio>=0.26.0",
+    "pytest-aiohttp>=1.1.0",
+    "mkdocstrings-python>=1.16.10",
+]
 
-[tool.poetry.group.dev.dependencies]
-ruff = ">=0.5.1,<0.11.11"
-mypy = "^1.14.1"
-pytest = "^8.3.4"
-types-requests = "^2.32.0.20241016"
-mkdocstrings = ">=0.27,<0.30"
-mkdocs-material = "^9.5.49"
-mkdocs = "^1.6.1"
-requests-testing = "^0.2.0"
-pytest-asyncio = ">=0.25.1,<0.27.0"
-pytest-aiohttp = "^1.0.5"
-mkdocstrings-python = "^1.13.0"
 
 [tool.mypy]
 plugins = "pydantic.mypy"
@@ -47,12 +48,15 @@ plugins = "pydantic.mypy"
 [tool.ruff]
 line-length = 200
 
+[tool.pdm.build]
+includes = ["aussiebb"]
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
     "network: Tests that require network access and a working backend server",
 ]

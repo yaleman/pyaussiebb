@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" test some things """
+"""test some things"""
 
 import json
 from typing import List
@@ -7,7 +7,7 @@ from typing import List
 import aiohttp
 import pytest
 
-from test_utils import configloader
+from .test_utils import configloader
 
 from aussiebb.asyncio import AussieBB
 import aussiebb.const
@@ -20,7 +20,6 @@ from aussiebb.types import ConfigUser
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.network
 @pytest.fixture(name="users")
 def fixture_users() -> List[ConfigUser]:
     """users fixture"""
@@ -210,9 +209,7 @@ async def test_get_voip_devices(users: List[AussieBB]) -> None:
                     continue
                 print(f"Found a voip service! {service['service_id']}")
 
-                service_devices = await api.get_voip_devices(
-                    service_id=int(service["service_id"])
-                )
+                service_devices = await api.get_voip_devices(service_id=int(service["service_id"]))
                 print(json.dumps(service_devices, indent=4, default=str))
 
 
@@ -237,7 +234,5 @@ async def test_get_voip_service(users: List[AussieBB]) -> None:
                     continue
                 print(f"Found a voip service! {service['service_id']}")
 
-                service_devices = await api.get_voip_service(
-                    service_id=int(service["service_id"])
-                )
+                service_devices = await api.get_voip_service(service_id=int(service["service_id"]))
                 print(json.dumps(service_devices, indent=4, default=str))

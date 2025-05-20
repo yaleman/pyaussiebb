@@ -17,7 +17,7 @@ import json
 from typing import List
 
 import pytest
-from test_utils import configloader
+from .test_utils import configloader
 
 from aussiebb import AussieBB
 import aussiebb.const
@@ -25,14 +25,10 @@ from aussiebb.exceptions import InvalidTestForService
 from aussiebb.types import GetServicesResponse
 
 
-@pytest.mark.network
 @pytest.fixture(name="users", scope="session")
 def userfactory() -> List[AussieBB]:
     """API factory"""
-    return [
-        AussieBB(username=user.username, password=user.password)
-        for user in configloader().users
-    ]
+    return [AussieBB(username=user.username, password=user.password) for user in configloader().users]
 
 
 @pytest.mark.network
@@ -135,9 +131,7 @@ def test_get_services_raw(users: List[AussieBB]) -> None:
         while hasattr(response, "links") and (response.links.next is not None):
             print("Theres's another page!")
             url = response.links.next
-            response = GetServicesResponse.model_validate(
-                user.request_get_json(url=url)
-            )
+            response = GetServicesResponse.model_validate(user.request_get_json(url=url))
             print(json.dumps(response.links, indent=4, default=str))
 
 
@@ -171,9 +165,7 @@ def test_get_voip_devices(users: List[AussieBB]) -> None:
                 continue
             print(f"Found a voip service! {service['service_id']}")
 
-            service_devices = user.get_voip_devices(
-                service_id=int(service["service_id"])
-            )
+            service_devices = user.get_voip_devices(service_id=int(service["service_id"]))
             print(json.dumps(service_devices, indent=4, default=str))
 
 
@@ -191,7 +183,5 @@ def test_get_voip_service(users: List[AussieBB]) -> None:
                 continue
             print(f"Found a voip service! {service['service_id']}")
 
-            service_devices = user.get_voip_service(
-                service_id=int(service["service_id"])
-            )
+            service_devices = user.get_voip_service(service_id=int(service["service_id"]))
             print(json.dumps(service_devices, indent=4, default=str))

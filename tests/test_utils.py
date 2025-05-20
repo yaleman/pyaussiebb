@@ -1,9 +1,9 @@
-""" test utils """
+"""test utils"""
 
 import json
 import os
 from pathlib import Path
-import sys
+
 
 import pytest
 
@@ -26,8 +26,6 @@ def configloader() -> AussieBBConfigFile:
                     pytest.exit("You need some users in config.json")
                 return configfile
             except json.JSONDecodeError as json_error:
-                pytest.exit(f"Failed to parse config file: {json_error}")
+                pytest.exit(reason=f"Failed to parse config file: {json_error}")
     print(f"No config file found... tried looking in {','.join(CONFIG_FILES)}")
-    sys.exit(1)
-
-    # TODO: add a validator that checks that either a user or a list of them is supplied
+    return AussieBBConfigFile.model_validate({})

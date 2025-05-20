@@ -15,7 +15,7 @@ It needs at least one user in the "users" field. eg:
 import json
 
 import pytest
-from test_utils import configloader
+from .test_utils import configloader
 
 from aussiebb import AussieBB
 

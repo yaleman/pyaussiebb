@@ -15,7 +15,7 @@ It needs at least one user in the "users" field. eg:
 import json
 
 import pytest
-from test_utils import configloader
+from .test_utils import configloader
 
 from aussiebb import AussieBB
 from aussiebb.types import AussieBBOutage
@@ -25,10 +25,7 @@ from aussiebb.types import AussieBBOutage
 def test_get_service_outages() -> None:
     """test the login step"""
 
-    user: AussieBB = [
-        AussieBB(username=user.username, password=user.password)
-        for user in configloader().users
-    ][0]
+    user: AussieBB = [AussieBB(username=user.username, password=user.password) for user in configloader().users][0]
 
     services = user.get_services()
     if services is None:

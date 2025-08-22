@@ -33,7 +33,7 @@ dev = [
     "pytest>=8.3.5",
     "types-requests==2.32.4.20250809",
     "mkdocstrings>=0.27",
-    "mkdocs-material==9.6.17",
+    "mkdocs-material==9.6.18",
     "mkdocs>=1.6.1",
     "requests-testing>=0.2.0",
     "pytest-asyncio>=0.26.0",

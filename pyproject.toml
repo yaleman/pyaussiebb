@@ -29,7 +29,7 @@ documentation = "https://yaleman.github.io/pyaussiebb/"
 [dependency-groups]
 dev = [
     "ruff>=0.11.10",
-    "mypy==1.18.1",
+    "mypy==1.18.2",
     "pytest>=8.3.5",
     "types-requests==2.32.4.20250913",
     "mkdocstrings>=0.27",

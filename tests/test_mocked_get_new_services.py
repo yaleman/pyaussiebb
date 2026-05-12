@@ -1,11 +1,11 @@
-""" uses mocked calls to test what happens when an unknown service type appears """
+"""uses mocked calls to test what happens when an unknown service type appears"""
 
 # from copy import deepcopy
 # import json
 
 # import pytest
 
-# import requests_testing  # type: ignore
+# import requests_testing
 
 # from aussiebb import AussieBB
 # import aussiebb
@@ -13,7 +13,7 @@
 # from aussiebb.const import TEST_MOCKDATA, BASEURL
 
 
-# @requests_testing.activate  # type: ignore
+# @requests_testing.activate
 # def test_handling_invalid_service() -> None:
 #     """test  API endpoint, with mocking"""
 

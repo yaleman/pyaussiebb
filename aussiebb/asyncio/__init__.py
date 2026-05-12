@@ -42,7 +42,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: SecretStr | str,
+        password: "SecretStr | str",
         session: Optional[aiohttp.client.ClientSession] = None,
         debug: bool = False,
         services_cache_time: int = 28800,
@@ -626,14 +626,14 @@ class AussieBB(BaseClass):
         url = self.get_url("get_orders")
         responsedata = await self.request_get_json(url=url)
         result = OrderDetailResponseModel(**responsedata)
-        return result.dict()
+        return result.model_dump()
 
     async def get_order(self, order_id: int) -> Dict[str, Any]:
         """gets a specific order"""
         url = self.get_url("get_order", {"order_id": order_id})
         responsedata = await self.request_get_json(url=url)
         result = OrderDetailResponseModel(**responsedata)
-        return result.dict()
+        return result.model_dump()
 
     async def get_voip_devices(self, service_id: int) -> List[VOIPDevice]:
         """gets the devices associatd with a VOIP service"""
@@ -659,8 +659,8 @@ class AussieBB(BaseClass):
     async def mfa_send(self, method: MFAMethod) -> None:
         """sends an MFA code to the user"""
         url = self.get_url("mfa_send")
-        print(method.dict())
-        await self.request_post_json(url=url, data=method.dict())
+        print(method.model_dump_json())
+        await self.request_post_json(url=url, data=method.model_dump())
 
     async def mfa_verify(self, token: str) -> None:
         """got the token from send_mfa? send it back to validate it"""

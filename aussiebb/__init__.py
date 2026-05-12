@@ -1,6 +1,7 @@
-""" A class for interacting with Aussie Broadband APIs """
+"""A class for interacting with Aussie Broadband APIs"""
 
 # import json
+from requests.models import Response
 import sys
 from time import time
 from typing import Any, Dict, List, Optional, cast
@@ -33,7 +34,7 @@ class AussieBB(BaseClass):
     def __init__(
         self,
         username: str,
-        password: SecretStr | str,
+        password: "SecretStr | str",
         debug: bool = False,
         services_cache_time: int = 28800,
         session: Optional[requests.sessions.Session] = None,
@@ -79,9 +80,7 @@ class AussieBB(BaseClass):
         response.raise_for_status()
         jsondata = response.json()
 
-        return self._handle_login_response(
-            response.status_code, jsondata, response.cookies
-        )
+        return self._handle_login_response(response.status_code, jsondata, response.cookies)
 
     def do_login_check(self, skip_login_check: bool) -> None:
         """checks if we're skipping the login check and logs in if necessary"""
@@ -91,13 +90,13 @@ class AussieBB(BaseClass):
                 self.logger.debug("token has expired, logging in...")
                 self.login()
 
-    def request_get(  # type: ignore
+    def request_get(
         self,
         url: str,
         skip_login_check: bool = False,
         cookies: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> Response:
         """Performs a GET request and logs in first if needed.
 
         Returns the `requests.Response` object."""
@@ -143,9 +142,7 @@ class AussieBB(BaseClass):
         result: Dict[str, Any] = response.json()
         return result
 
-    def request_post(
-        self, url: str, skip_login_check: bool = False, **kwargs: Dict[str, Any]
-    ) -> requests.Response:
+    def request_post(self, url: str, skip_login_check: bool = False, **kwargs: Dict[str, Any]) -> requests.Response:
         """Performs a POST request and logs in first if needed."""
         self.do_login_check(skip_login_check)
         if "cookies" not in kwargs:
@@ -222,9 +219,7 @@ class AussieBB(BaseClass):
             while True:
                 params = {"page": page}
                 responsedata = self.request_get_json(url=url, params=params)
-                next_url, page, services_list = self.handle_services_response(
-                    responsedata, services_list
-                )
+                next_url, page, services_list = self.handle_services_response(responsedata, services_list)
                 if next_url is None:
                     break
                 url = next_url
@@ -320,9 +315,7 @@ class AussieBB(BaseClass):
         This has a habit of throwing 400 errors if you query a VOIP service...
         """
         url = self.get_url("get_service_tests", {"service_id": service_id})
-        results: List[ServiceTest] = [
-            ServiceTest.model_validate(test) for test in self.request_get_list(url=url)
-        ]
+        results: List[ServiceTest] = [ServiceTest.model_validate(test) for test in self.request_get_list(url=url)]
         return results
 
     def get_test_history(self, service_id: int) -> Dict[str, Any]:
@@ -345,9 +338,7 @@ class AussieBB(BaseClass):
         result: Dict[str, Any] = response.json()
         return result
 
-    def run_test(
-        self, service_id: int, test_name: str, test_method: str = "post"
-    ) -> Optional[Dict[str, Any]]:
+    def run_test(self, service_id: int, test_name: str, test_method: str = "post") -> Optional[Dict[str, Any]]:
         """Run a test, but it checks it's valid first
 
         There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
@@ -358,11 +349,7 @@ class AussieBB(BaseClass):
         - 'status' of 'Completed' means you've got the full response
         """
 
-        test_links = [
-            test
-            for test in self.get_service_tests(service_id)
-            if test.link.endswith(f"/{test_name}")
-        ]
+        test_links = [test for test in self.get_service_tests(service_id) if test.link.endswith(f"/{test_name}")]
 
         if not test_links:
             return None

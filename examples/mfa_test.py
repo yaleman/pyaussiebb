@@ -1,5 +1,4 @@
-""" tests the MFA functionality """
-
+"""tests the MFA functionality"""
 
 import asyncio
 from pathlib import Path
@@ -20,9 +19,8 @@ async def main() -> None:
     configfile = None
     for filepath in config_files:
         if Path(filepath).expanduser().exists():
-            configfile = AussieBBConfigFile.parse_file(
-                Path(filepath).expanduser().resolve()
-            )
+            file_contents = Path(filepath).expanduser().read_text(encoding="utf-8")
+            configfile = AussieBBConfigFile.model_validate_json(file_contents)
             break
     if configfile is None:
         print("Couldn't find any config files, quitting!")

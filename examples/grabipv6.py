@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" pulls and lists the IPv6 addresess for your services """
+"""pulls and lists the IPv6 addresess for your services"""
 
 import asyncio
 
@@ -26,7 +26,7 @@ def configloader() -> Optional[AussieBBConfigFile]:
         filepath = Path(filename).resolve()
         if filepath.exists():
             try:
-                return AussieBBConfigFile.parse_file(filepath)
+                return AussieBBConfigFile.model_validate_json(filepath.read_text(encoding="utf-8"))
             except json.JSONDecodeError as json_error:
                 sys.exit(f"Failed to parse config file: {json_error}")
     return None
@@ -58,9 +58,7 @@ async def main() -> None:
             try:
                 parsed = ip_network(address)
             except Exception as error_message:  # pylint: disable=broad-except
-                client.logger.error(
-                    f"Not sure what this was, but it's not an address! {address} - {error_message}"
-                )
+                client.logger.error(f"Not sure what this was, but it's not an address! {address} - {error_message}")
                 continue
 
             if isinstance(parsed, IPv4Network):

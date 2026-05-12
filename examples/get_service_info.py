@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" pulls and lists the VOIP services on your account """
+"""pulls and lists the VOIP services on your account"""
 
 # pylint: disable=wrong-import-position
 
@@ -28,7 +28,7 @@ def configloader() -> Optional[AussieBBConfigFile]:
         filepath = Path(filename).resolve()
         if filepath.exists():
             try:
-                return AussieBBConfigFile.parse_file(filepath)
+                return AussieBBConfigFile.model_validate_json(filepath.read_text(encoding="utf-8"))
             except json.JSONDecodeError as json_error:
                 sys.exit(f"Failed to parse config file: {json_error}")
     return None

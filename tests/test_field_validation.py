@@ -1,6 +1,6 @@
 """ pyaussiebb tests """
-from pydantic import SecretStr
 import pytest
+from pydantic import SecretStr
 
 from aussiebb.baseclass import BaseClass
 from aussiebb.exceptions import UnrecognisedServiceType

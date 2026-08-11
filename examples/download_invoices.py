@@ -1,16 +1,16 @@
-""" downloads invoices and receipts and stuff """
+"""downloads invoices and receipts and stuff"""
 
 import argparse
 import asyncio
-from datetime import datetime
 import json
-from pathlib import Path
 import sys
+from datetime import datetime
+from pathlib import Path
 
 from aiohttp import ClientSession
 
 from aussiebb.asyncio import AussieBB
-from aussiebb.types import AussieBBConfigFile
+from aussiebb.types import AccountTransaction, AussieBBConfigFile
 
 config_files = [
     "~/.config/aussiebb.json",
@@ -23,10 +23,10 @@ async def main() -> None:
     for filepath in config_files:
         if Path(filepath).expanduser().exists():
             try:
-                with Path(filepath).open(encoding="utf-8") as file_handle:
+                with Path(filepath).expanduser().open(encoding="utf-8") as file_handle:
                     file_data = json.load(file_handle)
             except json.JSONDecodeError as error:
-                print(f"Failed to load {Path(filepath)}: {error}", file=sys.stderr)
+                print(f"Failed to load {Path(filepath).expanduser()}: {error}", file=sys.stderr)
                 sys.exit(1)
             configfile = AussieBBConfigFile.model_validate(file_data)
             break
@@ -49,9 +49,9 @@ async def main() -> None:
     args = parser.parse_args()
 
     if args.earliest:
-        earliest_date = datetime.strptime(args.earliest, "%Y-%m-%d")
+        earliest_date = datetime.strptime(args.earliest, "%Y-%m-%d").astimezone()
     else:
-        earliest_date = datetime.strptime("1970-01-01", "%Y-%m-%d")
+        earliest_date = datetime.strptime("1970-01-01", "%Y-%m-%d").astimezone()
     print(f"Earliest date: {earliest_date.strftime('%Y-%m-%d')}")
 
     async with ClientSession() as session:
@@ -63,12 +63,10 @@ async def main() -> None:
         print("Logging in...")
         await aussiebb.login()
         print("Pulling transactions...")
-        transactions = await aussiebb.account_transactions()
-        for _transaction_date, transaction in transactions.items():
-            timestamp = datetime.strptime(transaction["time"], "%Y-%m-%d")
-            download_path = Path(
-                f"{transaction['time']}-{transaction['id']}-{transaction['type']}.pdf"
-            )
+        transactions: dict[str, AccountTransaction] = await aussiebb.account_transactions()
+        for transaction in transactions.values():
+            timestamp = datetime.strptime(transaction["time"], "%Y-%m-%d").astimezone()
+            download_path = Path(f"{transaction['time']}-{transaction['id']}-{transaction['type']}.pdf")
             if download_path.exists():
                 print(f"Already have {download_path}, skipping")
                 continue
@@ -80,9 +78,7 @@ async def main() -> None:
             elif transaction["type"] == "invoice":
                 invoice = await aussiebb.billing_invoice(transaction["id"])
             elif transaction["type"] == "credit":
-                invoice = await aussiebb.billing_download(
-                    transaction["type"], transaction["id"]
-                )
+                invoice = await aussiebb.billing_download(transaction["type"], transaction["id"])
             else:
                 print(
                     "Unhandled event type: %s for id=%s",

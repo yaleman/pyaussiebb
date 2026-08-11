@@ -1,8 +1,8 @@
 """tests the MFA functionality"""
 
 import asyncio
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from aiohttp import ClientSession
 

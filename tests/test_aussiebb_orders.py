@@ -15,18 +15,17 @@ It needs at least one user in the "users" field. eg:
 import json
 
 import pytest
-from .test_utils import configloader
 
 from aussiebb import AussieBB
 
+from .test_utils import users  # noqa: F401
+
 
 @pytest.mark.network
-def test_get_orders() -> None:
+def test_get_orders(users: list[AussieBB]) -> None:  # noqa: F811
     """test the login step"""
 
-    config = configloader()
-    user = AussieBB(config.users[0].username, config.users[0].password)
-
+    user = users[0]
     orders = user.get_orders()
     print(json.dumps(orders, indent=4, default=str, ensure_ascii=False))
     for order in orders["data"]:

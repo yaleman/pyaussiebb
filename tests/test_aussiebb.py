@@ -14,25 +14,24 @@ It needs at least one user in the "users" field. eg:
 
 import json
 
-from typing import List
-
 import pytest
-from .test_utils import configloader
 
-from aussiebb import AussieBB
 import aussiebb.const
+from aussiebb import AussieBB
 from aussiebb.exceptions import InvalidTestForService
 from aussiebb.types import GetServicesResponse
 
+from .test_utils import configloader
+
 
 @pytest.fixture(name="users", scope="session")
-def userfactory() -> List[AussieBB]:
+def userfactory() -> list[AussieBB]:
     """API factory"""
     return [AussieBB(username=user.username, password=user.password) for user in configloader().users]
 
 
 @pytest.mark.network
-def test_login_cycle(users: List[AussieBB]) -> None:
+def test_login_cycle(users: list[AussieBB]) -> None:
     """test the login step"""
 
     test_api = users[0]
@@ -44,7 +43,7 @@ def test_login_cycle(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_customer_details(users: List[AussieBB]) -> None:
+def test_customer_details(users: list[AussieBB]) -> None:
     """test get_customer_details"""
     for test_api in users:
         test_api.logger.info("Testing get_details")
@@ -54,7 +53,7 @@ def test_customer_details(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_services(users: List[AussieBB]) -> None:
+def test_get_services(users: list[AussieBB]) -> None:
     """test get_services"""
 
     for test_api in users:
@@ -66,7 +65,7 @@ def test_get_services(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_line_state(users: List[AussieBB]) -> None:
+def test_line_state(users: list[AussieBB]) -> None:
     """test test_line_state"""
     for test_api in users:
         services = test_api.get_services()
@@ -86,7 +85,7 @@ def test_line_state(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_usage(users: List[AussieBB]) -> None:
+def test_get_usage(users: list[AussieBB]) -> None:
     """test get_usage"""
     for test_api in users:
         services = test_api.get_services()
@@ -99,7 +98,7 @@ def test_get_usage(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_service_tests(users: List[AussieBB]) -> None:
+def test_get_service_tests(users: list[AussieBB]) -> None:
     """tests... getting the tests for services."""
     for user in users:
         services = user.get_services()
@@ -120,7 +119,7 @@ def test_get_service_tests(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_services_raw(users: List[AussieBB]) -> None:
+def test_get_services_raw(users: list[AussieBB]) -> None:
     """allows one to dump the full result of a get_services call"""
     for user in users:
         url = user.get_url("get_services", {"page": 1})
@@ -136,14 +135,14 @@ def test_get_services_raw(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_referral_code(users: List[AussieBB]) -> None:
+def test_get_referral_code(users: list[AussieBB]) -> None:
     """tests the referral code func"""
     for user in users:
         assert isinstance(user.referral_code, int)
 
 
 @pytest.mark.network
-def test_account_contacts(users: List[AussieBB]) -> None:
+def test_account_contacts(users: list[AussieBB]) -> None:
     """tests the referral code func"""
     for user in users:
         contacts = user.account_contacts()
@@ -152,7 +151,7 @@ def test_account_contacts(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_voip_devices(users: List[AussieBB]) -> None:
+def test_get_voip_devices(users: list[AussieBB]) -> None:
     """finds voip services and returns the devices"""
     for user in users:
         services = user.get_services()
@@ -170,7 +169,7 @@ def test_get_voip_devices(users: List[AussieBB]) -> None:
 
 
 @pytest.mark.network
-def test_get_voip_service(users: List[AussieBB]) -> None:
+def test_get_voip_service(users: list[AussieBB]) -> None:
     """finds voip services and returns the specific info endpoint"""
     for user in users:
         services = user.get_services()

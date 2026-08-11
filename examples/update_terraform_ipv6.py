@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
 
-""" updates terraform.tfvars based on the current ipv6 subnet assigned to your network
+"""updates terraform.tfvars based on the current ipv6 subnet assigned to your network
 
-    looks for a variable called "base_ipv6_network" and updates it.
+looks for a variable called "base_ipv6_network" and updates it.
 """
 
-
-from ipaddress import ip_network, IPv6Network
 import os
-from pathlib import Path
 import re
 import sys
-from typing import Optional
+from ipaddress import IPv6Network, ip_network
+from pathlib import Path
 
 filepath = Path(__file__)
 sys.path.append(filepath.parent.parent.as_posix())
 
 # pylint: disable=import-error,wrong-import-position
-from aussiebb import AussieBB  # noqa E402
+from aussiebb import AussieBB
 
 TF_FILE = "terraform.tfvars"
 
 
 # pylint: disable=too-many-branches
-def get_network(api: AussieBB) -> Optional[IPv6Network]:
+def get_network(api: AussieBB) -> IPv6Network | None:
     """grabs an ipv6 network object"""
 
     api.logger.debug("Logging in")
@@ -41,30 +39,26 @@ def get_network(api: AussieBB) -> Optional[IPv6Network]:
             continue
         api.logger.debug(service)
         if "ipAddresses" in service:
-            api.logger.info("Found a service: {}", service.get("description"))
+            api.logger.info(f"Found a service: {service.get('description')}")
             if "ipAddresses" not in service:
                 continue
             for address in service["ipAddresses"]:
-                api.logger.debug("address: {}", address)
+                api.logger.debug(f"address: {address}")
                 try:
                     parsed = ip_network(address)
-                except Exception as error_message:  # pylint: disable=broad-except
+                except Exception as error_message:  # pylint: disable=broad-except  # noqa: BLE001
                     api.logger.error(
-                        "Not sure what this was, but it's not an address! {} - {}",
-                        address,
-                        error_message,
+                        f"Not sure what this was, but it's not an address! {address} - {error_message}",
                     )
                     continue
                 if isinstance(parsed, IPv6Network):
                     if found_network is None:
                         found_network = parsed
                     if found_network.prefixlen > parsed.prefixlen:
-                        api.logger.debug(
-                            "Found bigger network, making it current: {}", parsed
-                        )
+                        api.logger.debug(f"Found bigger network, making it current: {parsed}")
                         found_network = parsed
                     else:
-                        api.logger.debug("Smaller network found, skipping: {}", parsed)
+                        api.logger.debug(f"Smaller network found, skipping: {parsed}")
     if not found_network:
         api.logger.error("Didn't find an ipv6 network!")
 
@@ -81,12 +75,12 @@ def check_need_to_update_file(api: AussieBB, updated_address: str) -> bool:
     for line in terraform_file:
         matches = regex.match(line)
         if matches:
-            api.logger.debug("Found line: {}", line)
+            api.logger.debug("Found line: %s", line)
             found_address = matches.groupdict().get("network")
-            api.logger.debug("network: {}", found_address)
+            api.logger.debug("network: %s", found_address)
             if found_address != updated_address:
                 api.logger.info(
-                    "Need to update line... was {}, needs to be {}",
+                    "Need to update line... was %s, needs to be %s",
                     found_address,
                     updated_address,
                 )

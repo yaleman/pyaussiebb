@@ -3,24 +3,22 @@
 """pulls and lists the IPv6 addresess for your services"""
 
 import asyncio
-
-from ipaddress import ip_network, IPv4Network, IPv6Network
 import json
 import os
-from pathlib import Path
 import sys
-from typing import Optional
+from ipaddress import IPv4Network, IPv6Network, ip_network
+from pathlib import Path
 
 script_path = Path(__file__)
 sys.path.append(script_path.parent.parent.as_posix())
 
 
 # pylint: disable=import-error,wrong-import-position
-from aussiebb.asyncio import AussieBB  # noqa E402
-from aussiebb.types import AussieBBConfigFile  # noqa E402
+from aussiebb.asyncio import AussieBB
+from aussiebb.types import AussieBBConfigFile
 
 
-def configloader() -> Optional[AussieBBConfigFile]:
+def configloader() -> AussieBBConfigFile | None:
     """loads config"""
     for filename in [os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json"]:
         filepath = Path(filename).resolve()
@@ -57,7 +55,7 @@ async def main() -> None:
             client.logger.debug(f"address: {address}")
             try:
                 parsed = ip_network(address)
-            except Exception as error_message:  # pylint: disable=broad-except
+            except Exception as error_message:  # pylint: disable=broad-except  # noqa: BLE001
                 client.logger.error(f"Not sure what this was, but it's not an address! {address} - {error_message}")
                 continue
 

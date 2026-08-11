@@ -1,6 +1,7 @@
 project := "aussiebb"
 
-default: checks
+[private]
+default: check
 
 test:
     uv run pytest -m 'not network'
@@ -15,7 +16,7 @@ lint:
 mypy :
     uv run mypy --strict {{project}} tests
 
-checks: lint mypy test
+check: lint mypy test
 
 # run coverage checks and output html
 coverage:

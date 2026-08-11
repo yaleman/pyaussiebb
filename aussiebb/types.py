@@ -1,16 +1,9 @@
-""" types """
+"""types"""
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, TypedDict
 
-import sys
-
-from pydantic import field_validator, BaseModel, ConfigDict, SecretStr, Field
-
-if sys.version_info.major == 3 and sys.version_info.minor < 12:
-    from typing_extensions import TypedDict
-else:
-    from typing import TypedDict  # pylint: disable=ungrouped-imports
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
 
 
 class AccountTransaction(TypedDict):
@@ -37,19 +30,19 @@ class APIResponseLinks(BaseModel):
 
     first: str
     last: str
-    prev: Optional[str] = None
-    next: Optional[str] = None
+    prev: str | None = None
+    next: str | None = None
 
 
 APIResponseMeta = TypedDict(
     "APIResponseMeta",
     {
         "current_page": int,
-        "from": Optional[int],
+        "from": int | None,
         "last_page": int,
         "path": str,
         "per_page": int,
-        "to": Optional[int],
+        "to": int | None,
         "total": int,
     },
 )
@@ -58,7 +51,7 @@ APIResponseMeta = TypedDict(
 class GetServicesResponse(BaseModel):
     """the format for a response from the get_services call"""
 
-    data: List[Dict[str, Any]]
+    data: list[dict[str, Any]]
     links: APIResponseLinks
     meta: APIResponseMeta
 
@@ -75,9 +68,9 @@ class ConfigUser(BaseModel):
 class AussieBBConfigFile(BaseModel):
     """config file definition"""
 
-    users: List[ConfigUser]
-    username: Optional[str] = None
-    password: Optional[SecretStr] = None
+    users: list[ConfigUser]
+    username: str | None = None
+    password: SecretStr | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -161,8 +154,8 @@ class OutageRecord(BaseModel):
     summary: str
     start_time: datetime
     end_time: datetime
-    restored_at: Optional[datetime] = None
-    last_updated: Optional[datetime] = None
+    restored_at: datetime | None = None
+    last_updated: datetime | None = None
 
 
 class ScheduledOutageRecord:
@@ -176,12 +169,12 @@ class ScheduledOutageRecord:
 class AussieBBOutage(BaseModel):
     """outage class"""
 
-    networkEvents: List[OutageRecord]
-    aussieOutages: List[OutageRecord]
-    currentNbnOutages: List[Any]  # TODO: define currentNbnOutages
-    scheduledNbnOutages: List[ScheduledOutageRecord]
-    resolvedScheduledNbnOutages: List[ScheduledOutageRecord]
-    resolvedNbnOutages: List[Any]  # TODO: define resolvedNbnOutages
+    networkEvents: list[OutageRecord]
+    aussieOutages: list[OutageRecord]
+    currentNbnOutages: list[Any]  # TODO: define currentNbnOutages
+    scheduledNbnOutages: list[ScheduledOutageRecord]
+    resolvedScheduledNbnOutages: list[ScheduledOutageRecord]
+    resolvedNbnOutages: list[Any]  # TODO: define resolvedNbnOutages
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -204,7 +197,7 @@ class OrderDetailResponseModel(BaseModel):
     address: str
     appointment: str
     appointment_reschedule_code: int = Field(..., alias="appointmentRescheduleCode")
-    statuses: List[str]
+    statuses: list[str]
 
 
 OrderDetailResponse = TypedDict(
@@ -216,7 +209,7 @@ OrderDetailResponse = TypedDict(
         "address": str,
         "appointment": str,
         "appointment_reschedule_code": int,
-        "statuses": List[str],
+        "statuses": list[str],
     },
 )
 
@@ -224,7 +217,7 @@ OrderDetailResponse = TypedDict(
 class OrderResponse(BaseModel):
     """response from get_orders"""
 
-    data: List[OrderData]
+    data: list[OrderData]
     links: APIResponseLinks
     meta: APIResponseMeta
 
@@ -245,23 +238,23 @@ class AccountContact(BaseModel):
     contact_id: int = Field(..., alias="id")
     first_name: str
     last_name: str
-    email: List[str]
+    email: list[str]
     dob: str
-    home_phone: Optional[str] = None
-    work_phone: Optional[str] = None
-    mobile_phone: Optional[str] = None
-    work_mobile: Optional[str] = None
+    home_phone: str | None = None
+    work_phone: str | None = None
+    mobile_phone: str | None = None
+    work_mobile: str | None = None
     primary_contact: bool
-    username: Optional[str] = None
-    preferred_name: Optional[str] = None
-    middle_name: Optional[str] = None
+    username: str | None = None
+    preferred_name: str | None = None
+    middle_name: str | None = None
 
 
 class Address(BaseModel):
     """Address for services"""
 
-    subaddresstype: Optional[str] = None
-    subaddressnumber: Optional[str] = None
+    subaddresstype: str | None = None
+    subaddressnumber: str | None = None
     streetnumber: str
     streetname: str
     locality: str
@@ -282,8 +275,8 @@ class BaseService(BaseModel):
     usage_anniversary: datetime = Field(..., alias="usageAnniversary")
 
     address: Address
-    contract: Optional[str] = None
-    discounts: List[str]
+    contract: str | None = None
+    discounts: list[str]
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -294,15 +287,15 @@ class FetchSubscription(BaseModel):
     name: str
     description: str
     cost_cents: int = Field(..., alias="costCents")
-    start_date: Optional[datetime] = Field(..., alias="startDate")
-    end_date: Optional[datetime] = Field(..., alias="endDate")
+    start_date: datetime | None = Field(..., alias="startDate")
+    end_date: datetime | None = Field(..., alias="endDate")
 
 
-class FetchSubscriptionDict(BaseModel):
+class FetchSubscriptiondict(BaseModel):
     """this is just getting silly"""
 
-    # subscriptions: List[FetchSubscription] = Field(..., alias="")
-    premium_channels: List[FetchSubscription] = Field(..., alias="Premium Channels")
+    # subscriptions: list[FetchSubscription] = Field(..., alias="")
+    premium_channels: list[FetchSubscription] = Field(..., alias="Premium Channels")
 
 
 class FetchService(BaseService):
@@ -315,8 +308,8 @@ class FetchDetails(BaseModel):
     service_id: int = Field(..., alias="id")
     max_outstanding_cents: int = Field(..., alias="maxOutstandingCents")
     current_available_spend_cents: int = Field(..., alias="currentAvailableSpendCents")
-    transactions: List[str]
-    subscriptions: FetchSubscriptionDict
+    transactions: list[str]
+    subscriptions: FetchSubscriptiondict
 
 
 class VOIPDetails(BaseModel):
@@ -324,7 +317,7 @@ class VOIPDetails(BaseModel):
 
     phone_number: str = Field(..., alias="phoneNumber")
     bar_international: bool = Field(..., alias="barInternational")
-    divert_number: Optional[str] = Field(..., alias="divertNumber")
+    divert_number: str | None = Field(..., alias="divertNumber")
     supports_number_diversion: bool = Field(..., alias="supportsNumberDiversion")
 
 
@@ -347,7 +340,7 @@ class NBNService(BaseService):
 
     nbn_details: NBNDetails = Field(..., alias="nbnDetails")
 
-    ip_addresses: List[str] = Field(..., alias="ipAddresses")
+    ip_addresses: list[str] = Field(..., alias="ipAddresses")
 
 
 class MFAMethod(BaseModel):

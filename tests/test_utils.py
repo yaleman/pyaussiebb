@@ -4,10 +4,9 @@ import json
 import os
 from pathlib import Path
 
-
 import pytest
 
-# from aussiebb import AussieBB
+from aussiebb import AussieBB
 from aussiebb.types import AussieBBConfigFile
 
 CONFIG_FILES = [os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json"]
@@ -29,3 +28,19 @@ def configloader() -> AussieBBConfigFile:
                 pytest.exit(reason=f"Failed to parse config file: {json_error}")
     print(f"No config file found... tried looking in {','.join(CONFIG_FILES)}")
     return AussieBBConfigFile.model_validate({})
+
+
+@pytest.fixture(scope="session")
+def users() -> list[AussieBB]:
+    """user fixture"""
+    config = configloader()
+    if config is None:
+        pytest.skip("No config file found")
+    if len(config.users) == 0:
+        pytest.skip("No users in config file")
+    userlist = []
+    for user in config.users:
+        api = AussieBB(user.username, user.password)
+        api.login()
+        userlist.append(api)
+    return userlist

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.0
+
+Raising minimum Python to 3.9, rewriting all the typing for modern Python etc.
+
 ## v0.1.7
 
 - Updating dependencies, using non-deprecated pydantic functions and fixing types for return values etc.

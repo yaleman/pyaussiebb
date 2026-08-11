@@ -1,13 +1,6 @@
 """constants and utilities"""
 
-import sys
-from typing import Dict
-
-if sys.version_info.major == 3 and sys.version_info.minor < 12:
-    from typing_extensions import TypedDict
-else:
-    from typing import TypedDict
-
+from typing import TypedDict
 
 BASEURL = {
     "api": "https://myaussie-api.aussiebroadband.com.au",
@@ -29,7 +22,7 @@ DefaultHeaders = TypedDict(
 )
 
 
-def default_headers() -> Dict[str, str]:
+def default_headers() -> dict[str, str]:
     """returns a default set of headers"""
     return {
         "Accept": "application/json",

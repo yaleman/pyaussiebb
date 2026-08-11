@@ -1,11 +1,10 @@
 """aiohttp support for AussieBB"""
 
 import asyncio
-
 import json
-from time import time
 import sys
-from typing import Any, Dict, List, Optional
+from time import time
+from typing import Any
 
 from pydantic import SecretStr
 
@@ -17,22 +16,21 @@ except ImportError as error_message:
     sys.exit(1)
 
 from ..baseclass import BaseClass
-from ..const import BASEURL, default_headers, DEFAULT_BACKOFF_DELAY, PHONE_TYPES
+from ..const import BASEURL, DEFAULT_BACKOFF_DELAY, PHONE_TYPES, default_headers
 from ..exceptions import (
     AuthenticationException,
     RateLimitException,
     RecursiveDepth,
 )
-
 from ..types import (
-    MFAMethod,
-    ServiceTest,
     AccountContact,
     AccountTransaction,
     FetchService,
+    MFAMethod,
     OrderDetailResponseModel,
-    VOIPDevice,
+    ServiceTest,
     VOIPDetails,
+    VOIPDevice,
 )
 
 
@@ -43,7 +41,7 @@ class AussieBB(BaseClass):
         self,
         username: str,
         password: "SecretStr | str",
-        session: Optional[aiohttp.client.ClientSession] = None,
+        session: aiohttp.client.ClientSession | None = None,
         debug: bool = False,
         services_cache_time: int = 28800,
     ):
@@ -162,8 +160,8 @@ class AussieBB(BaseClass):
         url: str,
         skip_login_check: bool = False,
         depth: int = 0,
-        cookies: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        cookies: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> ClientResponse:
         """Performs a GET request and logs in first if needed."""
         if depth > 2:
@@ -201,15 +199,15 @@ class AussieBB(BaseClass):
         url: str,
         skip_login_check: bool = False,
         depth: int = 0,
-        cookies: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> List[Any]:
+        cookies: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> list[Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a list from the JSON response.
         """
         response = await self.request_get(url, skip_login_check, depth, cookies, params)
-        result: List[Any] = await response.json()
+        result: list[Any] = await response.json()
         return result
 
     async def request_get_json(
@@ -217,15 +215,15 @@ class AussieBB(BaseClass):
         url: str,
         skip_login_check: bool = False,
         depth: int = 0,
-        cookies: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        cookies: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Performs a GET request and logs in first if needed.
 
         Returns a dict of the JSON response.
         """
         response = await self.request_get(url, skip_login_check, depth, cookies, params)
-        result: Dict[str, Any] = await response.json()
+        result: dict[str, Any] = await response.json()
         return result
 
     async def request_post_json(
@@ -233,8 +231,8 @@ class AussieBB(BaseClass):
         url: str,
         depth: int = 0,
         skip_login_check: bool = False,
-        **kwargs: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        **kwargs: dict[str, Any],
+    ) -> dict[str, Any]:
         """Performs a POST request and logs in first if needed.
 
         Returns a dict of the response data.
@@ -248,11 +246,11 @@ class AussieBB(BaseClass):
         await self.do_login_check(skip_login_check)
 
         cookies = kwargs.get("cookies", {"myaussie_cookie": self.myaussie_cookie})
-        headers: Dict[str, str] = kwargs.get("headers", dict(default_headers()))
+        headers: dict[str, str] = kwargs.get("headers", dict(default_headers()))
         async with self.session.post(url=url, cookies=cookies, headers=headers, json=kwargs.get("data")) as response:
             try:
                 await self.handle_response_fail(response)
-                jsondata: Dict[str, Any] = await response.json()
+                jsondata: dict[str, Any] = await response.json()
             except RateLimitException:
                 jsondata = await self.request_post_json(
                     url=url,
@@ -262,13 +260,13 @@ class AussieBB(BaseClass):
                 )
         return jsondata
 
-    async def get_customer_details(self) -> Dict[str, Any]:
+    async def get_customer_details(self) -> dict[str, Any]:
         """Grabs the customer details.
 
         Returns a dict"""
 
         url = self.get_url("get_customer_details")
-        result: Dict[str, Any] = await self.request_get_json(
+        result: dict[str, Any] = await self.request_get_json(
             url=url,
             params={"v": "2"},
         )
@@ -300,10 +298,10 @@ class AussieBB(BaseClass):
         self,
         page: int = 1,
         use_cached: bool = False,
-        servicetypes: Optional[List[str]] = None,
-        drop_types: Optional[List[str]] = None,
+        servicetypes: list[str] | None = None,
+        drop_types: list[str] | None = None,
         drop_unknown_types: bool = False,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Returns a `list` of `dicts` of services associated with the account.
 
         If you want a specific kind of service, or services,
@@ -318,7 +316,7 @@ class AussieBB(BaseClass):
             await self._check_reload_cached_services()
         else:
             url = self.get_url("get_services")
-            services_list: List[Dict[str, Any]] = []
+            services_list: list[dict[str, Any]] = []
             while True:
                 params = {"page": page}
                 responsedata = await self.request_get_json(url=url, params=params)
@@ -341,7 +339,7 @@ class AussieBB(BaseClass):
 
         return self.services
 
-    async def account_transactions(self) -> Dict[str, AccountTransaction]:
+    async def account_transactions(self) -> dict[str, AccountTransaction]:
         """Pulls the data for transactions on your account.
 
         Returns a dict where the key is the month and year of the transaction.
@@ -364,7 +362,7 @@ class AussieBB(BaseClass):
         ```
         """
         url = self.get_url("account_transactions")
-        responsedata: Dict[str, AccountTransaction] = await self.request_get_json(url=url)
+        responsedata: dict[str, AccountTransaction] = await self.request_get_json(url=url)
         return responsedata
 
     async def billing_receipt(self, receipt_id: int) -> ClientResponse:
@@ -391,13 +389,13 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get(url=url)
         return responsedata
 
-    async def account_paymentplans(self) -> Dict[str, Any]:
+    async def account_paymentplans(self) -> dict[str, Any]:
         """Returns a dict of payment plans for an account"""
         url = self.get_url("account_paymentplans")
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_usage(self, service_id: int, use_cached: bool = True) -> Dict[str, Any]:
+    async def get_usage(self, service_id: int, use_cached: bool = True) -> dict[str, Any]:
         """
         Returns a dict of usage for a service.
 
@@ -415,7 +413,7 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_service_tests(self, service_id: int) -> List[ServiceTest]:
+    async def get_service_tests(self, service_id: int) -> list[ServiceTest]:
         """Gets the available tests for a given service ID
         Returns list of dicts
 
@@ -435,10 +433,10 @@ class AussieBB(BaseClass):
             print(f"Getting service tests for {service_id}", file=sys.stderr)
 
         url = self.get_url("get_service_tests", {"service_id": service_id})
-        responsedata: List[Any] = await self.request_get_list(url=url)
+        responsedata: list[Any] = await self.request_get_list(url=url)
         return [ServiceTest.model_validate(test) for test in responsedata]
 
-    async def get_test_history(self, service_id: int) -> Dict[str, Any]:
+    async def get_test_history(self, service_id: int) -> dict[str, Any]:
         """Gets the available tests for a given service ID
 
         Returns a list of dicts with tests which have been run
@@ -448,7 +446,7 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def test_line_state(self, service_id: int) -> Dict[str, Any]:
+    async def test_line_state(self, service_id: int) -> dict[str, Any]:
         """Tests the line state for a given service ID"""
         tests = await self.get_service_tests(service_id)
         url = self.get_url("test_line_state", {"service_id": service_id})
@@ -462,7 +460,7 @@ class AussieBB(BaseClass):
         # print(f"Response: {response}", file=sys.stderr)
         return response
 
-    async def run_test(self, service_id: int, test_name: str, test_method: str = "post") -> Optional[Dict[str, Any]]:
+    async def run_test(self, service_id: int, test_name: str, test_method: str = "post") -> dict[str, Any] | None:
         """Run a test, but it checks it's valid first
 
         There doesn't seem to be a valid way to identify what method you're supposed to use on each test.
@@ -478,9 +476,8 @@ class AussieBB(BaseClass):
 
         if not test_links:
             return None
-        if len(test_links) != 1:
-            if self.debug:
-                print(f"Too many tests? {test_links}", file=sys.stderr)
+        if len(test_links) != 1 and self.debug:
+            print(f"Too many tests? {test_links}", file=sys.stderr)
 
         test_name = test_links[0].name
         if self.debug:
@@ -491,7 +488,7 @@ class AussieBB(BaseClass):
             result = await self.request_post_json(url=test_links[0].link)
         return result
 
-    async def service_plans(self, service_id: int) -> Dict[str, Any]:
+    async def service_plans(self, service_id: int) -> dict[str, Any]:
         """
         Pulls the plan data for a given service. You MUST MFA-verify first.
 
@@ -505,7 +502,7 @@ class AussieBB(BaseClass):
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_outages(self, service_id: int) -> Dict[str, Any]:
+    async def service_outages(self, service_id: int) -> dict[str, Any]:
         """Pulls outages associated with a service.
 
         Keys: `['networkEvents', 'aussieOutages', 'currentNbnOutages', 'scheduledNbnOutages', 'resolvedScheduledNbnOutages', 'resolvedNbnOutages']`
@@ -534,7 +531,7 @@ class AussieBB(BaseClass):
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_boltons(self, service_id: int) -> Dict[str, Any]:
+    async def service_boltons(self, service_id: int) -> dict[str, Any]:
         """Pulls addons associated with the service.
 
         Keys: `['id', 'name', 'description', 'costCents', 'additionalNote', 'active']`
@@ -558,7 +555,7 @@ class AussieBB(BaseClass):
             print(responsedata, file=sys.stderr)
         return responsedata
 
-    async def service_datablocks(self, service_id: int) -> Dict[str, Any]:
+    async def service_datablocks(self, service_id: int) -> dict[str, Any]:
         """Pulls datablocks associated with the service.
 
         Keys: `['current', 'available']`
@@ -576,7 +573,7 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def telephony_usage(self, service_id: int) -> Dict[str, Any]:
+    async def telephony_usage(self, service_id: int) -> dict[str, Any]:
         """Pulls the telephony usage associated with the service.
 
         Keys: `['national', 'mobile', 'international', 'sms', 'internet', 'voicemail', 'other', 'daysTotal', 'daysRemaining', 'historical']`
@@ -594,51 +591,51 @@ class AussieBB(BaseClass):
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def support_tickets(self) -> Dict[str, Any]:
+    async def support_tickets(self) -> dict[str, Any]:
         """Pulls the support tickets associated with the account, returns a list of dicts.
 
-        Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
+        dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
 
         """
         url = self.get_url("support_tickets")
         responsedata = await self.request_get_json(url=url)
         return responsedata
 
-    async def get_appointment(self, ticketid: int) -> Dict[str, Any]:
+    async def get_appointment(self, ticketid: int) -> dict[str, Any]:
         """Pulls the support tickets associated with the account, returns a list of dicts.
 
-        Dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
+        dict keys: `['ref', 'create', 'updated', 'service_id', 'type', 'subject', 'status', 'closed', 'awaiting_customer_reply', 'expected_response_minutes']`
         """
         url = self.get_url("get_appointment", {"ticketid": ticketid})
         return await self.request_get_json(url=url)
 
-    async def account_contacts(self) -> List[AccountContact]:
+    async def account_contacts(self) -> list[AccountContact]:
         """Pulls the contacts with the account, returns a list of dicts
 
-        Dict keys: `['id', 'first_name', 'last_name', 'email', 'dob', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']`
+        dict keys: `['id', 'first_name', 'last_name', 'email', 'dob', 'home_phone', 'work_phone', 'mobile_phone', 'work_mobile', 'primary_contact']`
         """
         url = self.get_url("account_contacts")
         response = await self.request_get_json(url=url)
         return [AccountContact.model_validate(contact) for contact in response]
 
-    async def get_orders(self) -> Dict[str, Any]:
+    async def get_orders(self) -> dict[str, Any]:
         """pulls the outstanding orders for an account"""
         url = self.get_url("get_orders")
         responsedata = await self.request_get_json(url=url)
         result = OrderDetailResponseModel(**responsedata)
         return result.model_dump()
 
-    async def get_order(self, order_id: int) -> Dict[str, Any]:
+    async def get_order(self, order_id: int) -> dict[str, Any]:
         """gets a specific order"""
         url = self.get_url("get_order", {"order_id": order_id})
         responsedata = await self.request_get_json(url=url)
         result = OrderDetailResponseModel(**responsedata)
         return result.model_dump()
 
-    async def get_voip_devices(self, service_id: int) -> List[VOIPDevice]:
+    async def get_voip_devices(self, service_id: int) -> list[VOIPDevice]:
         """gets the devices associatd with a VOIP service"""
         url = self.get_url("voip_devices", {"service_id": service_id})
-        service_list: List[VOIPDevice] = []
+        service_list: list[VOIPDevice] = []
         data = await self.request_get_json(url=url)
         for service in data:
             service_list.append(VOIPDevice.model_validate(service))

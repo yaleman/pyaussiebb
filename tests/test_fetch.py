@@ -1,11 +1,10 @@
-""" tests some fetch-service-related things """
+"""tests some fetch-service-related things"""
 
 import json
-import pytest
+
 from aussiebb import types
 
 
-@pytest.mark.network
 def test_fetch_service_parser() -> None:
     """tests parsing an example service"""
 
@@ -39,7 +38,6 @@ def test_fetch_service_parser() -> None:
     assert test_parse.service_id
 
 
-@pytest.mark.network
 def test_fetch_service_details() -> None:
     """tests details"""
     fetch_service = json.loads(

@@ -1,17 +1,16 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
 
-""" contrived example checking for invalid services """
+"""contrived example checking for invalid services"""
 
-from pathlib import Path
 import sys
-
+from pathlib import Path
 
 script_path = Path(__file__)
 sys.path.append(script_path.parent.parent.as_posix())
 
 # pylint: disable=import-error,wrong-import-position
 from aussiebb import AussieBB  # noqa E402
-import aussiebb.exceptions  # noqa E402
+import aussiebb.exceptions
 
 
 client = AussieBB("12345", "12345")

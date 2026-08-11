@@ -1,10 +1,10 @@
 [project]
 name = "pyaussiebb"
-version = "0.1.7"
+version = "0.2.0"
 description = "Aussie Broadband API module"
 authors = [{ name = "James Hodgkinson", email = "james@terminaloutcomes.com" }]
 license = { text = "MIT" }
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 readme = "README.md"
 keywords = ["api", "aussie", "broadband", "internet"]
 classifiers = [
@@ -28,8 +28,7 @@ documentation = "https://yaleman.github.io/pyaussiebb/"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.11.10",
-    "mypy==2.3.0",
+    "ruff>=0.16.1",
     "pytest>=8.3.5",
     "types-requests>=2.32.4.20260107",
     "mkdocstrings>=0.27",
@@ -39,7 +38,7 @@ dev = [
     "pytest-asyncio>=0.26.0",
     "pytest-aiohttp>=1.1.0",
     "mkdocstrings-python>=1.16.10",
-    "ty>=0.0.35",
+    "ty>=0.0.67",
 ]
 
 

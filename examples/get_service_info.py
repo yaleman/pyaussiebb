@@ -7,9 +7,8 @@
 import asyncio
 import json
 import os
-from pathlib import Path
 import sys
-from typing import Optional
+from pathlib import Path
 
 import aiohttp
 
@@ -18,11 +17,11 @@ sys.path.append(script_path.parent.parent.as_posix())
 
 
 # pylint: disable=import-error
-from aussiebb.asyncio import AussieBB  # noqa E402
-from aussiebb.types import AussieBBConfigFile  # noqa E402
+from aussiebb.asyncio import AussieBB
+from aussiebb.types import AussieBBConfigFile
 
 
-def configloader() -> Optional[AussieBBConfigFile]:
+def configloader() -> AussieBBConfigFile | None:
     """loads config"""
     for filename in [os.path.expanduser("~/.config/aussiebb.json"), "aussiebb.json"]:
         filepath = Path(filename).resolve()
